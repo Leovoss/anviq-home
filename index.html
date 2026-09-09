@@ -1,100 +1,355 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Anviq — Forward deployed AI engineering</title>
-<meta name="description" content="Anviq is an independent forward deployed AI engineering practice. One engineer embeds with the client and owns delivery end to end.">
+<title>Anviq — forward deployed AI engineering</title>
+<meta name="description" content="Anviq is an independent forward deployed AI engineering practice. One engineer embeds with the client and owns delivery end to end: bespoke AI agents, integration with existing systems, and infrastructure with agreed data handling.">
+<meta property="og:title" content="Anviq — forward deployed AI engineering">
+<meta property="og:description" content="One engineer embeds with the client and owns delivery end to end. Bespoke AI agents, integration, and infrastructure for European enterprises.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://anviq.net/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://anviq.net/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          white: '#FFFFFF',
+          iron: '#252825',
+          ember: '#B54827',
+          chalk: '#F3F2EC',
+          ash: '#D8D9D2',
+          steel: '#626862',
+        },
+        fontFamily: {
+          sans: ['"IBM Plex Sans"', 'Arial', 'sans-serif'],
+          editorial: ['Georgia', '"Times New Roman"', 'serif'],
+          mono: ['"IBM Plex Mono"', 'Consolas', '"Liberation Mono"', 'monospace'],
+        },
+        maxWidth: { site: '1200px' },
+      }
+    }
+  }
+</script>
+<style>
+  body { -webkit-font-smoothing: antialiased; }
+  .strike { clip-path: polygon(0 0, 88% 0, 100% 100%, 0 100%); }
+  .reveal { opacity: 0; transform: translateY(10px); transition: opacity .5s ease, transform .5s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
+</style>
 </head>
-<body>
 
-<header class="site-header">
-  <a class="logo" href="/" aria-label="Anviq">
-    <svg viewBox="-46 16 394 280" width="28" height="20" role="img" aria-hidden="true">
-      <path fill="#252825" d="M50 86H252C268 86 278 94 278 107V117C278 129 270 137 256 141L211 155C194 160 185 172 185 187C185 202 196 214 217 226H85C71 215 64 204 64 190C64 176 71 164 85 154L116 132H50C35 132 24 122 24 109C24 96 35 86 50 86Z"/>
-      <path fill="#B54827" d="M236 86H252C268 86 278 94 278 107V117L260 123L236 106Z"/>
-    </svg>
-    <span>anviq</span>
-  </a>
-  <nav>
-    <a href="#work">The work</a>
-    <a href="#approach">Approach</a>
-    <a href="#contact">Contact</a>
-  </nav>
+<body class="font-sans bg-white text-iron">
+
+<a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-iron focus:text-white focus:px-3 focus:py-2 focus:rounded">Skip to content</a>
+
+<!-- ===================== HEADER ===================== -->
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-ash">
+  <div class="max-w-site mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="#top" class="flex items-center gap-2 font-mono text-[15px] tracking-wide" aria-label="Anviq">
+      <svg viewBox="-46 16 394 280" width="26" height="18" aria-hidden="true">
+        <path fill="#252825" d="M50 86H252C268 86 278 94 278 107V117C278 129 270 137 256 141L211 155C194 160 185 172 185 187C185 202 196 214 217 226H85C71 215 64 204 64 190C64 176 71 164 85 154L116 132H50C35 132 24 122 24 109C24 96 35 86 50 86Z"/>
+        <path fill="#B54827" d="M236 86H252C268 86 278 94 278 107V117L260 123L236 106Z"/>
+      </svg>
+      anviq
+    </a>
+    <nav class="hidden md:flex items-center gap-8 text-[14px] text-steel">
+      <a href="#work" class="hover:text-iron transition">The work</a>
+      <a href="#approach" class="hover:text-iron transition">Approach</a>
+      <a href="#work-selected" class="hover:text-iron transition">Selected work</a>
+      <a href="#engagement" class="hover:text-iron transition">Engagement</a>
+      <a href="#faq" class="hover:text-iron transition">FAQ</a>
+    </nav>
+    <div class="flex items-center gap-2">
+      <a href="mailto:lvoss@anviq.net" class="hidden sm:inline-flex items-center justify-center px-4 py-2 min-h-[40px] rounded bg-iron text-white text-[14px] font-semibold hover:bg-ember transition">Start a conversation</a>
+      <button id="nav-toggle" type="button" class="md:hidden inline-flex h-9 w-9 items-center justify-center rounded border border-ash text-iron" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menu">
+        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-nav" class="hidden md:hidden border-t border-ash bg-white">
+    <nav class="max-w-site mx-auto px-4 py-2 flex flex-col text-[15px]">
+      <a href="#work" class="py-3 border-b border-ash text-steel">The work</a>
+      <a href="#approach" class="py-3 border-b border-ash text-steel">Approach</a>
+      <a href="#work-selected" class="py-3 border-b border-ash text-steel">Selected work</a>
+      <a href="#engagement" class="py-3 border-b border-ash text-steel">Engagement</a>
+      <a href="#faq" class="py-3 border-b border-ash text-steel">FAQ</a>
+      <a href="mailto:lvoss@anviq.net" class="py-3 font-semibold text-ember">Start a conversation</a>
+    </nav>
+  </div>
 </header>
 
-<main>
+<main id="main">
+<div id="top"></div>
 
-  <section class="hero">
-    <p class="mono eyebrow">Forward deployed AI engineering</p>
-    <h1>Systems built to hold.</h1>
-    <p class="lede">Anviq is an independent forward deployed AI engineering practice. One engineer embeds with the client and owns delivery end to end.</p>
-    <a class="cta" href="#contact">Start a conversation</a>
-  </section>
-
-  <section id="work" class="work">
-    <span class="strike" aria-hidden="true"></span>
-    <h2>The work</h2>
-    <div class="grid-3">
-      <div class="card">
-        <h3>Bespoke AI agents</h3>
-        <p>Agents and intelligent automation built for a specific workflow, not a generic template.</p>
-      </div>
-      <div class="card">
-        <h3>Integration</h3>
-        <p>Connect new agents to the systems you already run. Scheduling to billing. CRM to operations.</p>
-      </div>
-      <div class="card">
-        <h3>Infrastructure</h3>
-        <p>Hosting, access controls and data handling agreed with European enterprises before implementation.</p>
+  <!-- ===================== HERO ===================== -->
+  <section class="border-b border-ash">
+    <div class="max-w-site mx-auto px-4 sm:px-6 pt-16 pb-16 sm:pt-24 sm:pb-24">
+      <p class="font-mono text-[13px] uppercase tracking-[0.15em] text-steel">Forward deployed AI engineering</p>
+      <h1 class="mt-6 font-editorial font-normal text-[40px] leading-[48px] sm:text-[64px] sm:leading-[72px] tracking-[-0.02em] max-w-3xl">Systems built to hold.</h1>
+      <p class="mt-6 text-[18px] leading-relaxed text-steel max-w-2xl">Anviq is an independent forward deployed AI engineering practice. One engineer embeds with the client and owns delivery end to end: bespoke agents, integration with what you already run, and infrastructure with agreed access controls.</p>
+      <div class="mt-8 flex flex-wrap items-center gap-4">
+        <a href="mailto:lvoss@anviq.net" class="inline-flex items-center justify-center px-6 py-3 min-h-[48px] rounded bg-iron text-white font-semibold hover:bg-ember transition">Start a conversation</a>
+        <a href="#approach" class="inline-flex items-center gap-1.5 text-[15px] font-semibold text-iron hover:text-ember transition">See how it works <span aria-hidden="true">&rarr;</span></a>
       </div>
     </div>
   </section>
 
-  <section id="approach" class="approach">
-    <span class="strike" aria-hidden="true"></span>
-    <h2>Own the delivery.</h2>
-    <blockquote>
-      <p>I work inside your team to build agents, automate workflows, and connect existing systems. I own delivery from the first technical assessment through deployment and documentation. Hosting, access controls, and data handling are agreed before implementation.</p>
-    </blockquote>
-    <div class="grid-2">
-      <div>
-        <h3>Precision engineering</h3>
-        <p>Make dimensions, decisions and outcomes explicit.</p>
-      </div>
-      <div>
-        <h3>Quiet confidence</h3>
-        <p>Let evidence carry the claim.</p>
-      </div>
-      <div>
-        <h3>Trust</h3>
-        <p>State responsibilities and boundaries.</p>
-      </div>
-      <div>
-        <h3>Discretion</h3>
-        <p>Protect client information.</p>
+  <!-- ===================== TRUST BAR ===================== -->
+  <section class="bg-chalk border-b border-ash">
+    <div class="max-w-site mx-auto px-4 sm:px-6 py-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[13.5px] text-steel">
+      <span class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-ember shrink-0"></span>One engineer, full accountability</span>
+      <span class="hidden sm:block h-4 w-px bg-ash"></span>
+      <span class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-ember shrink-0"></span>Hosting and access controls agreed upfront</span>
+      <span class="hidden sm:block h-4 w-px bg-ash"></span>
+      <span class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-ember shrink-0"></span>Documented decisions, clear responsibilities</span>
+      <span class="hidden sm:block h-4 w-px bg-ash"></span>
+      <span class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-ember shrink-0"></span>Built for European enterprises</span>
+    </div>
+  </section>
+
+  <!-- ===================== 01 THE WORK ===================== -->
+  <section id="work" class="border-b border-ash">
+    <div class="max-w-site mx-auto px-4 sm:px-6 py-16 sm:py-24">
+      <span class="strike block w-16 h-2 bg-ember mb-6" aria-hidden="true"></span>
+      <p class="font-mono text-[12px] uppercase tracking-[0.15em] text-steel">01 / The work</p>
+      <h2 class="mt-4 font-sans font-semibold text-[28px] leading-[36px] sm:text-[32px] sm:leading-[40px] tracking-[-0.02em] max-w-2xl">Three things, one point of contact.</h2>
+
+      <div class="mt-12 grid gap-6 sm:grid-cols-3">
+        <div class="border border-ash rounded-lg p-6">
+          <h3 class="font-sans font-semibold text-[24px] leading-[32px] tracking-[-0.01em]">Bespoke AI agents</h3>
+          <p class="mt-3 text-[16px] text-steel leading-relaxed">Agents and automation built for a specific workflow you already have, not a generic template retrofitted to fit.</p>
+        </div>
+        <div class="border border-ash rounded-lg p-6">
+          <h3 class="font-sans font-semibold text-[24px] leading-[32px] tracking-[-0.01em]">Integration</h3>
+          <p class="mt-3 text-[16px] text-steel leading-relaxed">Connect the new agent to the systems you already run: scheduling to billing, CRM to operations, wherever the handoff currently breaks.</p>
+        </div>
+        <div class="border border-ash rounded-lg p-6">
+          <h3 class="font-sans font-semibold text-[24px] leading-[32px] tracking-[-0.01em]">Infrastructure</h3>
+          <p class="mt-3 text-[16px] text-steel leading-relaxed">Hosting region, access controls and data handling agreed with you before a line of implementation starts.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <section id="contact" class="contact">
-    <span class="strike" aria-hidden="true"></span>
-    <h2>Name the work.</h2>
-    <p class="lede">Say what needs building, and I will tell you what it takes to build it.</p>
-    <a class="cta" href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
+  <!-- ===================== 02 THE IDEA (dark section) ===================== -->
+  <section class="bg-iron text-white border-b border-ash">
+    <div class="max-w-site mx-auto px-4 sm:px-6 py-16 sm:py-24 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div>
+        <span class="strike block w-16 h-2 bg-ember mb-6" aria-hidden="true"></span>
+        <p class="font-mono text-[12px] uppercase tracking-[0.15em] text-white/60">02 / The idea</p>
+        <h2 class="mt-4 font-sans font-semibold text-[28px] leading-[36px] sm:text-[32px] sm:leading-[40px] tracking-[-0.02em]">One letter away from &ldquo;anvil.&rdquo;</h2>
+        <p class="mt-6 text-[18px] leading-relaxed text-white/70">The metaphor is construction, testing and accountability, not spectacle. A forged mark, a disciplined grid, a restrained signal color. No robot hands, no glowing neural clouds, no purple swirls, no sparks. What gets built is meant to be inspected, not marveled at.</p>
+      </div>
+      <div class="grid grid-cols-2 gap-6">
+        <div>
+          <h3 class="font-sans font-semibold text-[18px]">Precision engineering</h3>
+          <p class="mt-2 text-[15px] text-white/60 leading-relaxed">Make dimensions, decisions and outcomes explicit.</p>
+        </div>
+        <div>
+          <h3 class="font-sans font-semibold text-[18px]">Quiet confidence</h3>
+          <p class="mt-2 text-[15px] text-white/60 leading-relaxed">Let evidence carry the claim.</p>
+        </div>
+        <div>
+          <h3 class="font-sans font-semibold text-[18px]">Trust</h3>
+          <p class="mt-2 text-[15px] text-white/60 leading-relaxed">State responsibilities and boundaries.</p>
+        </div>
+        <div>
+          <h3 class="font-sans font-semibold text-[18px]">Discretion</h3>
+          <p class="mt-2 text-[15px] text-white/60 leading-relaxed">Protect client information.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 03 APPROACH / PROCESS ===================== -->
+  <section id="approach" class="border-b border-ash">
+    <div class="max-w-site mx-auto px-4 sm:px-6 py-16 sm:py-24">
+      <span class="strike block w-16 h-2 bg-ember mb-6" aria-hidden="true"></span>
+      <p class="font-mono text-[12px] uppercase tracking-[0.15em] text-steel">03 / Approach</p>
+      <h2 class="mt-4 font-sans font-semibold text-[28px] leading-[36px] sm:text-[32px] sm:leading-[40px] tracking-[-0.02em] max-w-2xl">Own the delivery.</h2>
+      <p class="mt-6 text-[18px] leading-relaxed text-steel max-w-2xl">I work inside your team to build agents, automate workflows, and connect existing systems. I own delivery from the first technical assessment through deployment and documentation. Hosting, access controls, and data handling are agreed before implementation.</p>
+
+      <ol class="mt-12 grid gap-8 sm:grid-cols-4">
+        <li>
+          <span class="font-mono text-[13px] text-ember">01</span>
+          <h3 class="mt-2 font-sans font-semibold text-[18px]">Assess</h3>
+          <p class="mt-2 text-[15px] text-steel leading-relaxed">Map the workflow, the systems involved, and where the work actually breaks down today.</p>
+        </li>
+        <li>
+          <span class="font-mono text-[13px] text-ember">02</span>
+          <h3 class="mt-2 font-sans font-semibold text-[18px]">Build</h3>
+          <p class="mt-2 text-[15px] text-steel leading-relaxed">Build and integrate the agent against your real systems, not a demo environment.</p>
+        </li>
+        <li>
+          <span class="font-mono text-[13px] text-ember">03</span>
+          <h3 class="mt-2 font-sans font-semibold text-[18px]">Deploy</h3>
+          <p class="mt-2 text-[15px] text-steel leading-relaxed">Ship into the agreed hosting environment, under the agreed access controls.</p>
+        </li>
+        <li>
+          <span class="font-mono text-[13px] text-ember">04</span>
+          <h3 class="mt-2 font-sans font-semibold text-[18px]">Document &amp; maintain</h3>
+          <p class="mt-2 text-[15px] text-steel leading-relaxed">Hand over what changed and who owns it. Stay on for maintenance if you want it.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===================== 04 FROM CLAIM TO COMMITMENT ===================== -->
+  <section class="bg-chalk border-b border-ash">
+    <div class="max-w-site mx-auto px-4 sm:px-6 py-16 sm:py-24">
+      <span class="strike block w-16 h-2 bg-ember mb-6" aria-hidden="true"></span>
+      <p class="font-mono text-[12px] uppercase tracking-[0.15em] text-steel">04 / Say what I will do</p>
+      <h2 class="mt-4 font-sans font-semibold text-[28px] leading-[36px] sm:text-[32px] sm:leading-[40px] tracking-[-0.02em] max-w-2xl">From claim to commitment.</h2>
+
+      <div class="mt-10 grid gap-6 lg:grid-cols-2">
+        <div class="border border-ash rounded-lg p-6 bg-white">
+          <p class="font-mono text-[11px] uppercase tracking-[0.15em] text-steel">Not this</p>
+          <p class="mt-3 text-[17px] leading-relaxed text-steel italic">&ldquo;We harness cutting-edge AI to revolutionize your business with seamless, future-proof automation.&rdquo;</p>
+        </div>
+        <div class="border-l-4 border-ember rounded-lg p-6 bg-white">
+          <p class="font-mono text-[11px] uppercase tracking-[0.15em] text-ember">Anviq voice</p>
+          <p class="mt-3 text-[17px] leading-relaxed text-iron">I work inside your team to build agents, automate workflows, and connect existing systems. I own delivery from the first technical assessment through deployment and documentation. Hosting, access controls, and data handling are agreed before implementation.</p>
+        </div>
+      </div>
+
+      <div class="mt-10 grid gap-x-10 gap-y-3 sm:grid-cols-2 text-[15px]">
+        <p><span class="font-semibold text-iron">Use:</span> <span class="text-steel">build, integrate, deploy, maintain — engineer, system, workflow — tested, documented, measured.</span></p>
+        <p><span class="font-semibold text-iron">Avoid:</span> <span class="text-steel">revolutionize, disrupt, supercharge — AI wizard, magic, ecosystem — seamless, flawless, effortless.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 05 SELECTED WORK ===================== -->
+  <section id="work-selected" class="border-b border-ash">
+    <div class="max-w-site mx-auto px-4 sm:px-6 py-16 sm:py-24">
+      <span class="strike block w-16 h-2 bg-ember mb-6" aria-hidden="true"></span>
+      <p class="font-mono text-[12px] uppercase tracking-[0.15em] text-steel">05 / Selected work</p>
+      <h2 class="mt-4 font-sans font-semibold text-[28px] leading-[36px] sm:text-[32px] sm:leading-[40px] tracking-[-0.02em] max-w-2xl">Systems shipped, not slides.</h2>
+      <p class="mt-6 text-[18px] leading-relaxed text-steel max-w-2xl">A sample of independent builds. Client engagements are covered by discretion; these are products built and operated end to end.</p>
+
+      <div class="mt-12 grid gap-6 lg:grid-cols-3">
+        <a href="https://steadyward.com" target="_blank" rel="noopener" class="group border border-ash rounded-lg p-6 hover:border-ember transition">
+          <p class="font-mono text-[11px] uppercase tracking-[0.15em] text-steel">Retention infrastructure</p>
+          <h3 class="mt-3 font-sans font-semibold text-[20px]">Steadyward</h3>
+          <p class="mt-2 text-[15px] text-steel leading-relaxed">A read-only behavioural retention layer for MT4/MT5 brokers: pattern detection on live trading accounts, white-label trader alerts, no execution access.</p>
+          <span class="mt-4 inline-flex items-center gap-1.5 text-[14px] font-semibold text-iron group-hover:text-ember transition">steadyward.com <span aria-hidden="true">&rarr;</span></span>
+        </a>
+        <div class="border border-ash rounded-lg p-6">
+          <p class="font-mono text-[11px] uppercase tracking-[0.15em] text-steel">Multi-tenant SaaS</p>
+          <h3 class="mt-3 font-sans font-semibold text-[20px]">LV Matching</h3>
+          <p class="mt-2 text-[15px] text-steel leading-relaxed">Construction bill-of-quantities matching for multiple tenants, with a chat-and-grid interface, EU-hosted auth, and data handling built for GDPR from the schema up.</p>
+        </div>
+        <a href="https://addreach.addvert.de" target="_blank" rel="noopener" class="group border border-ash rounded-lg p-6 hover:border-ember transition">
+          <p class="font-mono text-[11px] uppercase tracking-[0.15em] text-steel">Outbound automation</p>
+          <h3 class="mt-3 font-sans font-semibold text-[20px]">Addreach</h3>
+          <p class="mt-2 text-[15px] text-steel leading-relaxed">Cold-outreach product for a German market: automated sending infrastructure with deliverability and compliance built into the pipeline, not bolted on after.</p>
+          <span class="mt-4 inline-flex items-center gap-1.5 text-[14px] font-semibold text-iron group-hover:text-ember transition">addreach.addvert.de <span aria-hidden="true">&rarr;</span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 06 ENGAGEMENT ===================== -->
+  <section id="engagement" class="border-b border-ash">
+    <div class="max-w-site mx-auto px-4 sm:px-6 py-16 sm:py-24">
+      <span class="strike block w-16 h-2 bg-ember mb-6" aria-hidden="true"></span>
+      <p class="font-mono text-[12px] uppercase tracking-[0.15em] text-steel">06 / Engagement</p>
+      <h2 class="mt-4 font-sans font-semibold text-[28px] leading-[36px] sm:text-[32px] sm:leading-[40px] tracking-[-0.02em] max-w-2xl">Say who builds, operates and maintains it.</h2>
+      <p class="mt-6 text-[18px] leading-relaxed text-steel max-w-2xl">Every engagement starts with a scoped technical assessment before any commitment to build. From there, I quote a fixed scope or an ongoing arrangement, whichever fits the work.</p>
+
+      <div class="mt-12 grid gap-6 sm:grid-cols-2">
+        <div class="border border-ash rounded-lg p-6">
+          <h3 class="font-sans font-semibold text-[20px]">Technical assessment</h3>
+          <p class="mt-2 text-[15px] text-steel leading-relaxed">A paid, fixed-scope review of the workflow and systems involved, ending in a written plan: what to build, what it connects to, what it costs to run.</p>
+        </div>
+        <div class="border border-ash rounded-lg p-6">
+          <h3 class="font-sans font-semibold text-[20px]">Build &amp; deploy</h3>
+          <p class="mt-2 text-[15px] text-steel leading-relaxed">Fixed-scope delivery against the plan, deployed into the agreed environment, with documentation handed over at the end.</p>
+        </div>
+        <div class="border border-ash rounded-lg p-6 sm:col-span-2">
+          <h3 class="font-sans font-semibold text-[20px]">Ongoing maintenance</h3>
+          <p class="mt-2 text-[15px] text-steel leading-relaxed">A retainer for teams who want the same engineer on call as the system evolves and the systems around it change.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 06 FAQ ===================== -->
+  <section id="faq" class="bg-chalk">
+    <div class="max-w-site mx-auto px-4 sm:px-6 py-16 sm:py-24">
+      <span class="strike block w-16 h-2 bg-ember mb-6" aria-hidden="true"></span>
+      <p class="font-mono text-[12px] uppercase tracking-[0.15em] text-steel">07 / Questions</p>
+      <h2 class="mt-4 font-sans font-semibold text-[28px] leading-[36px] sm:text-[32px] sm:leading-[40px] tracking-[-0.02em] max-w-2xl">Common questions.</h2>
+
+      <div class="mt-10 divide-y divide-ash border-t border-b border-ash">
+        <details class="group py-5">
+          <summary class="flex items-center justify-between cursor-pointer list-none font-semibold text-[17px]">
+            Who actually does the work?
+            <span class="ml-4 shrink-0 font-mono text-steel group-open:rotate-45 transition">+</span>
+          </summary>
+          <p class="mt-3 text-[15px] text-steel leading-relaxed max-w-2xl">I do. Anviq is an independent practice, not an agency with a rotating bench. The engineer you talk to in the assessment is the one who builds and deploys the system.</p>
+        </details>
+        <details class="group py-5">
+          <summary class="flex items-center justify-between cursor-pointer list-none font-semibold text-[17px]">
+            Where is data hosted?
+            <span class="ml-4 shrink-0 font-mono text-steel group-open:rotate-45 transition">+</span>
+          </summary>
+          <p class="mt-3 text-[15px] text-steel leading-relaxed max-w-2xl">Hosting region, access controls and data handling are agreed with you as part of the technical assessment, before implementation starts.</p>
+        </details>
+        <details class="group py-5">
+          <summary class="flex items-center justify-between cursor-pointer list-none font-semibold text-[17px]">
+            Do I own what gets built?
+            <span class="ml-4 shrink-0 font-mono text-steel group-open:rotate-45 transition">+</span>
+          </summary>
+          <p class="mt-3 text-[15px] text-steel leading-relaxed max-w-2xl">Yes. Code, configuration and documentation are handed over as part of delivery, per the agreed scope.</p>
+        </details>
+        <details class="group py-5">
+          <summary class="flex items-center justify-between cursor-pointer list-none font-semibold text-[17px]">
+            How does a technical assessment start?
+            <span class="ml-4 shrink-0 font-mono text-steel group-open:rotate-45 transition">+</span>
+          </summary>
+          <p class="mt-3 text-[15px] text-steel leading-relaxed max-w-2xl">Email a short description of the workflow you want automated or connected, and I will reply with scope and timing for the assessment.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTACT ===================== -->
+  <section id="contact" class="border-t border-ash">
+    <div class="max-w-site mx-auto px-4 sm:px-6 py-16 sm:py-24">
+      <span class="strike block w-16 h-2 bg-ember mb-6" aria-hidden="true"></span>
+      <h2 class="font-editorial font-normal text-[32px] leading-[40px] sm:text-[40px] sm:leading-[48px] tracking-[-0.02em] max-w-2xl">Name the work.</h2>
+      <p class="mt-4 text-[18px] leading-relaxed text-steel max-w-xl">Say what needs building, and I will tell you what it takes to build it.</p>
+      <a href="mailto:lvoss@anviq.net" class="mt-8 inline-flex items-center justify-center px-6 py-3 min-h-[48px] rounded bg-iron text-white font-semibold hover:bg-ember transition">lvoss@anviq.net</a>
+    </div>
   </section>
 
 </main>
 
-<footer class="site-footer">
-  <span class="mono">Anviq / Engineering delivery</span>
-  <span class="mono">© 2026</span>
+<!-- ===================== FOOTER ===================== -->
+<footer class="border-t border-ash">
+  <div class="max-w-site mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[12px] text-steel">
+    <span>Anviq / Engineering delivery</span>
+    <span>&copy; 2026 Anviq. Independent practice.</span>
+  </div>
 </footer>
+
+<script>
+  var toggle = document.getElementById('nav-toggle');
+  var menu = document.getElementById('mobile-nav');
+  toggle.addEventListener('click', function () {
+    var open = menu.classList.toggle('hidden');
+    toggle.setAttribute('aria-expanded', String(!open));
+  });
+</script>
 
 </body>
 </html>
