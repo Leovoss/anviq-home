@@ -1,14 +1,29 @@
 # Anviq site
 
-Static one-page marketing site for Anviq, an independent forward deployed AI engineering practice. Built from the Phase 4 brand handbook and design tokens (colors, type scale, spacing, logo mark).
+Marketing site for Anviq, an independent forward deployed AI engineering practice. React + TypeScript + Vite, styled with Tailwind CSS.
 
-- `index.html` — the whole site (Tailwind CDN, IBM Plex fonts, no build step)
-- `robots.txt`, `sitemap.xml`, `_headers` — Cloudflare Pages basics
+- `src/` - app source (pages, components, content data)
+- `public/` - static assets (favicon, robots.txt, sitemap.xml)
+
+## Development
+
+```
+npm install
+npm run dev
+```
+
+## Build
+
+```
+npm run build
+```
 
 ## Hosting
-No build step. Deploy on Cloudflare Pages: connect this repo, leave the build command empty, set the output directory to `/`.
+
+Deploy on Cloudflare Pages: connect this repo, build command `npm run build`, output directory `dist`.
 
 ## Before public launch
+
 - Confirm `lvoss@anviq.net` receives mail
 - Point the `anviq.net` DNS at Cloudflare Pages once the project is created
 - Swap or drop the Selected Work links (Steadyward, LV Matching, Addreach) if any shouldn't be public

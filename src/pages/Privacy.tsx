@@ -1,0 +1,163 @@
+import { Legal } from '@/components/Legal'
+
+export function Privacy() {
+  return (
+    <Legal title="Privacy Policy" updated="9 September 2026">
+      <p>
+        This Privacy Policy explains how we handle personal data in connection with this website (the
+        &ldquo;Site&rdquo;) at anviq.net. It covers the marketing website only. Any client engagement is governed by
+        a separate agreement and data processing terms provided directly to that client.
+      </p>
+      <p>
+        We have written this to be clear and honest about a simple brochure website. If you have any question,
+        contact us at <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>.
+      </p>
+
+      <h2>1. Who we are (the data controller)</h2>
+      <p>The controller responsible for your personal data in relation to the Site is:</p>
+      <ul>
+        <li>
+          <strong>Enrique Voss</strong>, operating as Anviq
+        </li>
+        <li>
+          Email: <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
+        </li>
+      </ul>
+
+      <h2>2. What this Site does and does not collect</h2>
+      <p>
+        This is a static informational website. We have kept data collection to the minimum. We do not run
+        advertising trackers, and we do not build profiles of visitors.
+      </p>
+      <h3>Information you choose to give us</h3>
+      <ul>
+        <li>
+          <strong>When you email us</strong> (for example, by clicking an email link to start a conversation): your
+          email address, your name if you provide it, and whatever you write to us.
+        </li>
+      </ul>
+      <h3>Information collected automatically</h3>
+      <ul>
+        <li>
+          <strong>Server and security logs.</strong> Our hosting and content delivery provider automatically
+          processes limited technical data such as your IP address, browser type, referring page, and the date and
+          time of your request. This is standard for any website and is used to deliver the pages and keep the Site
+          secure.
+        </li>
+        <li>
+          <strong>Google Fonts.</strong> The Site loads two typefaces from Google Fonts. Loading a font file sends
+          your IP address and browser information to Google. See Google&rsquo;s own privacy policy for how it
+          handles that request.
+        </li>
+      </ul>
+      <p>We set no cookies and run no analytics on this Site. See our <a href="/cookies">Cookie Policy</a> for detail.</p>
+
+      <h2>3. Why we use your data, and our legal bases (UK and EU GDPR)</h2>
+      <ul>
+        <li>
+          <strong>To respond to your enquiry.</strong> Legal basis: taking steps at your request before entering
+          into a contract, and our legitimate interest in responding to business enquiries.
+        </li>
+        <li>
+          <strong>To operate, secure, and maintain the Site.</strong> Legal basis: our legitimate interest in
+          running a safe, functioning website.
+        </li>
+        <li>
+          <strong>To comply with legal obligations</strong> where they apply. Legal basis: compliance with a legal
+          obligation.
+        </li>
+      </ul>
+      <p>
+        We do not currently rely on consent for anything, because the Site sets no cookies. If we ever add a
+        technology that needs consent, we will ask for it first.
+      </p>
+
+      <h2>4. Who we share data with</h2>
+      <p>
+        We do not sell your personal data. We share it only with service providers who help us run the Site and
+        respond to you, acting as our processors or independent controllers:
+      </p>
+      <ul>
+        <li>
+          <strong>Hosting / CDN:</strong> serving the Site and security logging.
+        </li>
+        <li>
+          <strong>Fonts</strong> (Google Fonts): loading typefaces, as described above.
+        </li>
+        <li>
+          <strong>Email</strong> (our email provider): receiving and replying to your messages.
+        </li>
+      </ul>
+      <p>We may also disclose data if required by law, or to establish, exercise, or defend legal claims.</p>
+
+      <h2>5. International data transfers</h2>
+      <p>
+        Some of the providers above may process data outside the UK and EEA. Where personal data is transferred
+        internationally, we rely on appropriate safeguards such as the UK and EU Standard Contractual Clauses and,
+        where applicable, the EU-US and UK-US Data Privacy Framework. You can ask us for more detail using the
+        contact details above.
+      </p>
+
+      <h2>6. How long we keep your data</h2>
+      <p>
+        We keep enquiry correspondence only as long as needed to deal with your request and for a reasonable period
+        afterwards for our records and to comply with legal obligations, then we delete it. Server and security logs
+        are kept for a short period by our hosting provider according to its policies.
+      </p>
+
+      <h2>7. Your rights (UK and EU)</h2>
+      <p>If you are in the UK or EEA, you have the right to:</p>
+      <ul>
+        <li>access the personal data we hold about you;</li>
+        <li>ask us to correct inaccurate data;</li>
+        <li>ask us to erase your data;</li>
+        <li>restrict or object to our processing;</li>
+        <li>data portability;</li>
+        <li>withdraw consent at any time, where we rely on consent.</li>
+      </ul>
+      <p>
+        To exercise any of these, email <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>. You also have the
+        right to complain to your data protection authority. In the UK that is the Information Commissioner&rsquo;s
+        Office (<a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>); in the EU it is the
+        supervisory authority in your country.
+      </p>
+
+      <h2>8. Your rights (United States)</h2>
+      <p>
+        Depending on your state of residence, you may have the right to know what personal information we collect,
+        to access or delete it, to correct it, and to opt out of its &ldquo;sale&rdquo; or &ldquo;sharing&rdquo; for
+        targeted advertising.
+      </p>
+      <p>
+        <strong>We do not sell or share your personal information,</strong> and we do not use it for cross-context
+        behavioural advertising. The categories of personal information we may collect are identifiers (such as
+        name, email, and IP address) and internet activity (such as basic server log data), as described above. We
+        will not discriminate against you for exercising any of these rights. To make a request, email{' '}
+        <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>; we may need to verify your identity before responding.
+      </p>
+
+      <h2>9. Children</h2>
+      <p>
+        This Site is aimed at businesses and is not directed to children. We do not knowingly collect personal data
+        from anyone under 18.
+      </p>
+
+      <h2>10. Security</h2>
+      <p>
+        We use a reputable hosting provider and serve the Site over HTTPS. No website can be guaranteed perfectly
+        secure, but we take reasonable measures to protect the limited data the Site handles.
+      </p>
+
+      <h2>11. Changes to this policy</h2>
+      <p>
+        We may update this policy from time to time. The &ldquo;last updated&rdquo; date at the top shows when it
+        last changed. Material changes will be reflected here.
+      </p>
+
+      <h2>12. Contact</h2>
+      <p>
+        Questions or requests about privacy: <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>.
+      </p>
+    </Legal>
+  )
+}
