@@ -41,11 +41,10 @@ import { PublicActivity } from "@/components/PublicActivity";
 import { ExplorerPane } from "@/components/ExplorerPane";
 import { motion, useReducedMotion } from "motion/react";
 import type { Variants } from "motion/react";
-
-const NAV_PILL_SPRING = { type: "spring", bounce: 0, duration: 0.32 } as const;
 import { GitHubActivity } from "@/components/ui/github-activity";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
+const NAV_PILL_SPRING = { type: "spring", bounce: 0, duration: 0.32 } as const;
 const NAV = [
   { id: "overview", label: "Overview", icon: House, href: "/" },
   {
@@ -824,11 +823,17 @@ export function Home() {
     "Page not found";
   const syncScrollAndFocus = () => {
     mainRef.current?.focus({ preventScroll: true });
-    if (location.hash)
+    if (location.hash) {
       document
         .getElementById(location.hash.slice(1))
         ?.scrollIntoView({ block: "start" });
-    else if (mainRef.current) mainRef.current.scrollTop = 0;
+      return;
+    }
+    // Desktop scrolls inside .explorer-main (boxed window); files-layout
+    // scrolls the page itself (.explorer-main is overflow:visible there).
+    // Reset whichever one actually owns the scroll - the other is a no-op.
+    if (mainRef.current) mainRef.current.scrollTop = 0;
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
   useEffect(() => {
     document.title = `${currentProject?.name ?? label} - Anviq`;

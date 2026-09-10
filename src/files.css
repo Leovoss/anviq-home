@@ -186,9 +186,12 @@
 .files-layout .anviq-github-activity [data-slot="github-activity-panel"] a { min-height: 44px; }
 
 /* iPad: edge-to-edge sidebar and one collection/document pane, never three squeezed columns. */
-.tablet-layout .explorer-window { grid-template-columns: 244px minmax(0, 1fr); background: linear-gradient(to right, var(--sidebar) 244px, var(--surface) 244px); }
+.tablet-layout .explorer-window, .tablet-layout .explorer-window.sidebar-hidden { grid-template-columns: 244px minmax(0, 1fr); background: linear-gradient(to right, var(--sidebar) 244px, var(--surface) 244px); height: auto; max-height: none; overflow: visible; }
 .tablet-layout .explorer-window.sidebar-hidden { grid-template-columns: 0 minmax(0, 1fr); background: var(--surface); }
 .tablet-layout .explorer-sidebar { position: sticky; top: 0; align-self: start; border-radius: 0; padding: 25px 15px; min-height: 100svh; }
+/* The sidebar/toolbar are sticky against page scroll, not a boxed inner pane like desktop -
+   files-layout scrolls as one region (the page), matching how a native app scrolls. */
+.files-layout .explorer-main { overflow-y: visible; }
 .files-sidebar-title { font-size: 31px; letter-spacing: -.025em; font-weight: 700; padding-inline: 13px; }
 .tablet-layout .explorer-sidebar .brand { font-size: 16px; padding: 12px 13px 20px; min-height: 60px; font-weight: 550; }
 .tablet-layout .explorer-sidebar .brand svg { width: 25px; height: 22px; }
@@ -206,7 +209,7 @@
 /* iPhone and Android: large titles, grouped Browse, folder collections, thumb-reachable tabs. */
 .phone-layout { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
 .phone-layout .explorer-window,
-.phone-layout .explorer-window.sidebar-hidden { grid-template-columns: minmax(0, 1fr); min-height: calc(100svh - 145px); background: var(--surface); }
+.phone-layout .explorer-window.sidebar-hidden { grid-template-columns: minmax(0, 1fr); height: auto; max-height: none; min-height: calc(100svh - 145px); overflow: visible; background: var(--surface); }
 .phone-layout .files-toolbar { grid-column: 1; padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right)); padding-bottom: 12px; }
 .phone-layout .files-toolbar-title { font-size: 15px; max-width: 125px; }
 .phone-layout .files-toolbar-row { column-gap: 5px; }
