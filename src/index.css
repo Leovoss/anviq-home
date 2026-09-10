@@ -809,6 +809,12 @@ svg {
 .activity-calendar-scroll .anviq-github-activity {
   max-width: none;
 }
+.activity-calendar-scroll .anviq-github-activity > p:first-child {
+  display: none;
+}
+.activity-calendar-scroll .anviq-github-activity [data-slot="github-activity-grid"] {
+  margin-top: 4px;
+}
 .activity-message {
   margin: 32px 0;
   padding: 24px 0;
