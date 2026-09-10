@@ -251,6 +251,27 @@ export const ENGAGEMENT = [
   },
 ];
 
+export const SHIP_LOG = [
+  {
+    date: "September 2026",
+    title: "Quick Look-style screenshot previews, project file packs",
+    note: "Selected work now browses like files, each with a proof note.",
+  },
+  {
+    date: "September 2026",
+    title: "Liquid Glass CTAs, Spotlight-style search",
+  },
+  {
+    date: "August 2026",
+    title: "Anonymous emoji reactions",
+    note: "Click counts only, no identifying data stored.",
+  },
+  {
+    date: "August 2026",
+    title: "Founder page, operating constraints section",
+  },
+];
+
 export const FAQ = [
   {
     q: "Who actually does the work?",
