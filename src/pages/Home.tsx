@@ -26,7 +26,6 @@ import {
   PanelLeft,
   Search,
   Server,
-  Sparkles,
   UserRound,
   Workflow,
   X,
@@ -48,6 +47,10 @@ import type { Variants } from "motion/react";
 import { GitHubActivity } from "@/components/ui/github-activity";
 import { EmojiReaction } from "@/components/ui/emoji-reaction";
 import { sendReaction } from "@/lib/reactions";
+import { DocumentPage } from "@/components/DocumentPage";
+import { Privacy } from "@/pages/Privacy";
+import { Cookies } from "@/pages/Cookies";
+import { Terms } from "@/pages/Terms";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
 const NAV_PILL_SPRING = { type: "spring", bounce: 0, duration: 0.32 } as const;
@@ -348,7 +351,7 @@ function Overview() {
     </div>
   );
 }
-function ProjectBrowser({ slug, filesLayout, mobile, view, setView, sort, setSort }: { slug?: string; filesLayout: boolean; mobile: boolean; view: FilesView; setView: (view: FilesView) => void; sort: FilesSort; setSort: (sort: FilesSort) => void }) {
+function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { slug?: string; filesLayout: boolean; view: FilesView; setView: (view: FilesView) => void; sort: FilesSort; setSort: (sort: FilesSort) => void }) {
   const selected = slug ? SLUGS.indexOf(slug) : filesLayout ? -1 : 0;
   if (slug && selected === -1) return <MissingPage />;
   const project = WORK_SELECTED[selected];
@@ -402,19 +405,12 @@ function ProjectBrowser({ slug, filesLayout, mobile, view, setView, sort, setSor
               </div>
             ))}
           </dl>
-          {project.screenshot && mobile && (
-            <img
-              className="project-screenshot project-screenshot-static"
-              src={project.screenshot}
-              alt={`${project.name} landing page`}
-              loading="lazy"
-            />
-          )}
-          {project.screenshot && !mobile && (
+          {project.screenshot && (
             <ScreenshotLightbox
               src={project.screenshot}
               alt={`${project.name} landing page`}
               label={`${project.name} screenshot`}
+              layoutId={SLUGS[selected]}
             />
           )}
           {project.href ? (
@@ -446,23 +442,6 @@ function ProjectBrowser({ slug, filesLayout, mobile, view, setView, sort, setSor
         </article>
       )}
     </div>
-  );
-}
-function DocumentPage({
-  title,
-  intro,
-  children,
-}: {
-  title: string;
-  intro?: string;
-  children: ReactNode;
-}) {
-  return (
-    <article className="document-page">
-      <h1>{title}</h1>
-      {intro && <p className="intro">{intro}</p>}
-      {children}
-    </article>
   );
 }
 function Services() {
@@ -656,7 +635,7 @@ function About() {
 }
 function Founder() {
   return (
-    <DocumentPage title="Founder.">
+    <DocumentPage title="Founder." className="document-page-centered">
       <div className="founder-profile">
         <img
           className="founder-photo"
@@ -737,10 +716,7 @@ function SuggestionGroups({
                   <span className="suggestion-icon">
                     <FileText size={17} aria-hidden="true" />
                   </span>
-                  <span>
-                    <strong>{item.title}</strong>
-                    <small>{item.body}</small>
-                  </span>
+                  <strong>{item.title}</strong>
                 </button>
               );
             })}
@@ -1001,7 +977,7 @@ function CommandPalette() {
               transition={reducedMotion ? { duration: 0 } : PALETTE_FADE}
             >
               <form className="search-field magic-search-field" role="search" onSubmit={submit}>
-                <Sparkles size={18} aria-hidden="true" className="magic-search-icon" />
+                <Search size={18} aria-hidden="true" />
                 <input
                   ref={inputRef}
                   type="search"
@@ -1009,7 +985,7 @@ function CommandPalette() {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   onKeyDown={onInputKeyDown}
-                  placeholder="Search Anviq..."
+                  placeholder="Make magic happen..."
                   aria-label="Search Anviq"
                   autoComplete="off"
                   role="combobox"
@@ -1089,6 +1065,9 @@ export function Home() {
     browse: "Browse",
     about: "About Anviq",
     founder: "Founder",
+    privacy: "Privacy Policy",
+    cookies: "Cookie Policy",
+    terms: "Terms & Disclaimer",
   };
   const label =
     NAV.find((item) => item.id === active)?.label ??
@@ -1126,7 +1105,7 @@ export function Home() {
       content = filesLayout ? <FilesOverview /> : <Overview />;
       break;
     case "projects":
-      content = <ProjectBrowser slug={slug} filesLayout={filesLayout} mobile={mobile} view={fileView} setView={setFileView} sort={fileSort} setSort={setFileSort} />;
+      content = <ProjectBrowser slug={slug} filesLayout={filesLayout} view={fileView} setView={setFileView} sort={fileSort} setSort={setFileSort} />;
       break;
     case "services":
       content = <Services />;
@@ -1173,6 +1152,15 @@ export function Home() {
       break;
     case "founder":
       content = <Founder />;
+      break;
+    case "privacy":
+      content = <Privacy />;
+      break;
+    case "cookies":
+      content = <Cookies />;
+      break;
+    case "terms":
+      content = <Terms />;
       break;
     case "browse":
       content = filesLayout ? <FilesBrowse /> : (
@@ -1328,9 +1316,9 @@ export function Home() {
       <footer className="site-footer">
         <span>© 2026 Anviq</span>
         <nav aria-label="Legal">
-          <Link to="/privacy">Privacy</Link>
-          <Link to="/cookies">Cookies</Link>
-          <Link to="/terms">Terms &amp; disclaimer</Link>
+          <Link to="/explore/privacy">Privacy</Link>
+          <Link to="/explore/cookies">Cookies</Link>
+          <Link to="/explore/terms">Terms &amp; disclaimer</Link>
         </nav>
         <div className="site-footer-right">
           <nav className="social-links" aria-label="Social">

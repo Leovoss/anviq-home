@@ -346,21 +346,6 @@ svg {
   height: 21px;
   color: var(--muted);
 }
-.magic-search-icon {
-  color: var(--accent);
-  animation: magic-sparkle 2.6s ease-in-out infinite;
-}
-@keyframes magic-sparkle {
-  0%,
-  100% {
-    opacity: 0.75;
-    transform: scale(1) rotate(0deg);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.12) rotate(8deg);
-  }
-}
 .search-field {
   display: flex;
   align-items: center;
@@ -483,6 +468,7 @@ svg {
   align-items: center;
   gap: 11px;
   width: 100%;
+  min-width: 0;
   text-align: left;
   padding: 9px 10px;
   border: 0;
@@ -501,13 +487,9 @@ svg {
 }
 .search-suggestions strong {
   display: block;
+  min-width: 0;
   font-size: 14px;
   font-weight: 600;
-}
-.search-suggestions small {
-  display: block;
-  font-size: 12px;
-  color: var(--muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -526,13 +508,11 @@ svg {
   min-height: 48px;
   padding-inline: 22px;
   border-radius: 9999px;
-  color: var(--accent);
+  color: var(--text);
   font-size: 16px;
   font-weight: 500;
   line-height: 1.4;
-  transition:
-    color 150ms ease-out,
-    transform 100ms ease-out;
+  transition: transform 100ms ease-out;
 }
 .primary-button::before {
   /* Crisp layer: defines the visible pill edge. Unblurred, so the shape
@@ -586,7 +566,6 @@ svg {
   gap: 16px;
 }
 .primary-button:hover {
-  color: var(--accent-hover);
   transform: translateY(-1px);
 }
 .primary-button:active {
@@ -946,6 +925,14 @@ svg {
   border: 0;
   background: none;
   text-align: left;
+  /* The lift lives on the button, not the image - .project-screenshot is a
+     motion.img with a shared layoutId, and Motion owns that element's
+     transform for the Quick Look animation. A CSS transform on the same
+     element would fight it, same issue as the folder-image-lift wrapper. */
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.project-screenshot-trigger:hover {
+  transform: translateY(-3px);
 }
 .project-screenshot-trigger:focus-visible {
   outline: 3px solid var(--focus);
@@ -958,58 +945,55 @@ svg {
   border-radius: 12px;
   border: 1px solid var(--line);
   box-shadow: 0 12px 32px rgb(24 32 44 / 10%);
-  transition:
-    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-/* On mobile the screenshot renders as a plain, non-interactive image
-   (no lightbox trigger wrapper), so it needs its own top margin. */
-.project-screenshot-static {
-  max-width: 640px;
-  margin-top: 24px;
+  transition: box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .project-screenshot-trigger:hover .project-screenshot {
-  transform: translateY(-3px);
   box-shadow: 0 18px 40px rgb(24 32 44 / 14%);
 }
-.lightbox-backdrop {
+.quicklook-backdrop {
   position: fixed;
   inset: 0;
   z-index: 200;
   display: grid;
   place-items: center;
-  padding: 24px;
-  background: rgb(15 20 28 / 65%);
+  padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+  background: rgb(15 20 28 / 72%);
 }
-.lightbox-dialog {
+@supports (backdrop-filter: blur(20px)) {
+  .quicklook-backdrop {
+    backdrop-filter: blur(20px);
+  }
+}
+.quicklook-dialog {
   position: relative;
-  max-width: min(90vw, 1100px);
+  max-width: min(92vw, 1100px);
   max-height: 90vh;
-  overflow: auto;
-  border-radius: 14px;
-  background: var(--surface);
-  padding: 16px;
-  box-shadow: var(--window-shadow);
+  outline: none;
 }
-.lightbox-dialog img {
+.quicklook-dialog img {
   display: block;
-  width: 100%;
-  border-radius: 8px;
+  max-width: min(92vw, 1100px);
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: 0 30px 80px rgb(0 0 0 / 35%);
 }
-.lightbox-close {
+.quicklook-close {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: -16px;
+  right: -16px;
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 9999px;
   background: var(--surface);
   color: var(--muted);
-  box-shadow: 0 4px 14px rgb(24 32 44 / 18%);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 25%);
 }
-.lightbox-close:hover {
+.quicklook-close:hover {
   background: var(--hover);
   color: var(--accent);
 }
@@ -1077,6 +1061,14 @@ svg {
 }
 .document-sections > section:last-child {
   border-bottom: 1px solid var(--line);
+}
+/* The only page that centers instead of the site's usual left-aligned
+   document flow - matches the centered macOS Account panel it's based on. */
+.document-page-centered {
+  text-align: center;
+}
+.document-page-centered .founder-bio {
+  text-align: left;
 }
 /* macOS System Settings account panel: centered photo, name, email. */
 .founder-profile {
@@ -1307,39 +1299,6 @@ svg {
   font-size: 17px;
   min-height: 52px;
 }
-.legal-window {
-  max-width: 1040px;
-  background: var(--surface);
-  margin: 32px auto;
-  border-radius: 16px;
-  box-shadow: var(--window-shadow);
-}
-.legal-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  padding: 12px 30px;
-  background: var(--chrome);
-  border-bottom: 1px solid var(--line);
-  border-radius: 16px 16px 0 0;
-}
-.legal-toolbar .brand {
-  padding: 4px 0;
-  min-height: 44px;
-  font-size: 23px;
-}
-.legal-content {
-  padding: 45px 48px;
-  max-width: 820px;
-  margin-inline: auto;
-}
-.legal-content h1 {
-  font-size: 36px;
-  line-height: 1.2;
-  letter-spacing: -0.03em;
-  font-weight: 650;
-}
 .legal-updated {
   margin-top: 15px;
   color: var(--muted);
@@ -1375,21 +1334,6 @@ svg {
 .legal-copy strong {
   color: var(--text);
 }
-.legal-footer {
-  padding: 22px 30px;
-  border-top: 1px solid var(--line);
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  font-size: 13px;
-  color: var(--muted);
-}
-.legal-footer a {
-  min-height: 36px;
-  display: inline-flex;
-  align-items: center;
-}
-
 @media (min-width: 1100px) and (min-height: 740px) {
   .explorer-sidebar {
     position: sticky;
@@ -1711,27 +1655,6 @@ svg {
   .activity-list time {
     margin-left: 31px;
   }
-  .legal-window {
-    margin: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  .legal-toolbar {
-    padding: 12px 20px;
-    border-radius: 0;
-  }
-  .legal-content {
-    padding: 32px 24px;
-  }
-  .legal-content h1 {
-    font-size: 30px;
-  }
-  .legal-footer {
-    padding: 20px 24px;
-  }
-  .legal-footer a {
-    min-height: 44px;
-  }
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -1813,7 +1736,7 @@ svg {
   .social-links a:active,
   .files-tab-bar a:active,
   .project-folder:active .folder-image-lift,
-  .project-screenshot-trigger:hover .project-screenshot,
+  .project-screenshot-trigger:hover,
   .service-links a:hover > svg:last-child,
   .search-results > a:hover > svg:last-child {
     transform: none;
