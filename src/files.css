@@ -77,6 +77,7 @@
 .files-search-row .search-field-wrap {
   width: 100%;
   min-width: 0;
+  max-width: none;
   margin-left: 0;
 }
 .files-search-row .search-field {
