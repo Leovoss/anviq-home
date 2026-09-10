@@ -504,6 +504,8 @@ export type GitHubActivityProps = React.ComponentProps<"div"> & {
   defaultOpen?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** Override the computed "N contributions in YYYY" heading, e.g. with a total that includes private contributions. */
+  headingOverride?: string;
 };
 
 const GitHubActivity = ({
@@ -520,6 +522,7 @@ const GitHubActivity = ({
   defaultOpen = false,
   open: openProp,
   onOpenChange,
+  headingOverride,
   style,
   ...props
 }: GitHubActivityProps) => {
@@ -564,7 +567,9 @@ const GitHubActivity = ({
 
   const parsedYear = Number(contributions.at(-1)?.date.slice(0, 4));
   const displayYear = year ?? (Number.isFinite(parsedYear) ? parsedYear : null);
-  const heading = `${total} contributions${displayYear ? ` in ${displayYear}` : ""}`;
+  const heading =
+    headingOverride ??
+    `${total} contributions${displayYear ? ` in ${displayYear}` : ""}`;
 
   const gap = gapFor(cellSize);
   const columns = Math.min(

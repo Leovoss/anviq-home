@@ -39,7 +39,7 @@ import {
 } from "@/data/content";
 import { PublicActivity } from "@/components/PublicActivity";
 import { GitHubActivity } from "@/components/ui/github-activity";
-import { useContributionsTotal } from "@/lib/useContributionsTotal";
+import { useContributions } from "@/lib/useContributionsTotal";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
 const NAV = [
@@ -82,6 +82,46 @@ const NAV = [
   },
 ];
 const SLUGS = ["steadyward", "lv-matching", "addreach"];
+const FOUNDER_BIO = [
+  "I work where customers, product, and regulated environments meet. Four years across forex brokerage, fintech, and iGaming, turning what customers struggle with into requirements engineering, compliance, and risk teams can act on: AML, KYC, and Source-of-Wealth for the German market, and a 200+ VIP portfolio generating roughly €10M a year at 82% retention.",
+  "Anviq is that same approach applied directly: sit with the customer, find the real problem, own it through to something shipped and running. I build and run production systems for companies without engineers of their own, custom software, automation, integrations, GDPR-compliant infrastructure, using AI tools daily to move faster.",
+  "Native German speaker with deep DACH market experience, studying computer science at Uninettuno alongside the work. Open to remote roles and relocation to Australia, the US, or Switzerland, particularly platform and developer-focused products.",
+];
+const SEARCH_ENTRIES = [
+  ...NAV.filter((item) => item.id !== "overview").map((item) => ({
+    title: item.label,
+    href: item.href,
+    body:
+      item.id === "services"
+        ? WORK.map((s) => s.body).join(" ")
+        : item.id === "approach"
+          ? PROCESS.map((s) => s.body).join(" ")
+          : item.id === "engagement"
+            ? ENGAGEMENT.map((s) => s.body).join(" ")
+            : item.id === "questions"
+              ? FAQ.map((s) => s.q + " " + s.a).join(" ")
+              : item.label,
+  })),
+  ...WORK_SELECTED.map((item, index) => ({
+    title: item.name,
+    href: `/projects/${SLUGS[index]}`,
+    body: `${item.tag}. ${item.body}`,
+  })),
+  {
+    title: "About Anviq",
+    href: "/explore/about",
+    body: "Independent AI engineering practice. One engineer, full accountability.",
+  },
+];
+function searchEntries(query: string) {
+  const words = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return [];
+  return SEARCH_ENTRIES.filter((item) =>
+    words.every((word) =>
+      `${item.title} ${item.body}`.toLocaleLowerCase().includes(word),
+    ),
+  );
+}
 const SERVICE_ICONS = [Workflow, Layers, Server];
 const PROJECT_DETAILS = [
   [
@@ -118,6 +158,20 @@ const subscribeFiles = (callback: () => void) => {
 };
 const getFilesLayout = () => window.matchMedia(filesQuery).matches;
 
+function LinkedinLogo() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.446-2.136 2.94v5.666H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.114 20.452H3.558V9h3.556v11.452z" />
+    </svg>
+  );
+}
+function XLogo() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
 function FolderImage({ small = false }: { small?: boolean }) {
   return (
     <img
@@ -188,7 +242,7 @@ function Overview() {
         <h1 id="welcome-title">Systems built to hold.</h1>
         <p className="intro">
           Independent AI engineering. Bespoke agents, integration, and
-          infrastructure — one engineer, end-to-end accountability.
+          infrastructure. One engineer, end-to-end accountability.
         </p>
         <ContactLink />
       </section>
@@ -446,7 +500,7 @@ function About() {
         Built for European enterprises. Hosting and access controls agreed
         upfront. Documented decisions, clear responsibilities.
       </p>
-      <h2>One letter away from “anvil.”</h2>
+      <h2>One letter away from "anvil."</h2>
       <p>
         The metaphor is construction, testing and accountability, not spectacle.
         What gets built is meant to be inspected, not marveled at.
@@ -459,40 +513,33 @@ function About() {
           </section>
         ))}
       </div>
-      <details className="brand-notes">
-        <summary>Brand and writing notes</summary>
-        <p>
-          A forged mark, a disciplined grid, a restrained signal color. No robot
-          hands, no glowing neural clouds, no purple swirls, no sparks.
-        </p>
-        <h3>From claim to commitment</h3>
-        <p>
-          Avoid: “We harness cutting-edge AI to revolutionize your business with
-          seamless, future-proof automation.”
-        </p>
-        <p>
-          Anviq voice: I work inside your team to build agents, automate
-          workflows, and connect existing systems. I own delivery from the first
-          technical assessment through deployment and documentation. Hosting,
-          access controls, and data handling are agreed before implementation.
-        </p>
-        <p>
-          Use: build, integrate, deploy, maintain — engineer, system, workflow —
-          tested, documented, measured.
-        </p>
-        <p>
-          Avoid: revolutionize, disrupt, supercharge — AI wizard, magic,
-          ecosystem — seamless, flawless, effortless.
-        </p>
-      </details>
+      <p>
+        I work inside your team to build agents, automate workflows, and
+        connect existing systems. I own delivery from the first technical
+        assessment through deployment and documentation. Hosting, access
+        controls, and data handling are agreed before implementation.
+      </p>
+      <h2>Leonardo Voss</h2>
+      <div className="founder-card">
+        <img
+          className="founder-photo"
+          src="/images/founder.png"
+          alt="Leonardo Voss"
+        />
+        <div className="founder-bio">
+          {FOUNDER_BIO.map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </div>
+      </div>
     </DocumentPage>
   );
 }
 function MissingPage() {
   return (
     <DocumentPage
-      title="This page isn’t here."
-      intro="The link may have changed. You can browse Anviq’s services and projects from the overview."
+      title="This page isn't here."
+      intro="The link may have changed. You can browse Anviq's services and projects from the overview."
     >
       <Link className="external-link" to="/">
         <ArrowLeft size={18} aria-hidden="true" />
@@ -502,46 +549,13 @@ function MissingPage() {
   );
 }
 function SearchResults({ query }: { query: string }) {
-  const entries = [
-    ...NAV.filter((item) => item.id !== "overview").map((item) => ({
-      title: item.label,
-      href: item.href,
-      body:
-        item.id === "services"
-          ? WORK.map((s) => s.body).join(" ")
-          : item.id === "approach"
-            ? PROCESS.map((s) => s.body).join(" ")
-            : item.id === "engagement"
-              ? ENGAGEMENT.map((s) => s.body).join(" ")
-              : item.id === "questions"
-                ? FAQ.map((s) => s.q + " " + s.a).join(" ")
-                : item.label,
-    })),
-    ...WORK_SELECTED.map((item, index) => ({
-      title: item.name,
-      href: `/projects/${SLUGS[index]}`,
-      body: `${item.tag}. ${item.body}`,
-    })),
-    {
-      title: "About Anviq",
-      href: "/explore/about",
-      body: "Independent AI engineering practice. One engineer, full accountability.",
-    },
-  ];
-  const words = query.toLocaleLowerCase().trim().split(/\s+/);
-  const matches = query.trim()
-    ? entries.filter((item) =>
-        words.every((word) =>
-          `${item.title} ${item.body}`.toLocaleLowerCase().includes(word),
-        ),
-      )
-    : [];
+  const matches = searchEntries(query);
   return (
     <DocumentPage
       title="Search Anviq"
       intro={
         query.trim()
-          ? `${matches.length} ${matches.length === 1 ? "result" : "results"} for “${query.trim()}”`
+          ? `${matches.length} ${matches.length === 1 ? "result" : "results"} for "${query.trim()}"`
           : "Search services, projects, and information using the field above."
       }
     >
@@ -550,8 +564,8 @@ function SearchResults({ query }: { query: string }) {
           <Search size={32} aria-hidden="true" />
           <h2>No matching pages</h2>
           <p>
-            Try a project name or a topic such as “agents”, “hosting”, or
-            “assessment”.
+            Try a project name or a topic such as "agents", "hosting", or
+            "assessment".
           </p>
           <Link className="external-link" to="/">
             Browse the overview <ArrowRight size={18} aria-hidden="true" />
@@ -575,8 +589,18 @@ function SearchResults({ query }: { query: string }) {
 }
 function SearchControl({ query }: { query: string }) {
   const [search, setSearch] = useState(query);
+  const [open, setOpen] = useState(false);
+  const [highlighted, setHighlighted] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const suggestions = search.trim() ? searchEntries(search).slice(0, 6) : [];
+  const showSuggestions = open && suggestions.length > 0;
+
+  useEffect(() => {
+    setHighlighted(0);
+  }, [search]);
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
@@ -590,38 +614,108 @@ function SearchControl({ query }: { query: string }) {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
+
+  useEffect(() => {
+    const onPointerDown = (event: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    return () => document.removeEventListener("mousedown", onPointerDown);
+  }, []);
+
+  const goTo = (href: string) => {
+    setOpen(false);
+    navigate(href);
+  };
+
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    navigate(`/explore/search?q=${encodeURIComponent(search.trim())}`);
+    if (showSuggestions && suggestions[highlighted]) {
+      goTo(suggestions[highlighted].href);
+    } else {
+      goTo(`/explore/search?q=${encodeURIComponent(search.trim())}`);
+    }
   };
+
+  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setHighlighted((h) => Math.min(h + 1, suggestions.length - 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setHighlighted((h) => Math.max(h - 1, 0));
+    } else if (event.key === "Escape") {
+      setOpen(false);
+    }
+  };
+
   return (
-    <form className="search-field" role="search" onSubmit={submit}>
-      <button type="submit" aria-label="Search Anviq">
-        <Search size={18} aria-hidden="true" />
-      </button>
-      <input
-        ref={inputRef}
-        type="search"
-        name="q"
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        placeholder="Search Anviq…"
-        aria-label="Search Anviq"
-        autoComplete="off"
-      />
-      {search && (
-        <button
-          type="button"
-          aria-label="Clear search"
-          onClick={() => {
-            setSearch("");
-            inputRef.current?.focus();
-          }}
-        >
-          <X size={16} aria-hidden="true" />
+    <div className="search-field-wrap" ref={wrapRef}>
+      <form className="search-field" role="search" onSubmit={submit}>
+        <button type="submit" aria-label="Search Anviq">
+          <Search size={18} aria-hidden="true" />
         </button>
+        <input
+          ref={inputRef}
+          type="search"
+          name="q"
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          onKeyDown={onKeyDown}
+          placeholder="Search Anviq..."
+          aria-label="Search Anviq"
+          autoComplete="off"
+          role="combobox"
+          aria-expanded={showSuggestions}
+          aria-controls="search-suggestions"
+          aria-activedescendant={
+            showSuggestions ? `search-suggestion-${highlighted}` : undefined
+          }
+        />
+        {search && (
+          <button
+            type="button"
+            aria-label="Clear search"
+            onClick={() => {
+              setSearch("");
+              inputRef.current?.focus();
+            }}
+          >
+            <X size={16} aria-hidden="true" />
+          </button>
+        )}
+      </form>
+      {showSuggestions && (
+        <ul className="search-suggestions" id="search-suggestions" role="listbox">
+          {suggestions.map((item, index) => (
+            <li key={item.href} role="presentation">
+              <button
+                type="button"
+                id={`search-suggestion-${index}`}
+                role="option"
+                aria-selected={index === highlighted}
+                className={index === highlighted ? "is-highlighted" : ""}
+                onMouseEnter={() => setHighlighted(index)}
+                onClick={() => goTo(item.href)}
+              >
+                <FileText size={17} aria-hidden="true" />
+                <span>
+                  <strong>{item.title}</strong>
+                  <small>{item.body}</small>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
-    </form>
+    </div>
   );
 }
 export function Home() {
@@ -633,7 +727,7 @@ export function Home() {
     getServerMobile,
   );
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const contributionsTotal = useContributionsTotal();
+  const contributions = useContributions();
   const filesLayout = useSyncExternalStore(subscribeFiles, getFilesLayout, getServerMobile);
   const [fileView, setFileView] = useState<FilesView>("icons");
   const [fileSort, setFileSort] = useState<FilesSort>("name");
@@ -657,7 +751,7 @@ export function Home() {
     "Page not found";
   const query = new URLSearchParams(location.search).get("q") ?? "";
   useEffect(() => {
-    document.title = `${currentProject?.name ?? label} — Anviq`;
+    document.title = `${currentProject?.name ?? label} - Anviq`;
     if (lastLocation.current !== location.key) {
       lastLocation.current = location.key;
       mainRef.current?.focus({ preventScroll: true });
@@ -694,16 +788,17 @@ export function Home() {
           title="Public activity."
           intro="This pulls live from GitHub. The calendar and list below show public repositories only; client work is under NDA."
         >
-          {contributionsTotal !== null && (
-            <p className="activity-total-stat">
-              {contributionsTotal} contributions in the past year, across public and private work.
-            </p>
-          )}
           <div className="activity-calendar-scroll">
             <GitHubActivity
               username="Leovoss"
+              contributions={contributions?.days}
               showMonths={!filesLayout}
               cellSize={filesLayout ? 3 : 11}
+              headingOverride={
+                contributions
+                  ? `${contributions.count} contributions in the past year (public and private)`
+                  : undefined
+              }
               className="anviq-github-activity"
             />
           </div>
@@ -854,7 +949,27 @@ export function Home() {
           <Link to="/cookies">Cookies</Link>
           <Link to="/terms">Terms &amp; disclaimer</Link>
         </nav>
-        <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
+        <div className="site-footer-right">
+          <nav className="social-links" aria-label="Social">
+            <a
+              href="https://www.linkedin.com/in/v-leonardo/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Leonardo Voss on LinkedIn"
+            >
+              <LinkedinLogo />
+            </a>
+            <a
+              href="https://x.com/thereallvoss"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Leonardo Voss on X"
+            >
+              <XLogo />
+            </a>
+          </nav>
+          <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
+        </div>
       </footer>
       {mobile && <FilesTabBar active={active} />}
     </div>

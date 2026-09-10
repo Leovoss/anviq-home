@@ -39,15 +39,6 @@
   min-height: 48px;
 }
 .files-toolbar-leading { display: flex; align-items: center; gap: 4px; }
-.files-toolbar-brand {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.files-toolbar-brand svg {
-  width: 36px;
-  height: 26px;
-}
 .files-toolbar-title {
   font-size: 16px;
   font-weight: 600;
@@ -83,13 +74,16 @@
 }
 .files-contact:hover { background: var(--selected); }
 .files-search-row { margin-top: 5px; }
-.files-search-row .search-field {
+.files-search-row .search-field-wrap {
   width: 100%;
+  min-width: 0;
+  margin-left: 0;
+}
+.files-search-row .search-field {
   height: 44px;
   background: var(--files-canvas);
   border: 0;
   border-radius: 11px;
-  margin: 0;
 }
 .files-search-row .search-field input { font-size: 16px; }
 .files-search-row .search-field button { min-width: 44px; height: 44px; }
@@ -103,6 +97,11 @@
   letter-spacing: -.025em;
 }
 .files-page-heading > p { color: var(--muted); font-size: 16px; line-height: 1.5; margin-top: 7px; }
+.files-overview .files-page-heading > svg {
+  width: 58px;
+  height: 42px;
+  margin-bottom: 8px;
+}
 .files-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .files-screen h2 { font-size: 21px; font-weight: 650; letter-spacing: -.02em; }
 .files-section-heading > a { color: var(--accent); display: inline-flex; gap: 3px; align-items: center; min-height: 44px; font-size: 15px; }
@@ -176,7 +175,6 @@
 .files-layout .document-page { max-width: 900px; padding: 31px 34px 45px; }
 .files-layout .document-page h1 { font-size: 32px; }
 .files-layout .document-sections > section { scroll-margin-top: 134px; }
-.files-layout .brand-notes summary { min-height: 44px; }
 .anviq-github-activity { --color-foreground: var(--text); --color-background: var(--surface); --color-card: var(--surface); background: var(--surface); color: var(--text); }
 .anviq-github-activity [class~="text-foreground/40"] { color: var(--muted); }
 .anviq-github-activity [data-slot="github-activity-panel"] { background: var(--chrome-glass); }

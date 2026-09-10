@@ -14,7 +14,7 @@ export function Legal({
   children: ReactNode;
 }) {
   useEffect(() => {
-    document.title = `${title} — Anviq`;
+    document.title = `${title} - Anviq`;
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [title]);
   return (
