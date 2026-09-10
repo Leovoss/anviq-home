@@ -76,7 +76,16 @@ button,
 a {
   transition:
     background-color 150ms ease-out,
-    color 150ms ease-out;
+    color 150ms ease-out,
+    transform 100ms ease-out;
+}
+.nav-link:active,
+.about-link:active,
+.icon-button:active,
+.search-field button:active,
+.social-links a:active {
+  background: var(--selected);
+  transform: scale(0.96);
 }
 :focus-visible {
   outline: 3px solid var(--focus);
@@ -141,6 +150,12 @@ svg {
   border-radius: 16px 0 0 0;
   padding: 0 15px 32px;
   overflow-y: auto;
+}
+@supports (backdrop-filter: blur(20px)) {
+  .explorer-sidebar {
+    background: color-mix(in srgb, var(--sidebar) 82%, transparent);
+    backdrop-filter: blur(20px) saturate(1.6);
+  }
 }
 .brand {
   display: flex;
@@ -264,6 +279,11 @@ svg {
   margin-left: auto;
   width: clamp(150px, 20vw, 280px);
   min-width: 130px;
+  transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.search-field-wrap.is-collapsed {
+  width: 40px;
+  min-width: 40px;
 }
 .search-field {
   display: flex;
@@ -274,6 +294,15 @@ svg {
   height: 40px;
   background: var(--sidebar);
   color: var(--muted);
+  transition: background-color 150ms ease-out;
+}
+.is-collapsed .search-field {
+  background: transparent;
+}
+.is-collapsed .search-field input,
+.is-collapsed .search-field button[aria-label="Clear search"] {
+  opacity: 0;
+  pointer-events: none;
 }
 .search-field:focus-within {
   outline: 3px solid var(--focus);
@@ -373,12 +402,20 @@ svg {
   font-size: 16px;
   font-weight: 500;
   line-height: 1.4;
+  box-shadow: 0 1px 2px rgb(0 101 219 / 15%);
+  transition:
+    background-color 150ms ease-out,
+    transform 100ms ease-out,
+    box-shadow 150ms ease-out;
 }
 .primary-button:hover {
   background: var(--accent-hover);
+  box-shadow: 0 4px 14px rgb(0 101 219 / 30%);
+  transform: translateY(-1px);
 }
 .primary-button:active {
-  transform: translateY(1px);
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 1px 2px rgb(0 101 219 / 15%);
 }
 .compact-button {
   white-space: nowrap;
@@ -581,8 +618,8 @@ svg {
 .social-links a {
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   min-height: 0;
   border-radius: 50%;
   color: var(--muted);
@@ -769,29 +806,45 @@ svg {
 .document-sections > section:last-child {
   border-bottom: 1px solid var(--line);
 }
+.founder-heading {
+  margin-top: 40px !important;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
 .founder-card {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   align-items: flex-start;
-  margin-top: 16px;
+  margin-top: 20px;
+  padding: 28px;
+  border-radius: 20px;
+  background: var(--chrome-glass);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgb(24 32 44 / 4%);
 }
 .founder-photo {
-  width: 84px;
-  height: 84px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   object-fit: cover;
   background: var(--sidebar);
+  border: 3px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
   flex-shrink: 0;
 }
 .founder-bio {
   min-width: 0;
-  max-width: 62ch;
+  max-width: 60ch;
+}
+.founder-bio h2 {
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
 }
 .founder-bio p {
-  margin-top: 0 !important;
-}
-.founder-bio p + p {
-  margin-top: 14px !important;
+  margin-top: 12px !important;
+  font-size: 15px !important;
+  line-height: 1.65 !important;
 }
 .service-detail {
   display: flex;
@@ -1440,7 +1493,14 @@ svg {
     animation: none !important;
   }
   .project-folder:hover .folder-image,
-  .primary-button:active {
+  .primary-button:hover,
+  .primary-button:active,
+  .nav-link:active,
+  .about-link:active,
+  .icon-button:active,
+  .search-field button:active,
+  .social-links a:active,
+  .files-tab-bar a:active {
     transform: none;
   }
 }
