@@ -61,13 +61,13 @@ export function PublicActivity() {
   if (state.status === "loading")
     return (
       <p className="activity-message" role="status">
-        Loading public GitHub activity…
+        Loading public GitHub activity...
       </p>
     );
   if (state.status === "error")
     return (
       <div className="activity-message" role="status">
-        <h2>Activity couldn’t be loaded.</h2>
+        <h2>Activity couldn't be loaded.</h2>
         <p>
           GitHub may be unavailable or limiting requests. You can retry or open
           the public profile below.

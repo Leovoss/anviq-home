@@ -4,9 +4,9 @@ export function Terms() {
   return (
     <Legal title="Terms & Disclaimer" updated="9 September 2026">
       <p>
-        These terms apply to your use of this website (the &ldquo;Site&rdquo;) at anviq.net. By using the Site you
+        These terms apply to your use of this website (the "Site") at anviq.net. By using the Site you
         agree to them. If you do not agree, please do not use the Site. The Site is operated by{' '}
-        <strong>Enrique Voss</strong> (&ldquo;Anviq&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;).
+        <strong>Enrique Voss</strong> ("Anviq", "we", "us").
       </p>
 
       <h2>1. What this Site is</h2>
@@ -40,7 +40,7 @@ export function Terms() {
       <h2>4. No reliance</h2>
       <p>
         We try to keep the Site accurate and up to date, but we make no warranty that it is complete, current, or
-        error-free. The Site is provided &ldquo;as is&rdquo;. You should not rely on it as the sole basis for any
+        error-free. The Site is provided "as is". You should not rely on it as the sole basis for any
         business decision; speak to us directly for current details.
       </p>
 
@@ -74,13 +74,13 @@ export function Terms() {
 
       <h2>9. Changes to these terms</h2>
       <p>
-        We may update these terms from time to time. The &ldquo;last updated&rdquo; date shows the current version.
+        We may update these terms from time to time. The "last updated" date shows the current version.
         Continued use of the Site means you accept the updated terms.
       </p>
 
       <h2>10. Governing law</h2>
       <p>
-        These terms are governed by the laws applicable at Anviq&rsquo;s place of establishment, and the courts of
+        These terms are governed by the laws applicable at Anviq's place of establishment, and the courts of
         that place have non-exclusive jurisdiction, without affecting any mandatory consumer or local-law rights you
         may have.
       </p>
