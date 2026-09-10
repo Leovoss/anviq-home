@@ -214,17 +214,40 @@ export const CONSTRAINTS = [
 
 export const ENGAGEMENT = [
   {
-    title: "Technical assessment",
+    id: "assessment",
+    title: "Assessment",
     body: "A paid, fixed-scope review of the workflow and systems involved, ending in a written plan: what to build, what it connects to, what it costs to run.",
+    in: [
+      "Workflow and systems mapped end to end",
+      "Written plan: what to build, what it connects to",
+      "Fixed scope, fixed price",
+    ],
+    out: ["No code changes", "No infrastructure changes"],
+    next: "You get the plan and decide whether to move to Build.",
   },
   {
-    title: "Build & deploy",
+    id: "build",
+    title: "Build",
     body: "Fixed-scope delivery against the plan, deployed into the agreed environment, with documentation handed over at the end.",
+    in: [
+      "Delivery against the agreed plan",
+      "Deployed into your agreed environment",
+      "Documentation handed over at the end",
+    ],
+    out: ["No maintenance included", "No scope beyond the assessment plan"],
+    next: "System goes live in your environment, documented and handed over.",
   },
   {
-    title: "Ongoing maintenance",
+    id: "retain",
+    title: "Retain",
     body: "A retainer for teams who want the same engineer on call as the system evolves and the systems around it change.",
-    wide: true,
+    in: [
+      "Same engineer on call as the system evolves",
+      "Fixes and small changes as needed",
+      "Priority response",
+    ],
+    out: ["Not a retainer for unrelated new features", "No fixed minimum hours"],
+    next: "Month to month, cancel anytime.",
   },
 ];
 

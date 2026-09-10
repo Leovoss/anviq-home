@@ -1177,6 +1177,62 @@ svg {
 .document-sections {
   margin-block: 34px;
 }
+.segmented-control {
+  display: flex;
+  gap: 2px;
+  margin-top: 27px;
+  padding: 3px;
+  border-radius: 11px;
+  background: var(--sidebar);
+}
+.segmented-control button {
+  flex: 1;
+  min-height: 38px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.segmented-control button[aria-selected="true"] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
+}
+.engagement-panel {
+  margin-top: 27px;
+}
+.engagement-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.engagement-columns h3 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.engagement-columns ul {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.engagement-columns li {
+  font-size: 15px;
+  line-height: 1.55;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+}
+.engagement-columns li:first-child {
+  border-top: 0;
+}
+.engagement-next {
+  margin-top: 24px !important;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
 .document-sections > section {
   padding: 27px 0;
   border-top: 1px solid var(--line);
@@ -1743,6 +1799,13 @@ svg {
     font-size: 16px;
     margin-bottom: 22px;
     scroll-margin-top: 96px;
+  }
+  .segmented-control button {
+    min-height: 44px;
+  }
+  .engagement-columns {
+    grid-template-columns: 1fr;
+    gap: 6px;
   }
   .project-preview .document-label {
     display: none;
