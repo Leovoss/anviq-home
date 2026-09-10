@@ -1,5 +1,6 @@
 interface Env {
-  GITHUB_TOKEN: string;
+  github_PAT: string;
+  ASSETS: { fetch(request: Request): Promise<Response> };
 }
 
 const QUERY = `query {
@@ -12,16 +13,16 @@ const QUERY = `query {
   }
 }`;
 
-export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
-  const cache = caches.default;
-  const cacheKey = new Request(new URL(request.url).toString(), { method: "GET" });
+async function contributionsTotal(env: Env): Promise<Response> {
+  const cache = (caches as unknown as { default: Cache }).default;
+  const cacheKey = new Request("https://anviq.net/api/contributions");
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
   const upstream = await fetch("https://api.github.com/graphql", {
     method: "POST",
     headers: {
-      Authorization: `bearer ${env.GITHUB_TOKEN}`,
+      Authorization: `bearer ${env.github_PAT}`,
       "Content-Type": "application/json",
       "User-Agent": "anviq-home",
     },
@@ -63,4 +64,14 @@ export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
   });
   await cache.put(cacheKey, response.clone());
   return response;
+}
+
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname === "/api/contributions") {
+      return contributionsTotal(env);
+    }
+    return env.ASSETS.fetch(request);
+  },
 };

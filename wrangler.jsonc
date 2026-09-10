@@ -1,0 +1,13 @@
+{
+  "name": "anviq-home",
+  "compatibility_date": "2026-09-10",
+  "main": "worker/index.ts",
+  "build": {
+    "command": "npm run build"
+  },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  }
+}
