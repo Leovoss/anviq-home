@@ -38,7 +38,7 @@ export function FilesTabBar({ active }: { active: string }) {
 
 export function FilesOverview() {
   return <div className="files-overview files-screen">
-    <div className="files-page-heading"><Logo /><h1>Anviq</h1><p>Independent AI engineering</p></div>
+    <div className="files-page-heading"><h1 className="sr-only">Anviq</h1><Logo /><p>Independent AI engineering</p></div>
     <section className="files-welcome-document" aria-labelledby="files-welcome-title">
       <div className="files-document-heading"><FilesArtwork document /><div><span>Read me</span><h2 id="files-welcome-title">Systems built to hold.</h2></div></div>
       <p>Bespoke agents, integration, and infrastructure. One engineer, end-to-end accountability.</p>

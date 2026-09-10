@@ -16,8 +16,8 @@ export function Cookies() {
 
       <h2>2. Third-party requests</h2>
       <p>
-        To display correctly, the Site loads a few resources from third parties. These do not track you for
-        advertising, but you should be aware of them:
+        The Site loads its fonts, icons, and code from itself, not from a third party. The one exception is the
+        hosting and content delivery provider below, which does not track you for advertising.
       </p>
       <table className="mb-4 w-full border-collapse text-[14px]">
         <thead>
@@ -28,13 +28,6 @@ export function Cookies() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td className="border border-ash p-3 align-top">Google Fonts</td>
-            <td className="border border-ash p-3 align-top">Loading two typefaces</td>
-            <td className="border border-ash p-3 align-top">
-              Your browser requests font files from Google&rsquo;s servers, which involves your IP address.
-            </td>
-          </tr>
           <tr>
             <td className="border border-ash p-3 align-top">Hosting / CDN</td>
             <td className="border border-ash p-3 align-top">Serving and securing the Site</td>
@@ -49,7 +42,7 @@ export function Cookies() {
       <h2>3. How to control cookies</h2>
       <p>
         You can block or delete cookies through your browser settings, and most browsers let you refuse
-        third-party cookies. Doing so will not break this Site. For help, see your browser&rsquo;s documentation or{' '}
+        third-party cookies. Doing so will not break this Site. For help, see your browser's documentation or{' '}
         <a href="https://www.aboutcookies.org" target="_blank" rel="noopener">
           aboutcookies.org
         </a>
