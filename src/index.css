@@ -41,11 +41,16 @@
 * {
   box-sizing: border-box;
 }
+html {
+  background: var(--page);
+  overscroll-behavior-y: contain;
+}
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   background: var(--page);
   color: var(--text);
+  overscroll-behavior-y: contain;
 }
 button,
 input {
