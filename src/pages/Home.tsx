@@ -39,6 +39,9 @@ import {
 } from "@/data/content";
 import { PublicActivity } from "@/components/PublicActivity";
 import { ExplorerPane } from "@/components/ExplorerPane";
+import { motion, useReducedMotion } from "motion/react";
+
+const NAV_PILL_SPRING = { type: "spring", bounce: 0, duration: 0.32 } as const;
 import { GitHubActivity } from "@/components/ui/github-activity";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
@@ -211,6 +214,8 @@ function ContactLink({
   );
 }
 function Navigation({ active }: { active: string }) {
+  const reducedMotion = useReducedMotion();
+  const pillTransition = reducedMotion ? { duration: 0 } : NAV_PILL_SPRING;
   const groups = [
     { title: "Explore", items: NAV.slice(0, 4) },
     { title: "Information", items: NAV.slice(4) },
@@ -220,17 +225,29 @@ function Navigation({ active }: { active: string }) {
       {groups.map(({ title, items }) => (
         <div className="nav-group" key={title}>
           <p className="nav-group-label">{title}</p>
-          {items.map(({ id, label, icon: Icon, href }) => (
-            <Link
-              key={id}
-              to={href}
-              className={`nav-link ${active === id ? "is-selected" : ""}`}
-              aria-current={active === id ? "page" : undefined}
-            >
-              <Icon size={20} strokeWidth={1.75} aria-hidden="true" />
-              <span>{label}</span>
-            </Link>
-          ))}
+          {items.map(({ id, label, icon: Icon, href }) => {
+            const selected = active === id;
+            return (
+              <Link
+                key={id}
+                to={href}
+                className={`nav-link ${selected ? "is-selected" : ""}`}
+                aria-current={selected ? "page" : undefined}
+              >
+                {selected && (
+                  <motion.span
+                    layoutId="explorer-nav-active"
+                    className="nav-pill"
+                    transition={pillTransition}
+                  />
+                )}
+                <span className="nav-link-content">
+                  <Icon size={20} strokeWidth={1.75} aria-hidden="true" />
+                  <span>{label}</span>
+                </span>
+              </Link>
+            );
+          })}
         </div>
       ))}
     </nav>
@@ -725,6 +742,8 @@ export function Home() {
     getServerMobile,
   );
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const reducedMotion = useReducedMotion();
+  const aboutPillTransition = reducedMotion ? { duration: 0 } : NAV_PILL_SPRING;
   const filesLayout = useSyncExternalStore(subscribeFiles, getFilesLayout, getServerMobile);
   const [fileView, setFileView] = useState<FilesView>("icons");
   const [fileSort, setFileSort] = useState<FilesSort>("name");
@@ -862,8 +881,17 @@ export function Home() {
             aria-current={active === "about" ? "page" : undefined}
             to="/explore/about"
           >
-            <BookOpen size={17} aria-hidden="true" />
-            About Anviq
+            {active === "about" && (
+              <motion.span
+                layoutId="explorer-nav-active"
+                className="nav-pill"
+                transition={aboutPillTransition}
+              />
+            )}
+            <span className="nav-link-content">
+              <BookOpen size={17} aria-hidden="true" />
+              About Anviq
+            </span>
           </Link>
         </aside>
         {filesLayout ? <FilesToolbar title={currentProject?.name ?? (active === "overview" ? "Anviq" : label)} phone={mobile} sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} back={filesBack}><SearchControl alwaysExpanded /></FilesToolbar> : <header className="explorer-toolbar">
