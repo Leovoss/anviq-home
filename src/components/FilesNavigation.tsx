@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Activity, ArrowRight, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Compass, FileText, Folder, House, Layers, LayoutGrid, List, Mail, PanelLeft, Server, Workflow } from "lucide-react";
 import { WORK, WORK_SELECTED } from "@/data/content";
+import { Logo } from "@/components/Logo";
 
 const projectSlugs = ["steadyward", "lv-matching", "addreach"];
 const serviceIcons = [Workflow, Layers, Server];
@@ -21,7 +22,13 @@ export function FilesToolbar({ title, phone, sidebarOpen, onToggleSidebar, back,
   return <header className="files-toolbar">
     <div className="files-toolbar-row">
       {phone ? <Link to={back.href} className="files-back"><ChevronLeft size={24} aria-hidden="true" /><span>{back.label}</span></Link> : <div className="files-toolbar-leading"><button className="icon-button" aria-label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} aria-expanded={sidebarOpen} aria-controls="desktop-sidebar" onClick={onToggleSidebar}><PanelLeft size={23} aria-hidden="true" /></button>{back.href !== "/explore/browse" && <Link to={back.href} className="files-back"><ChevronLeft size={22} aria-hidden="true" /><span>{back.label}</span></Link>}</div>}
-      <span className="files-toolbar-title">{title}</span>
+      {title === "Anviq" ? (
+        <span className="files-toolbar-title files-toolbar-brand" aria-label="Anviq">
+          <Logo />
+        </span>
+      ) : (
+        <span className="files-toolbar-title">{title}</span>
+      )}
       <a href="https://calendly.com/lvoss-anviq/30min?month=2026-09" target="_blank" rel="noopener noreferrer" className="files-contact" aria-label="Contact Anviq"><Mail size={22} strokeWidth={1.7} aria-hidden="true" /><span>Contact</span></a>
     </div>
     <div className="files-search-row">{children}</div>

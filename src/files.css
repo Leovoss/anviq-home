@@ -39,6 +39,15 @@
   min-height: 48px;
 }
 .files-toolbar-leading { display: flex; align-items: center; gap: 4px; }
+.files-toolbar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.files-toolbar-brand svg {
+  width: 36px;
+  height: 26px;
+}
 .files-toolbar-title {
   font-size: 16px;
   font-weight: 600;
