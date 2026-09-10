@@ -212,6 +212,26 @@ export const CONSTRAINTS = [
   },
 ];
 
+export const DACH = [
+  {
+    label: "UWG §7",
+    note: "Outreach ordered to the statutory sequencing window, not convenience.",
+  },
+  {
+    label: "AML / KYC",
+    note: "Source-of-Wealth and KYC discipline carried over from financial services work.",
+  },
+  { label: "EU hosting", note: "Data stays in-region unless you choose otherwise." },
+  {
+    label: "AI Act",
+    note: "Deterministic code where a decision would have legal effect on a person, not a model.",
+  },
+  {
+    label: "German-native delivery",
+    note: "Native German speaker with deep DACH market experience.",
+  },
+];
+
 export const ENGAGEMENT = [
   {
     id: "assessment",
