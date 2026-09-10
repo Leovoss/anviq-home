@@ -54,6 +54,7 @@ export const WORK_SELECTED = [
     body: "A read-only behavioural retention layer for MT4/MT5 brokers: pattern detection on live trading accounts, white-label trader alerts, no execution access.",
     domain: "steadyward.com",
     screenshot: "/images/steadyward-shot.png",
+    ships: [] as { date: string; title: string }[],
     files: [
       {
         name: "README.md",
@@ -96,6 +97,7 @@ export const WORK_SELECTED = [
     body: "Construction bill-of-quantities matching for multiple tenants, with a chat-and-grid interface, EU-hosted auth, and data handling built for GDPR from the schema up.",
     domain: null,
     screenshot: null,
+    ships: [] as { date: string; title: string }[],
     files: [
       {
         name: "README.md",
@@ -124,6 +126,7 @@ export const WORK_SELECTED = [
     body: "Cold-outreach product for a German market: automated sending infrastructure with deliverability and compliance built into the pipeline, not bolted on after.",
     domain: "addreach.addvert.de",
     screenshot: "/images/addreach-shot.png",
+    ships: [] as { date: string; title: string }[],
     files: [
       {
         name: "README.md",
@@ -152,6 +155,7 @@ export const WORK_SELECTED = [
     body: "Runs the full loop from ad-sourced CV intake to legally-sequenced outreach to placement, for a German recruitment operation. Matching is deterministic code, not AI, by design: the EU AI Act was the reason, not a missing feature.",
     domain: null,
     screenshot: null,
+    ships: [] as { date: string; title: string }[],
     files: [
       {
         name: "README.md",
@@ -268,27 +272,6 @@ export const ENGAGEMENT = [
     ],
     out: ["Not a retainer for unrelated new features", "No fixed minimum hours"],
     next: "Month to month, cancel anytime.",
-  },
-];
-
-export const SHIP_LOG = [
-  {
-    date: "September 2026",
-    title: "Quick Look-style screenshot previews, project file packs",
-    note: "Selected work now browses like files, each with a proof note.",
-  },
-  {
-    date: "September 2026",
-    title: "Liquid Glass CTAs, Spotlight-style search",
-  },
-  {
-    date: "August 2026",
-    title: "Anonymous emoji reactions",
-    note: "Click counts only, no identifying data stored.",
-  },
-  {
-    date: "August 2026",
-    title: "Founder page, operating constraints section",
   },
 ];
 

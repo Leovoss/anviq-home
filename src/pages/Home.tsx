@@ -20,7 +20,6 @@ import {
   ExternalLink,
   FileText,
   Folder,
-  History,
   House,
   Layers,
   Mail,
@@ -28,7 +27,6 @@ import {
   Search,
   Server,
   ShieldCheck,
-  UserRound,
   Workflow,
   X,
 } from "lucide-react";
@@ -40,7 +38,6 @@ import {
   ENGAGEMENT,
   CONSTRAINTS,
   DACH,
-  SHIP_LOG,
   FAQ,
   IDEA,
 } from "@/data/content";
@@ -107,19 +104,11 @@ const NAV = [
     icon: Activity,
     href: "/explore/activity",
   },
-  {
-    id: "ship-log",
-    label: "Ship log",
-    icon: History,
-    href: "/explore/ship-log",
-  },
 ];
 const SLUGS = ["steadyward", "lv-matching", "addreach", "recruitment-crm"];
-const FOUNDER_BIO = [
-  "I work where customers, product, and regulated environments meet. Four years across forex brokerage, fintech, and iGaming, turning what customers struggle with into requirements engineering, compliance, and risk teams can act on: AML, KYC, and Source-of-Wealth for the German market, and a 200+ VIP portfolio generating roughly €10M a year at 82% retention.",
-  "Anviq is that same approach applied directly: sit with the customer, find the real problem, own it through to something shipped and running, the workflow and handoffs as much as the code. I build and run production systems for companies without engineers of their own, custom software, automation, integrations, GDPR-compliant infrastructure, using AI where it earns its place.",
-  "Native German speaker with deep DACH market experience, studying computer science at Uninettuno alongside the work. Open to remote roles and relocation to Australia, the US, or Switzerland.",
-];
+// One credibility line, not an autobiography - LinkedIn holds the story.
+const FOUNDER_LINE =
+  "Four years in regulated commercial operations (brokerage, fintech, iGaming) before going technical. Native German speaker, DACH market.";
 const SEARCH_ENTRIES = [
   ...NAV.filter((item) => item.id !== "overview").map((item) => ({
     title: item.label,
@@ -136,11 +125,9 @@ const SEARCH_ENTRIES = [
               ? CONSTRAINTS.map((s) => s.body).join(" ") +
                 " " +
                 DACH.map((s) => `${s.label} ${s.note}`).join(" ")
-              : item.id === "ship-log"
-                ? SHIP_LOG.map((s) => s.title).join(" ")
-                : item.id === "questions"
-                  ? FAQ.map((s) => s.q + " " + s.a).join(" ")
-              : item.label,
+              : item.id === "questions"
+                ? FAQ.map((s) => s.q + " " + s.a).join(" ")
+                : item.label,
   })),
   ...WORK_SELECTED.map((item, index) => ({
     title: item.name,
@@ -152,13 +139,7 @@ const SEARCH_ENTRIES = [
     title: "About Anviq",
     href: "/explore/about",
     group: "Explore" as const,
-    body: "Independent IT consulting and software practice. Commercial judgment and technical delivery, one person, full accountability.",
-  },
-  {
-    title: "Founder",
-    href: "/explore/founder",
-    group: "Explore" as const,
-    body: "Leonardo Voss, founder of Anviq.",
+    body: "Independent IT consulting and software practice. Commercial judgment and technical delivery, one person, full accountability. Leonardo Voss.",
   },
 ];
 function searchEntries(query: string) {
@@ -381,6 +362,25 @@ type ProjectFile = {
   boundary?: string;
   proof?: string[][];
 };
+function ProjectShips({ ships }: { ships: { date: string; title: string }[] }) {
+  return (
+    <div className="project-ships">
+      <p className="document-label">Ship log</p>
+      {ships.length === 0 ? (
+        <p className="project-ships-empty">Coming soon.</p>
+      ) : (
+        <ul className="project-ships-list">
+          {ships.map((entry) => (
+            <li key={`${entry.date}-${entry.title}`}>
+              <span className="project-ships-date">{entry.date}</span>
+              <span className="project-ships-title">{entry.title}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 function ProjectFiles({ files }: { files: ProjectFile[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   if (openIndex !== null) {
@@ -489,6 +489,7 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
             ))}
           </dl>
           <ProjectFiles files={project.files} />
+          <ProjectShips ships={project.ships} />
           {project.screenshot && (
             <ScreenshotLightbox
               src={project.screenshot}
@@ -762,9 +763,33 @@ function About() {
       intro="Anviq is an independent IT consulting and software practice. Commercial judgment and technical delivery, one person, full accountability."
     >
       <p>
-        Built for European enterprises. Hosting and access controls agreed
-        upfront. Documented decisions, clear responsibilities.
+        Hosting region, access controls and data handling follow your
+        requirements. Documented decisions, clear responsibilities.
       </p>
+      <div className="identity-strip">
+        <img
+          className="identity-photo"
+          src="/images/founder.png"
+          alt="Leonardo Voss"
+        />
+        <div className="identity-text">
+          <strong>Leonardo Voss</strong>
+          <a className="identity-email" href="mailto:lvoss@anviq.net">
+            lvoss@anviq.net
+          </a>
+          <span className="identity-line">{FOUNDER_LINE}</span>
+        </div>
+        <a
+          className="identity-linkedin"
+          href="https://www.linkedin.com/in/v-leonardo/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <ExternalLink size={16} aria-hidden="true" />
+          LinkedIn
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+      </div>
       <h2>One letter away from "anvil."</h2>
       <p>
         The metaphor is construction, testing and accountability, not spectacle.
@@ -778,38 +803,10 @@ function About() {
           </section>
         ))}
       </div>
-      <Link className="external-link" to="/explore/founder">
-        <UserRound size={18} aria-hidden="true" />
-        Meet the founder
-      </Link>
-      <Link className="external-link" to="/explore/constraints">
-        <ShieldCheck size={18} aria-hidden="true" />
+      <Link className="internal-link" to="/explore/constraints">
         Hosting, access, and compliance boundaries
+        <ArrowRight size={18} aria-hidden="true" />
       </Link>
-    </DocumentPage>
-  );
-}
-function Founder() {
-  return (
-    <DocumentPage title="Founder.">
-      <div className="founder-card">
-        <div className="founder-profile">
-          <img
-            className="founder-photo"
-            src="/images/founder.png"
-            alt="Leonardo Voss"
-          />
-          <h2>Leonardo Voss</h2>
-          <a className="founder-email" href="mailto:lvoss@anviq.net">
-            lvoss@anviq.net
-          </a>
-        </div>
-        <div className="founder-bio">
-          {FOUNDER_BIO.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </div>
-      </div>
     </DocumentPage>
   );
 }
@@ -1225,7 +1222,6 @@ export function Home() {
   const specialLabels: Record<string, string> = {
     browse: "Browse",
     about: "About Anviq",
-    founder: "Founder",
     privacy: "Privacy Policy",
     cookies: "Cookie Policy",
     terms: "Terms & Disclaimer",
@@ -1308,41 +1304,11 @@ export function Home() {
             View Leovoss on GitHub
             <span className="sr-only"> (opens in a new tab)</span>
           </a>
-          <Link className="external-link" to="/explore/ship-log">
-            Ship log <ArrowRight size={18} aria-hidden="true" />
-          </Link>
-        </DocumentPage>
-      );
-      break;
-    case "ship-log":
-      content = (
-        <DocumentPage
-          title="Ship log."
-          intro="What went out, month by month. Some entries are redacted for client discretion."
-        >
-          {SHIP_LOG.length === 0 ? (
-            <p className="ship-log-empty">Nothing shipped this month yet.</p>
-          ) : (
-            <ul className="ship-log-list">
-              {SHIP_LOG.map((entry, index) => (
-                <li key={index}>
-                  <span className="ship-log-date">{entry.date}</span>
-                  <span className="ship-log-title">{entry.title}</span>
-                  {entry.note && (
-                    <span className="ship-log-note">{entry.note}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
         </DocumentPage>
       );
       break;
     case "about":
       content = <About />;
-      break;
-    case "founder":
-      content = <Founder />;
       break;
     case "privacy":
       content = <Privacy />;
@@ -1375,6 +1341,8 @@ export function Home() {
     "#faq": "/explore/questions",
     "#activity": "/explore/activity",
     "#contact": "/explore/engagement",
+    "#founder": "/explore/about",
+    "#ship-log": "/explore/projects",
   };
   if (location.pathname === "/" && legacy[location.hash])
     return <Navigate to={legacy[location.hash]} replace />;
@@ -1417,23 +1385,6 @@ export function Home() {
             <span className="nav-link-content">
               <BookOpen size={17} aria-hidden="true" />
               About Anviq
-            </span>
-          </Link>
-          <Link
-            className={`about-link founder-link ${active === "founder" ? "is-selected" : ""}`}
-            aria-current={active === "founder" ? "page" : undefined}
-            to="/explore/founder"
-          >
-            {active === "founder" && (
-              <motion.span
-                layoutId="explorer-nav-active"
-                className="nav-pill"
-                transition={aboutPillTransition}
-              />
-            )}
-            <span className="nav-link-content">
-              <UserRound size={17} aria-hidden="true" />
-              Founder
             </span>
           </Link>
         </aside>
