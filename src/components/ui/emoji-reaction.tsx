@@ -323,7 +323,14 @@ export function EmojiReaction({
     if (!open) return;
 
     const onPointerDown = (event: globalThis.PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) close();
+      const target = event.target as Node | null;
+      // Opening swaps the trigger's icon during this same pointerdown, so by
+      // the time this listener runs the original target can already be
+      // detached. A detached node means our own re-render removed it, not a
+      // click outside - treating it as outside closed the bar instantly and
+      // made the whole control feel flaky.
+      if (target && !target.isConnected) return;
+      if (!rootRef.current?.contains(target)) close();
     };
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key !== "Escape") return;

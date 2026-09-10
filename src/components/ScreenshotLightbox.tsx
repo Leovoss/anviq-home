@@ -6,20 +6,70 @@ import { X } from "lucide-react";
 const BACKDROP_TRANSITION = { duration: 0.18 } as const;
 const QUICK_LOOK_SPRING = { type: "spring", bounce: 0.1, duration: 0.42 } as const;
 
-// iOS/macOS Quick Look: tap the thumbnail and it grows in place into a large
-// preview (shared layoutId on the <img> itself does the morph), instead of a
-// generic lightbox fading in over it. Works the same on touch as on desktop.
-export function ScreenshotLightbox({
-  src,
-  alt,
-  label,
-  layoutId,
-}: {
+type PreviewProps = {
   src: string;
   alt: string;
   label: string;
   layoutId: string;
-}) {
+  /** Desktop expands the shot in place, Finder-style. Touch shells get the
+   * full-screen Quick Look overlay instead. */
+  inline?: boolean;
+};
+
+// Finder shows a preview inside the window rather than throwing an overlay
+// over everything: clicking the shot grows it to the width of the project
+// pane and back.
+function InlinePreview({ src, alt, label }: Omit<PreviewProps, "layoutId">) {
+  const [open, setOpen] = useState(false);
+  const reducedMotion = useReducedMotion();
+  const transition = reducedMotion ? { duration: 0 } : QUICK_LOOK_SPRING;
+  return (
+    <motion.figure
+      layout
+      transition={transition}
+      className={`screenshot-preview ${open ? "is-open" : ""}`}
+    >
+      <button
+        type="button"
+        className="project-screenshot-trigger"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        aria-label={open ? `Collapse ${label}` : `Expand ${label}`}
+      >
+        <motion.img
+          layout
+          transition={transition}
+          className="project-screenshot"
+          src={src}
+          alt={alt}
+          loading="lazy"
+        />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.figcaption
+            className="screenshot-preview-bar"
+            initial={reducedMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={BACKDROP_TRANSITION}
+          >
+            <span>{label}</span>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Collapse preview"
+            >
+              <X size={16} aria-hidden="true" />
+            </button>
+          </motion.figcaption>
+        )}
+      </AnimatePresence>
+    </motion.figure>
+  );
+}
+
+function OverlayQuickLook({ src, alt, label, layoutId }: PreviewProps) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -74,6 +124,14 @@ export function ScreenshotLightbox({
               exit={{ opacity: 0 }}
               transition={reducedMotion ? { duration: 0 } : BACKDROP_TRANSITION}
             >
+              <button
+                type="button"
+                className="quicklook-close"
+                onClick={() => setOpen(false)}
+                aria-label="Close preview"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
               <div
                 ref={dialogRef}
                 role="dialog"
@@ -89,14 +147,6 @@ export function ScreenshotLightbox({
                   alt={alt}
                   transition={reducedMotion ? { duration: 0 } : QUICK_LOOK_SPRING}
                 />
-                <button
-                  type="button"
-                  className="quicklook-close"
-                  onClick={() => setOpen(false)}
-                  aria-label="Close preview"
-                >
-                  <X size={18} aria-hidden="true" />
-                </button>
               </div>
             </motion.div>
           )}
@@ -105,4 +155,8 @@ export function ScreenshotLightbox({
       )}
     </>
   );
+}
+
+export function ScreenshotLightbox({ inline, ...props }: PreviewProps) {
+  return inline ? <InlinePreview {...props} /> : <OverlayQuickLook {...props} inline={inline} />;
 }
