@@ -76,7 +76,16 @@ button,
 a {
   transition:
     background-color 150ms ease-out,
-    color 150ms ease-out;
+    color 150ms ease-out,
+    transform 100ms ease-out;
+}
+.nav-link:active,
+.about-link:active,
+.icon-button:active,
+.search-field button:active,
+.social-links a:active {
+  background: var(--selected);
+  transform: scale(0.96);
 }
 :focus-visible {
   outline: 3px solid var(--focus);
@@ -141,6 +150,12 @@ svg {
   border-radius: 16px 0 0 0;
   padding: 0 15px 32px;
   overflow-y: auto;
+}
+@supports (backdrop-filter: blur(20px)) {
+  .explorer-sidebar {
+    background: color-mix(in srgb, var(--sidebar) 82%, transparent);
+    backdrop-filter: blur(20px) saturate(1.6);
+  }
 }
 .brand {
   display: flex;
