@@ -635,22 +635,24 @@ function About() {
 }
 function Founder() {
   return (
-    <DocumentPage title="Founder." className="document-page-centered">
-      <div className="founder-profile">
-        <img
-          className="founder-photo"
-          src="/images/founder.png"
-          alt="Leonardo Voss"
-        />
-        <h2>Leonardo Voss</h2>
-        <a className="founder-email" href="mailto:lvoss@anviq.net">
-          lvoss@anviq.net
-        </a>
-      </div>
-      <div className="founder-bio">
-        {FOUNDER_BIO.map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
-        ))}
+    <DocumentPage title="Founder.">
+      <div className="founder-card">
+        <div className="founder-profile">
+          <img
+            className="founder-photo"
+            src="/images/founder.png"
+            alt="Leonardo Voss"
+          />
+          <h2>Leonardo Voss</h2>
+          <a className="founder-email" href="mailto:lvoss@anviq.net">
+            lvoss@anviq.net
+          </a>
+        </div>
+        <div className="founder-bio">
+          {FOUNDER_BIO.map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </div>
       </div>
     </DocumentPage>
   );
@@ -716,7 +718,10 @@ function SuggestionGroups({
                   <span className="suggestion-icon">
                     <FileText size={17} aria-hidden="true" />
                   </span>
-                  <strong>{item.title}</strong>
+                  <span className="suggestion-text">
+                    <strong>{item.title}</strong>
+                    <small>{item.body}</small>
+                  </span>
                 </button>
               );
             })}
