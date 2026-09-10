@@ -661,7 +661,7 @@ function Approach() {
   return (
     <DocumentPage
       title="Own the delivery."
-      intro="I work inside your team across the whole system, not just the code: workflow, integration, and the handoffs between them. I own delivery from the first technical assessment through deployment and documentation."
+      intro="I work inside your team across the whole system, not just the code: workflow, integration, compliance, and the handoffs between them. I own delivery from the first technical assessment through deployment and documentation."
     >
       <p>
         Hosting, access controls, and data handling are agreed before
