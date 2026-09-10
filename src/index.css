@@ -1013,6 +1013,32 @@ svg {
   max-width: 68ch;
   margin-top: 10px;
 }
+.project-file-boundary {
+  border-left: 2px solid var(--accent);
+  padding-left: 14px;
+  margin-top: 16px !important;
+  color: var(--text) !important;
+  font-style: italic;
+}
+.project-file-proof {
+  margin: 20px 0 0;
+  padding: 18px 0 0;
+  border-top: 1px solid var(--line);
+}
+.project-file-proof > div {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 16px;
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.project-file-proof dt {
+  color: var(--muted);
+}
+.project-file-proof dd {
+  margin: 0;
+}
 .project-screenshot-trigger {
   display: block;
   width: 100%;
@@ -1490,7 +1516,8 @@ svg {
   .project-preview {
     padding: 28px 24px;
   }
-  .project-details > div {
+  .project-details > div,
+  .project-file-proof > div {
     grid-template-columns: 1fr;
     gap: 3px;
     margin-block: 16px;
@@ -1731,7 +1758,8 @@ svg {
   .project-description {
     margin-top: 24px;
   }
-  .project-details > div {
+  .project-details > div,
+  .project-file-proof > div {
     grid-template-columns: 88px minmax(0, 1fr);
     gap: 15px;
   }
