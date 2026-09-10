@@ -700,7 +700,12 @@ export function Home() {
             </p>
           )}
           <div className="activity-calendar-scroll">
-            <GitHubActivity username="Leovoss" showMonths className="anviq-github-activity" />
+            <GitHubActivity
+              username="Leovoss"
+              showMonths={!filesLayout}
+              cellSize={filesLayout ? 3 : 11}
+              className="anviq-github-activity"
+            />
           </div>
           <PublicActivity />
           <a
