@@ -79,20 +79,6 @@
 }
 .files-contact:hover { background: var(--selected); }
 .files-search-row { margin-top: 5px; }
-.files-search-row .search-field-wrap {
-  width: 100%;
-  min-width: 0;
-  max-width: none;
-  margin-left: 0;
-}
-.files-search-row .search-field {
-  height: 44px;
-  background: var(--files-canvas);
-  border: 0;
-  border-radius: 11px;
-}
-.files-search-row .search-field input { font-size: 16px; }
-.files-search-row .search-field button { min-width: 44px; height: 44px; }
 .files-layout .explorer-main { background: var(--surface); }
 .files-screen { padding: 29px 30px 36px; }
 .files-page-heading { margin-bottom: 25px; }
