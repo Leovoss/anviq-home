@@ -972,6 +972,10 @@ svg {
 }
 .activity-calendar-scroll {
   margin-top: 24px;
+  overflow-x: auto;
+}
+.activity-calendar-scroll .anviq-github-activity {
+  max-width: none;
 }
 .activity-message {
   margin: 32px 0;

@@ -825,8 +825,8 @@ export function Home() {
                   ? undefined
                   : `https://github.com/${repo.owner}/${repo.name}`,
               }))}
-              showMonths={!filesLayout}
-              cellSize={filesLayout ? 4 : 11}
+              showMonths
+              cellSize={14}
               headingOverride={
                 contributions
                   ? `${contributions.count} contributions in the past year (public and private)`
