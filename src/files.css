@@ -39,15 +39,6 @@
   min-height: 48px;
 }
 .files-toolbar-leading { display: flex; align-items: center; gap: 4px; }
-.files-toolbar-brand {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.files-toolbar-brand svg {
-  width: 36px;
-  height: 26px;
-}
 .files-toolbar-title {
   font-size: 16px;
   font-weight: 600;
@@ -103,6 +94,11 @@
   letter-spacing: -.025em;
 }
 .files-page-heading > p { color: var(--muted); font-size: 16px; line-height: 1.5; margin-top: 7px; }
+.files-overview .files-page-heading > svg {
+  width: 44px;
+  height: 32px;
+  margin-bottom: 10px;
+}
 .files-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .files-screen h2 { font-size: 21px; font-weight: 650; letter-spacing: -.02em; }
 .files-section-heading > a { color: var(--accent); display: inline-flex; gap: 3px; align-items: center; min-height: 44px; font-size: 15px; }
