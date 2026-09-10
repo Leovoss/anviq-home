@@ -54,6 +54,29 @@ export const WORK_SELECTED = [
     body: "A read-only behavioural retention layer for MT4/MT5 brokers: pattern detection on live trading accounts, white-label trader alerts, no execution access.",
     domain: "steadyward.com",
     screenshot: "/images/steadyward-shot.png",
+    files: [
+      {
+        name: "README.md",
+        body: [
+          "Behavioural retention layer for MT4/MT5 brokers. Watches live trading accounts for churn patterns and surfaces white-label alerts to the broker's retention team.",
+          "Read-only against the trading platform: it observes account activity, it never places or modifies a trade.",
+        ],
+      },
+      {
+        name: "architecture.md",
+        body: [
+          "Ingests account activity from the broker's MT4/MT5 bridge on a polling schedule, scores it against known churn patterns, and writes alerts to a queue the broker's own retention tooling consumes.",
+          "No direct connection between Steadyward and the trading engine's order execution path.",
+        ],
+      },
+      {
+        name: "constraints.md",
+        body: [
+          "No execution access, by design: the retention layer cannot place, close, or modify a trade.",
+          "Hosting region and data retention are agreed per broker before onboarding.",
+        ],
+      },
+    ],
   },
   {
     href: null,
@@ -62,6 +85,15 @@ export const WORK_SELECTED = [
     body: "Construction bill-of-quantities matching for multiple tenants, with a chat-and-grid interface, EU-hosted auth, and data handling built for GDPR from the schema up.",
     domain: null,
     screenshot: null,
+    files: [
+      {
+        name: "README.md",
+        body: [
+          "Bill-of-quantities matching for construction estimators, multi-tenant from the schema up. A chat interface sits next to the grid for quick corrections.",
+          "EU-hosted authentication; tenant data is isolated at the database level, not just filtered in application code.",
+        ],
+      },
+    ],
   },
   {
     href: "https://addreach.addvert.de",
@@ -70,6 +102,15 @@ export const WORK_SELECTED = [
     body: "Cold-outreach product for a German market: automated sending infrastructure with deliverability and compliance built into the pipeline, not bolted on after.",
     domain: "addreach.addvert.de",
     screenshot: "/images/addreach-shot.png",
+    files: [
+      {
+        name: "README.md",
+        body: [
+          "Cold-outreach sending infrastructure built for the German market, where outreach compliance isn't optional.",
+          "Deliverability tooling and legal sequencing sit inside the send pipeline, not as a separate checklist someone can skip.",
+        ],
+      },
+    ],
   },
   {
     href: null,
@@ -78,6 +119,29 @@ export const WORK_SELECTED = [
     body: "Runs the full loop from ad-sourced CV intake to legally-sequenced outreach to placement, for a German recruitment operation. Matching is deterministic code, not AI, by design: the EU AI Act was the reason, not a missing feature.",
     domain: null,
     screenshot: null,
+    files: [
+      {
+        name: "README.md",
+        body: [
+          "Runs the full recruitment loop: ad-sourced CV intake, legally-sequenced candidate outreach, placement tracking, for a German recruitment operation.",
+          "Matching is deterministic code, not a model. That was a legal decision, not a technical shortcut.",
+        ],
+      },
+      {
+        name: "architecture.md",
+        body: [
+          "Intake pulls CVs from job-board ad responses into a normalized candidate record. A rules engine scores fit against open roles; outreach is queued only once the legally required sequencing window has passed.",
+          "Candidate and company data are separated at the database role level so a compromised outreach worker can't read company-side records.",
+        ],
+      },
+      {
+        name: "constraints.md",
+        body: [
+          "No AI in the matching path: under the EU AI Act, an automated match with legal or similarly significant effect on a candidate carries obligations this system is built to avoid entirely.",
+          "Outreach ordered to UWG §7 Abs. 2, not to whatever is fastest to send.",
+        ],
+      },
+    ],
   },
 ];
 
