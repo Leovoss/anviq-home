@@ -117,7 +117,7 @@ const NAV = [
 const SLUGS = ["steadyward", "lv-matching", "addreach", "recruitment-crm"];
 const FOUNDER_BIO = [
   "I work where customers, product, and regulated environments meet. Four years across forex brokerage, fintech, and iGaming, turning what customers struggle with into requirements engineering, compliance, and risk teams can act on: AML, KYC, and Source-of-Wealth for the German market, and a 200+ VIP portfolio generating roughly €10M a year at 82% retention.",
-  "Anviq is that same approach applied directly: sit with the customer, find the real problem, own it through to something shipped and running. I build and run production systems for companies without engineers of their own, custom software, automation, integrations, GDPR-compliant infrastructure, using AI tools daily to move faster.",
+  "Anviq is that same approach applied directly: sit with the customer, find the real problem, own it through to something shipped and running, the workflow and handoffs as much as the code. I build and run production systems for companies without engineers of their own, custom software, automation, integrations, GDPR-compliant infrastructure, using AI where it earns its place.",
   "Native German speaker with deep DACH market experience, studying computer science at Uninettuno alongside the work. Open to remote roles and relocation to Australia, the US, or Switzerland.",
 ];
 const SEARCH_ENTRIES = [
@@ -152,7 +152,7 @@ const SEARCH_ENTRIES = [
     title: "About Anviq",
     href: "/explore/about",
     group: "Explore" as const,
-    body: "Independent AI engineering practice. One engineer, full accountability.",
+    body: "Independent IT consulting and software practice. Commercial judgment and technical delivery, one person, full accountability.",
   },
   {
     title: "Founder",
@@ -325,8 +325,9 @@ function Overview() {
         </div>
         <h1 id="welcome-title">Systems built to hold.</h1>
         <p className="intro">
-          Independent AI engineering. Bespoke agents, integration, and
-          infrastructure. One engineer, end-to-end accountability.
+          Independent IT consulting and software. Workflow, integration, and
+          infrastructure, AI where it earns its place. One engineer,
+          end-to-end accountability.
         </p>
         <ContactLink />
       </section>
@@ -531,7 +532,7 @@ function Services() {
   return (
     <DocumentPage
       title="Three things, one point of contact."
-      intro="Bespoke AI agents, integration with what you already run, and infrastructure with agreed access controls."
+      intro="Custom software, integration with what you already run, and infrastructure with agreed access controls. AI where it earns its place, not by default."
     >
       <div className="document-sections">
         {WORK.map((item, index) => {
@@ -611,7 +612,7 @@ function Approach() {
   return (
     <DocumentPage
       title="Own the delivery."
-      intro="I work inside your team to build agents, automate workflows, and connect existing systems. I own delivery from the first technical assessment through deployment and documentation."
+      intro="I work inside your team across the whole system, not just the code: workflow, integration, and the handoffs between them. I own delivery from the first technical assessment through deployment and documentation."
     >
       <p>
         Hosting, access controls, and data handling are agreed before
@@ -758,7 +759,7 @@ function About() {
   return (
     <DocumentPage
       title="About Anviq."
-      intro="Anviq is an independent forward deployed AI engineering practice. One engineer, full accountability."
+      intro="Anviq is an independent IT consulting and software practice. Commercial judgment and technical delivery, one person, full accountability."
     >
       <p>
         Built for European enterprises. Hosting and access controls agreed
