@@ -1493,7 +1493,14 @@ svg {
     animation: none !important;
   }
   .project-folder:hover .folder-image,
-  .primary-button:active {
+  .primary-button:hover,
+  .primary-button:active,
+  .nav-link:active,
+  .about-link:active,
+  .icon-button:active,
+  .search-field button:active,
+  .social-links a:active,
+  .files-tab-bar a:active {
     transform: none;
   }
 }
