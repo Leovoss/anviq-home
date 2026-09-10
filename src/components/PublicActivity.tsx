@@ -19,7 +19,6 @@ const EVENT_LABELS: Record<string, string> = {
   IssueCommentEvent: "Commented on an issue",
   ReleaseEvent: "Updated a release",
   ForkEvent: "Forked a repository",
-  WatchEvent: "Starred a repository",
   DeleteEvent: "Deleted a branch or tag",
 };
 export function PublicActivity() {
@@ -29,7 +28,7 @@ export function PublicActivity() {
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 12000);
     let active = true;
-    fetch("https://api.github.com/users/Leovoss/events/public?per_page=12", {
+    fetch("https://api.github.com/users/Leovoss/events/public?per_page=100", {
       signal: controller.signal,
     })
       .then(async (response) => {
@@ -40,6 +39,7 @@ export function PublicActivity() {
           (item): item is PublicEvent =>
             typeof item?.id === "string" &&
             typeof item?.type === "string" &&
+            item.type !== "WatchEvent" &&
             typeof item?.repo?.name === "string" &&
             typeof item?.created_at === "string" &&
             Number.isFinite(Date.parse(item.created_at)),
