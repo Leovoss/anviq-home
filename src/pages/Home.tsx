@@ -222,7 +222,7 @@ function Navigation({ active }: { active: string }) {
               className={`nav-link ${active === id ? "is-selected" : ""}`}
               aria-current={active === id ? "page" : undefined}
             >
-              <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
+              <Icon size={20} strokeWidth={1.75} aria-hidden="true" />
               <span>{label}</span>
             </Link>
           ))}
@@ -236,7 +236,7 @@ function Overview() {
     <div className="overview-page">
       <section className="welcome-section" aria-labelledby="welcome-title">
         <div className="welcome-label">
-          <FileText size={31} strokeWidth={1.35} aria-hidden="true" />
+          <FileText size={31} strokeWidth={1.75} aria-hidden="true" />
           <span>Welcome to Anviq</span>
         </div>
         <h1 id="welcome-title">Systems built to hold.</h1>
@@ -277,7 +277,7 @@ function Overview() {
                 key={service.title}
                 to={`/explore/services#service-${index}`}
               >
-                <Icon size={23} strokeWidth={1.65} aria-hidden="true" />
+                <Icon size={23} strokeWidth={1.75} aria-hidden="true" />
                 <span>{service.title}</span>
                 <ChevronRight size={18} aria-hidden="true" />
               </Link>
@@ -403,7 +403,7 @@ function Services() {
               key={item.title}
               className="service-detail"
             >
-              <Icon aria-hidden="true" size={26} strokeWidth={1.6} />
+              <Icon aria-hidden="true" size={26} strokeWidth={1.75} />
               <div>
                 <h2>{item.title}</h2>
                 <p>{item.body}</p>

@@ -8,7 +8,7 @@ const projectSlugs = ["steadyward", "lv-matching", "addreach"];
 const serviceIcons = [Workflow, Layers, Server];
 
 export function FilesArtwork({ document = false }: { document?: boolean }) {
-  return document ? <span className="files-document-icon" aria-hidden="true"><FileText size={31} strokeWidth={1.3} /></span> : <img className="files-folder-art" src="/images/folder.png" width="112" height="112" alt="" draggable="false" />;
+  return document ? <span className="files-document-icon" aria-hidden="true"><FileText size={31} strokeWidth={1.75} /></span> : <img className="files-folder-art" src="/images/folder.png" width="112" height="112" alt="" draggable="false" />;
 }
 
 export function FilesToolbar({ title, phone, sidebarOpen, onToggleSidebar, back, children }: {
@@ -23,7 +23,7 @@ export function FilesToolbar({ title, phone, sidebarOpen, onToggleSidebar, back,
     <div className="files-toolbar-row">
       {phone ? <Link to={back.href} className="files-back"><ChevronLeft size={24} aria-hidden="true" /><span>{back.label}</span></Link> : <div className="files-toolbar-leading"><button className="icon-button" aria-label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} aria-expanded={sidebarOpen} aria-controls="desktop-sidebar" onClick={onToggleSidebar}><PanelLeft size={23} aria-hidden="true" /></button>{back.href !== "/explore/browse" && <Link to={back.href} className="files-back"><ChevronLeft size={22} aria-hidden="true" /><span>{back.label}</span></Link>}</div>}
       <span className="files-toolbar-title">{title}</span>
-      <a href="https://calendly.com/lvoss-anviq/30min?month=2026-09" target="_blank" rel="noopener noreferrer" className="files-contact" aria-label="Contact Anviq"><Mail size={22} strokeWidth={1.7} aria-hidden="true" /><span>Contact</span></a>
+      <a href="https://calendly.com/lvoss-anviq/30min?month=2026-09" target="_blank" rel="noopener noreferrer" className="files-contact" aria-label="Contact Anviq"><Mail size={22} strokeWidth={1.75} aria-hidden="true" /><span>Contact</span></a>
     </div>
     <div className="files-search-row">{children}</div>
   </header>;
@@ -47,7 +47,7 @@ export function FilesOverview() {
     <section className="files-overview-work" aria-labelledby="files-work-title"><div className="files-section-heading"><h2 id="files-work-title">Selected work</h2><Link to="/explore/projects">See all<ChevronRight size={16} aria-hidden="true" /></Link></div>
       <div className="files-grid">{WORK_SELECTED.map((project, index) => <Link className="files-item" key={project.name} to={`/projects/${projectSlugs[index]}`}><FilesArtwork /><span className="files-item-name">{project.name}</span><span className="files-item-kind">Project</span></Link>)}</div>
     </section>
-    <section className="files-services" aria-labelledby="files-services-title"><h2 id="files-services-title">Services</h2><div className="files-grouped-list">{WORK.map((item, index) => { const Icon = serviceIcons[index]; return <Link key={item.title} to={`/explore/services#service-${index}`}><Icon size={22} strokeWidth={1.65} aria-hidden="true" /><span>{item.title}</span><ChevronRight size={17} aria-hidden="true" /></Link> })}</div></section>
+    <section className="files-services" aria-labelledby="files-services-title"><h2 id="files-services-title">Services</h2><div className="files-grouped-list">{WORK.map((item, index) => { const Icon = serviceIcons[index]; return <Link key={item.title} to={`/explore/services#service-${index}`}><Icon size={22} strokeWidth={1.75} aria-hidden="true" /><span>{item.title}</span><ChevronRight size={17} aria-hidden="true" /></Link> })}</div></section>
   </div>;
 }
 
@@ -57,7 +57,7 @@ export function FilesBrowse() {
     { title: "Favorites", items: [{ label: "Selected work", note: "3 projects", href: "/explore/projects", Icon: Folder }, { label: "Services", href: "/explore/services", Icon: Layers }, { label: "Approach", href: "/explore/approach", Icon: Compass }] },
     { title: "Information", items: [{ label: "Engagement", href: "/explore/engagement", Icon: FileText }, { label: "Questions", href: "/explore/questions", Icon: CircleHelp }, { label: "Activity", href: "/explore/activity", Icon: Activity }, { label: "About Anviq", href: "/explore/about", Icon: BookOpen }] },
   ];
-  return <div className="files-browse files-screen"><div className="files-page-heading"><h1>Browse</h1></div>{groups.map(({ title, items }) => <section className="files-browse-group" key={title}><h2>{title}</h2><nav className="files-grouped-list" aria-label={title}>{items.map(({ label, href, Icon, ...rest }) => <Link to={href} key={href}><Icon size={23} strokeWidth={1.6} aria-hidden="true" /><span>{label}{"note" in rest && <small>{rest.note}</small>}</span><ChevronRight size={17} aria-hidden="true" /></Link>)}</nav></section>)}</div>;
+  return <div className="files-browse files-screen"><div className="files-page-heading"><h1>Browse</h1></div>{groups.map(({ title, items }) => <section className="files-browse-group" key={title}><h2>{title}</h2><nav className="files-grouped-list" aria-label={title}>{items.map(({ label, href, Icon, ...rest }) => <Link to={href} key={href}><Icon size={23} strokeWidth={1.75} aria-hidden="true" /><span>{label}{"note" in rest && <small>{rest.note}</small>}</span><ChevronRight size={17} aria-hidden="true" /></Link>)}</nav></section>)}</div>;
 }
 
 export type FilesView = "icons" | "list";
