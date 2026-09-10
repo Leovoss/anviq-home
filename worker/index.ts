@@ -57,10 +57,11 @@ async function contributionsTotal(env: Env): Promise<Response> {
   });
 
   if (!upstream.ok) {
-    return new Response(JSON.stringify({ error: "upstream" }), {
-      status: 502,
-      headers: { "content-type": "application/json" },
-    });
+    const body = await upstream.text();
+    return new Response(
+      JSON.stringify({ error: "upstream", status: upstream.status, body: body.slice(0, 500) }),
+      { status: 502, headers: { "content-type": "application/json" } },
+    );
   }
 
   const data: unknown = await upstream.json();
