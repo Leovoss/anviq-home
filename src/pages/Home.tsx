@@ -839,7 +839,7 @@ export function Home() {
                   : `https://github.com/${repo.owner}/${repo.name}`,
               }))}
               showMonths
-              cellSize={14}
+              cellSize={filesLayout ? 14 : 11}
               headingOverride={
                 contributions
                   ? `${contributions.count} contributions in the past year (public and private)`
