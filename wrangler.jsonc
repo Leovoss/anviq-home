@@ -8,6 +8,13 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "not_found_handling": "single-page-application"
-  }
+    "not_found_handling": "single-page-application",
+    "run_worker_first": true
+  },
+  "kv_namespaces": [
+    {
+      "binding": "REACTIONS",
+      "id": "8394c13e5fba4f54a79d1c8b0a9b2bf4"
+    }
+  ]
 }

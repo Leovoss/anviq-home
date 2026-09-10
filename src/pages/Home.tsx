@@ -27,6 +27,7 @@ import {
   Search,
   Server,
   Sparkles,
+  UserRound,
   Workflow,
   X,
 } from "lucide-react";
@@ -45,6 +46,8 @@ import { ScreenshotLightbox } from "@/components/ScreenshotLightbox";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { Variants } from "motion/react";
 import { GitHubActivity } from "@/components/ui/github-activity";
+import { EmojiReaction } from "@/components/ui/emoji-reaction";
+import { sendReaction } from "@/lib/reactions";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
 const NAV_PILL_SPRING = { type: "spring", bounce: 0, duration: 0.32 } as const;
@@ -124,6 +127,12 @@ const SEARCH_ENTRIES = [
     href: "/explore/about",
     group: "Explore" as const,
     body: "Independent AI engineering practice. One engineer, full accountability.",
+  },
+  {
+    title: "Founder",
+    href: "/explore/founder",
+    group: "Explore" as const,
+    body: "Leonardo Voss, founder of Anviq.",
   },
 ];
 function searchEntries(query: string) {
@@ -233,8 +242,10 @@ function ContactLink({
       target={href.startsWith("mailto:") ? undefined : "_blank"}
       rel={href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
     >
-      {children}
-      {!compact && <ArrowRight size={18} aria-hidden="true" />}
+      <span className="primary-button-content">
+        {children}
+        {!compact && <ArrowRight size={18} aria-hidden="true" />}
+      </span>
     </a>
   );
 }
@@ -636,20 +647,31 @@ function About() {
           </section>
         ))}
       </div>
-      <h2 className="founder-heading">Founder</h2>
-      <div className="founder-card">
+      <Link className="external-link" to="/explore/founder">
+        <UserRound size={18} aria-hidden="true" />
+        Meet the founder
+      </Link>
+    </DocumentPage>
+  );
+}
+function Founder() {
+  return (
+    <DocumentPage title="Founder.">
+      <div className="founder-profile">
         <img
           className="founder-photo"
           src="/images/founder.png"
           alt="Leonardo Voss"
         />
         <h2>Leonardo Voss</h2>
-        <p className="founder-role">Founder, Anviq</p>
-        <div className="founder-bio">
-          {FOUNDER_BIO.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </div>
+        <a className="founder-email" href="mailto:lvoss@anviq.net">
+          lvoss@anviq.net
+        </a>
+      </div>
+      <div className="founder-bio">
+        {FOUNDER_BIO.map((paragraph, index) => (
+          <p key={index}>{paragraph}</p>
+        ))}
       </div>
     </DocumentPage>
   );
@@ -1066,6 +1088,7 @@ export function Home() {
   const specialLabels: Record<string, string> = {
     browse: "Browse",
     about: "About Anviq",
+    founder: "Founder",
   };
   const label =
     NAV.find((item) => item.id === active)?.label ??
@@ -1148,6 +1171,9 @@ export function Home() {
     case "about":
       content = <About />;
       break;
+    case "founder":
+      content = <Founder />;
+      break;
     case "browse":
       content = filesLayout ? <FilesBrowse /> : (
         <DocumentPage title="Browse Anviq">
@@ -1212,6 +1238,23 @@ export function Home() {
             <span className="nav-link-content">
               <BookOpen size={17} aria-hidden="true" />
               About Anviq
+            </span>
+          </Link>
+          <Link
+            className={`about-link founder-link ${active === "founder" ? "is-selected" : ""}`}
+            aria-current={active === "founder" ? "page" : undefined}
+            to="/explore/founder"
+          >
+            {active === "founder" && (
+              <motion.span
+                layoutId="explorer-nav-active"
+                className="nav-pill"
+                transition={aboutPillTransition}
+              />
+            )}
+            <span className="nav-link-content">
+              <UserRound size={17} aria-hidden="true" />
+              Founder
             </span>
           </Link>
         </aside>
@@ -1307,6 +1350,7 @@ export function Home() {
             >
               <XLogo />
             </a>
+            <EmojiReaction onReact={sendReaction} size="sm" />
           </nav>
           <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
         </div>
