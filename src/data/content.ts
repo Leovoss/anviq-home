@@ -1,11 +1,11 @@
 export const WORK = [
   {
-    title: "Bespoke AI agents",
-    body: "Agents and automation built for a specific workflow you already have, not a generic template retrofitted to fit.",
+    title: "Software & automation",
+    body: "Custom software and automation built for a workflow you already have, using AI where it earns its place, not by default.",
   },
   {
     title: "Integration",
-    body: "Connect the new agent to the systems you already run: scheduling to billing, CRM to operations, wherever the handoff currently breaks.",
+    body: "Connect what gets built to the systems you already run: scheduling to billing, CRM to operations, wherever the handoff currently breaks.",
   },
   {
     title: "Infrastructure",
