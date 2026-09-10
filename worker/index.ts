@@ -19,11 +19,6 @@ async function contributionsTotal(env: Env): Promise<Response> {
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
-  const tokenPresent = typeof env.github_PAT === "string" && env.github_PAT.length > 0;
-  const tokenLength = tokenPresent ? env.github_PAT.length : 0;
-  const tokenPrefix = tokenPresent ? env.github_PAT.slice(0, 4) : null;
-  const envKeys = Object.keys(env as object);
-
   const upstream = await fetch("https://api.github.com/graphql", {
     method: "POST",
     headers: {
@@ -34,24 +29,14 @@ async function contributionsTotal(env: Env): Promise<Response> {
     body: JSON.stringify({ query: QUERY }),
   });
 
-  const bodyText = await upstream.text();
-
   if (!upstream.ok) {
-    return new Response(
-      JSON.stringify({
-        error: "upstream",
-        status: upstream.status,
-        body: bodyText.slice(0, 500),
-        tokenPresent,
-        tokenLength,
-        tokenPrefix,
-        envKeys,
-      }),
-      { status: 502, headers: { "content-type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ error: "upstream" }), {
+      status: 502,
+      headers: { "content-type": "application/json" },
+    });
   }
 
-  const data: unknown = JSON.parse(bodyText);
+  const data: unknown = await upstream.json();
   const count = (
     data as {
       data?: {
@@ -65,10 +50,10 @@ async function contributionsTotal(env: Env): Promise<Response> {
   )?.data?.viewer?.contributionsCollection?.contributionCalendar?.totalContributions;
 
   if (typeof count !== "number") {
-    return new Response(
-      JSON.stringify({ error: "invalid", body: bodyText.slice(0, 500) }),
-      { status: 502, headers: { "content-type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ error: "invalid" }), {
+      status: 502,
+      headers: { "content-type": "application/json" },
+    });
   }
 
   const response = new Response(JSON.stringify({ count }), {
