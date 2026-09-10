@@ -30,7 +30,7 @@ function levelFor(count: number): 0 | 1 | 2 | 3 | 4 {
 
 async function contributionsTotal(env: Env): Promise<Response> {
   const cache = (caches as unknown as { default: Cache }).default;
-  const cacheKey = new Request("https://anviq.net/api/contributions");
+  const cacheKey = new Request("https://anviq.net/api/contributions?v=2");
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
