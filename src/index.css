@@ -315,22 +315,31 @@ svg {
 }
 .command-palette-dialog {
   width: 100%;
-  max-width: 560px;
-  max-height: 70vh;
+  max-width: 640px;
+  max-height: 65vh;
   display: flex;
   flex-direction: column;
-  border-radius: 16px;
+  border-radius: 18px;
   background: var(--surface);
   box-shadow: var(--window-shadow);
   overflow: hidden;
 }
 .command-palette-dialog .search-field {
   flex-shrink: 0;
+  gap: 14px;
   border-radius: 0;
-  height: 56px;
-  padding-inline: 18px;
+  height: 64px;
+  padding-inline: 20px;
   background: transparent;
   border-bottom: 1px solid var(--line);
+}
+.command-palette-dialog .search-field input {
+  font-size: 19px;
+}
+.command-palette-dialog .search-field > svg {
+  width: 21px;
+  height: 21px;
+  color: var(--muted);
 }
 .search-field {
   display: flex;
@@ -408,7 +417,29 @@ svg {
 .search-suggestions.palette-results {
   flex: 1;
   overflow-y: auto;
-  padding: 8px;
+  padding: 8px 8px 20px;
+  /* Fades the last row toward transparent instead of hard-clipping it at
+     the dialog's rounded corner when the list scrolls - macOS lists use
+     the same trick so a cut-off row never looks like a rendering bug. */
+  mask-image: linear-gradient(to bottom, black calc(100% - 28px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 28px), transparent 100%);
+}
+.command-palette-dialog .suggestion-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: var(--sidebar);
+}
+.command-palette-dialog .search-suggestions button svg {
+  color: var(--accent);
+}
+.command-palette-dialog .search-suggestions button {
+  padding: 8px 10px;
+  gap: 13px;
+  border-radius: 10px;
 }
 .palette-group + .palette-group {
   margin-top: 4px;
@@ -466,23 +497,26 @@ svg {
   justify-content: center;
   align-items: center;
   gap: 16px;
-  padding: 12px 20px;
+  padding: 12px 22px;
   min-height: 46px;
-  background-image: linear-gradient(
-    to bottom,
-    rgb(255 255 255 / 28%),
-    rgb(255 255 255 / 0%) 55%
-  );
-  background-color: color-mix(in srgb, var(--accent) 88%, transparent);
+  background-image:
+    radial-gradient(
+      120% 180% at 18% -30%,
+      rgb(255 255 255 / 55%),
+      rgb(255 255 255 / 0%) 60%
+    ),
+    linear-gradient(to bottom, rgb(255 255 255 / 22%), rgb(255 255 255 / 0%) 50%);
+  background-color: color-mix(in srgb, var(--accent) 72%, transparent);
   color: #fff;
-  border-radius: var(--radius-control);
-  border: 1px solid color-mix(in srgb, white 25%, var(--accent) 75%);
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, white 40%, var(--accent) 60%);
   font-size: 16px;
   font-weight: 500;
   line-height: 1.4;
   box-shadow:
     0 1px 2px rgb(0 101 219 / 15%),
-    inset 0 1px 0 rgb(255 255 255 / 30%);
+    inset 0 1px 0 rgb(255 255 255 / 45%),
+    inset 0 -1px 2px rgb(0 40 90 / 20%);
   transition:
     background-color 150ms ease-out,
     transform 100ms ease-out,
@@ -490,22 +524,24 @@ svg {
 }
 @supports (backdrop-filter: blur(16px)) {
   .primary-button {
-    backdrop-filter: blur(16px) saturate(1.8);
-    -webkit-backdrop-filter: blur(16px) saturate(1.8);
+    backdrop-filter: blur(20px) saturate(2.2);
+    -webkit-backdrop-filter: blur(20px) saturate(2.2);
   }
 }
 .primary-button:hover {
-  background-color: color-mix(in srgb, var(--accent-hover) 90%, transparent);
+  background-color: color-mix(in srgb, var(--accent-hover) 76%, transparent);
   box-shadow:
     0 4px 14px rgb(0 101 219 / 30%),
-    inset 0 1px 0 rgb(255 255 255 / 30%);
+    inset 0 1px 0 rgb(255 255 255 / 50%),
+    inset 0 -1px 2px rgb(0 40 90 / 22%);
   transform: translateY(-1px);
 }
 .primary-button:active {
   transform: translateY(0) scale(0.97);
   box-shadow:
     0 1px 2px rgb(0 101 219 / 15%),
-    inset 0 1px 0 rgb(255 255 255 / 25%);
+    inset 0 1px 0 rgb(255 255 255 / 35%),
+    inset 0 -1px 2px rgb(0 40 90 / 18%);
 }
 .compact-button {
   white-space: nowrap;
