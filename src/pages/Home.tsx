@@ -160,14 +160,14 @@ const getFilesLayout = () => window.matchMedia(filesQuery).matches;
 
 function LinkedinLogo() {
   return (
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
+    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="currentColor">
       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.446-2.136 2.94v5.666H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.114 20.452H3.558V9h3.556v11.452z" />
     </svg>
   );
 }
 function XLogo() {
   return (
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
+    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="currentColor">
       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
     </svg>
   );
@@ -222,7 +222,7 @@ function Navigation({ active }: { active: string }) {
               className={`nav-link ${active === id ? "is-selected" : ""}`}
               aria-current={active === id ? "page" : undefined}
             >
-              <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
+              <Icon size={20} strokeWidth={1.75} aria-hidden="true" />
               <span>{label}</span>
             </Link>
           ))}
@@ -236,7 +236,7 @@ function Overview() {
     <div className="overview-page">
       <section className="welcome-section" aria-labelledby="welcome-title">
         <div className="welcome-label">
-          <FileText size={31} strokeWidth={1.35} aria-hidden="true" />
+          <FileText size={31} strokeWidth={1.75} aria-hidden="true" />
           <span>Welcome to Anviq</span>
         </div>
         <h1 id="welcome-title">Systems built to hold.</h1>
@@ -277,7 +277,7 @@ function Overview() {
                 key={service.title}
                 to={`/explore/services#service-${index}`}
               >
-                <Icon size={23} strokeWidth={1.65} aria-hidden="true" />
+                <Icon size={23} strokeWidth={1.75} aria-hidden="true" />
                 <span>{service.title}</span>
                 <ChevronRight size={18} aria-hidden="true" />
               </Link>
@@ -403,7 +403,7 @@ function Services() {
               key={item.title}
               className="service-detail"
             >
-              <Icon aria-hidden="true" size={26} strokeWidth={1.6} />
+              <Icon aria-hidden="true" size={26} strokeWidth={1.75} />
               <div>
                 <h2>{item.title}</h2>
                 <p>{item.body}</p>
@@ -513,13 +513,7 @@ function About() {
           </section>
         ))}
       </div>
-      <p>
-        I work inside your team to build agents, automate workflows, and
-        connect existing systems. I own delivery from the first technical
-        assessment through deployment and documentation. Hosting, access
-        controls, and data handling are agreed before implementation.
-      </p>
-      <h2>Leonardo Voss</h2>
+      <h2 className="founder-heading">Founder</h2>
       <div className="founder-card">
         <img
           className="founder-photo"
@@ -527,6 +521,7 @@ function About() {
           alt="Leonardo Voss"
         />
         <div className="founder-bio">
+          <h2>Leonardo Voss</h2>
           {FOUNDER_BIO.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
@@ -587,15 +582,23 @@ function SearchResults({ query }: { query: string }) {
     </DocumentPage>
   );
 }
-function SearchControl({ query }: { query: string }) {
+function SearchControl({
+  query,
+  alwaysExpanded = false,
+}: {
+  query: string;
+  alwaysExpanded?: boolean;
+}) {
   const [search, setSearch] = useState(query);
   const [open, setOpen] = useState(false);
+  const [focused, setFocused] = useState(false);
   const [highlighted, setHighlighted] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const suggestions = search.trim() ? searchEntries(search).slice(0, 6) : [];
   const showSuggestions = open && suggestions.length > 0;
+  const expanded = alwaysExpanded || focused || search.trim().length > 0;
 
   useEffect(() => {
     setHighlighted(0);
@@ -605,11 +608,16 @@ function SearchControl({ query }: { query: string }) {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        inputRef.current?.focus();
-        inputRef.current?.select();
+        setFocused(true);
+        requestAnimationFrame(() => {
+          inputRef.current?.focus();
+          inputRef.current?.select();
+        });
       }
-      if (event.key === "Escape" && document.activeElement === inputRef.current)
+      if (event.key === "Escape" && document.activeElement === inputRef.current) {
         document.getElementById("main-content")?.focus();
+        setFocused(false);
+      }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
@@ -619,6 +627,7 @@ function SearchControl({ query }: { query: string }) {
     const onPointerDown = (event: MouseEvent) => {
       if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) {
         setOpen(false);
+        setFocused(false);
       }
     };
     document.addEventListener("mousedown", onPointerDown);
@@ -653,9 +662,21 @@ function SearchControl({ query }: { query: string }) {
   };
 
   return (
-    <div className="search-field-wrap" ref={wrapRef}>
+    <div
+      className={`search-field-wrap ${expanded ? "is-expanded" : "is-collapsed"}`}
+      ref={wrapRef}
+    >
       <form className="search-field" role="search" onSubmit={submit}>
-        <button type="submit" aria-label="Search Anviq">
+        <button
+          type={expanded ? "submit" : "button"}
+          aria-label="Search Anviq"
+          onClick={() => {
+            if (!expanded) {
+              setFocused(true);
+              requestAnimationFrame(() => inputRef.current?.focus());
+            }
+          }}
+        >
           <Search size={18} aria-hidden="true" />
         </button>
         <input
@@ -663,11 +684,15 @@ function SearchControl({ query }: { query: string }) {
           type="search"
           name="q"
           value={search}
+          tabIndex={expanded ? 0 : -1}
           onChange={(event) => {
             setSearch(event.target.value);
             setOpen(true);
           }}
-          onFocus={() => setOpen(true)}
+          onFocus={() => {
+            setFocused(true);
+            setOpen(true);
+          }}
           onKeyDown={onKeyDown}
           placeholder="Search Anviq..."
           aria-label="Search Anviq"
@@ -880,7 +905,7 @@ export function Home() {
             About Anviq
           </Link>
         </aside>
-        {filesLayout ? <FilesToolbar title={currentProject?.name ?? (active === "overview" ? "Anviq" : label)} phone={mobile} sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} back={filesBack}><SearchControl key={query} query={query} /></FilesToolbar> : <header className="explorer-toolbar">
+        {filesLayout ? <FilesToolbar title={currentProject?.name ?? (active === "overview" ? "Anviq" : label)} phone={mobile} sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} back={filesBack}><SearchControl key={query} query={query} alwaysExpanded /></FilesToolbar> : <header className="explorer-toolbar">
           {mobile ? (
             <Link
               className="browse-button"

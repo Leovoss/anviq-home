@@ -253,7 +253,8 @@
   background: var(--chrome-glass);
   box-shadow: 0 5px 24px rgb(30 45 65 / 16%);
 }
-.files-tab-bar a { min-height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--muted); border-radius: 25px; font-size: 11px; font-weight: 550; }
+.files-tab-bar a { min-height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--muted); border-radius: 25px; font-size: 11px; font-weight: 550; transition: background-color 150ms ease-out, color 150ms ease-out, transform 100ms ease-out; }
+.files-tab-bar a:active { background: var(--hover); transform: scale(0.94); }
 .files-tab-bar a[aria-current="page"] { color: var(--selected-text); background: var(--selected); }
 @media (max-width: 360px) {
   .phone-layout .files-screen { padding-inline: 16px; }
