@@ -1,6 +1,6 @@
 # Anviq site
 
-Marketing site for Anviq, an independent forward deployed AI engineering practice. React + TypeScript + Vite, styled with Tailwind CSS.
+Marketing site for Anviq, an independent IT consulting and software practice. React + TypeScript + Vite, styled with Tailwind CSS.
 
 - `src/` - app source (pages, components, content data)
 - `public/` - static assets (favicon, robots.txt, sitemap.xml)
