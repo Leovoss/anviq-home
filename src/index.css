@@ -13,6 +13,7 @@
   --font-editorial: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "SFMono-Regular", Consolas, monospace;
   --max-width-site: 1464px;
+  --color-ring: #0065db;
 }
 
 :root {
@@ -33,7 +34,7 @@
   --selected: #dceaff;
   --selected-text: #004aab;
   --hover: #f0f5fc;
-  --focus: #005fcc;
+  --focus: #0065db;
   --radius-control: 9px;
   --window-shadow:
     0 18px 50px -20px rgb(40 58 85 / 28%), 0 2px 5px rgb(40 58 85 / 6%);
@@ -93,8 +94,8 @@ a {
   transform: scale(0.96);
 }
 :focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 3px;
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 ::selection {
   background: var(--selected);
@@ -201,7 +202,11 @@ svg {
 }
 .nav-link svg,
 .about-link svg {
-  color: var(--accent);
+  color: var(--muted);
+}
+.nav-link.is-selected svg,
+.about-link.is-selected svg {
+  color: var(--selected-text);
 }
 .nav-link:hover,
 .about-link:hover {
@@ -330,7 +335,35 @@ svg {
     -webkit-backdrop-filter: blur(24px) saturate(1.8);
   }
 }
-.command-palette-dialog .search-field {
+/* macOS window chrome: a real red close control, not a decorative row of
+   three fake dots. */
+.magic-search-chrome {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 10px 12px 0;
+}
+.magic-search-close {
+  display: grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  border: 0;
+  border-radius: 50%;
+  background: #ff5f57;
+  box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 12%);
+  color: transparent;
+  padding: 0;
+}
+.magic-search-close:hover,
+.magic-search-close:focus-visible {
+  color: rgb(84 17 12 / 85%);
+}
+.command-palette-dialog .magic-search-field:focus-within {
+  box-shadow: none;
+}
+.command-palette-dialog .magic-search-field {
+  position: relative;
   flex-shrink: 0;
   gap: 14px;
   border-radius: 0;
@@ -338,6 +371,19 @@ svg {
   padding-inline: 20px;
   background: transparent;
   border-bottom: 1px solid var(--line);
+}
+/* Liquid glass on the field itself, matching the CTA recipe: the dialog
+   supplies the frosted backdrop, this adds the lensed top edge. */
+.command-palette-dialog .magic-search-field::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 55%),
+    rgb(255 255 255 / 0%) 70%
+  );
 }
 .command-palette-dialog .search-field input {
   font-size: 19px;
@@ -844,6 +890,15 @@ svg {
   background: var(--hover);
   text-decoration: none;
 }
+/* The reaction bar is a popover over a short footer, so it needs to read as
+   floating rather than colliding with the legal line behind it. */
+.social-links [data-slot="emoji-reaction"] .z-30 {
+  filter: drop-shadow(0 8px 20px rgb(24 32 44 / 18%));
+}
+.reaction-failed {
+  color: var(--muted);
+  font-size: 11px;
+}
 .project-browser {
   display: grid;
   grid-template-columns: minmax(240px, 33%) minmax(0, 1fr);
@@ -1036,6 +1091,46 @@ svg {
 .project-file-proof dd {
   margin: 0;
 }
+.screenshot-preview {
+  margin: 24px 0 0;
+  max-width: 420px;
+}
+/* Expanding fills the preview pane edge to edge, cancelling its padding the
+   way a Finder preview does, so the click is a real change of size. */
+.screenshot-preview.is-open {
+  max-width: none;
+  margin-inline: -36px;
+}
+.screenshot-preview.is-open .screenshot-preview-bar {
+  padding-inline: 36px 40px;
+}
+.screenshot-preview.is-open .project-screenshot-trigger:hover {
+  transform: none;
+}
+.screenshot-preview-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  padding-left: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.screenshot-preview-bar button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+}
+.screenshot-preview-bar button:hover {
+  background: var(--hover);
+  color: var(--accent);
+}
 .project-screenshot-trigger {
   display: block;
   width: 100%;
@@ -1051,11 +1146,15 @@ svg {
      element would fight it, same issue as the folder-image-lift wrapper. */
   transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+.screenshot-preview .project-screenshot-trigger {
+  max-width: none;
+  margin-top: 0;
+}
 .project-screenshot-trigger:hover {
   transform: translateY(-3px);
 }
 .project-screenshot-trigger:focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
   border-radius: 12px;
 }
@@ -1101,9 +1200,10 @@ svg {
   box-shadow: 0 30px 80px rgb(0 0 0 / 35%);
 }
 .quicklook-close {
-  position: absolute;
-  top: -16px;
-  right: -16px;
+  position: fixed;
+  z-index: 1;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
   display: grid;
   place-items: center;
   width: 36px;
@@ -1176,6 +1276,22 @@ svg {
 .document-page > .primary-button {
   margin-top: 27px;
 }
+/* Prompt line and its button read as one block, not two stray elements. */
+.page-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 20px;
+  margin-top: 32px;
+  padding-top: 26px;
+  border-top: 1px solid var(--line);
+}
+.page-cta > p {
+  margin-top: 0 !important;
+}
+.page-cta .primary-button {
+  margin-top: 0;
+}
 .document-sections {
   margin-block: 34px;
 }
@@ -1200,6 +1316,11 @@ svg {
   color: var(--text);
   box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
 }
+/* Inset the ring so it traces the segment instead of a blue slab straddling
+   the track's rounded edge. */
+.segmented-control button:focus-visible {
+  outline-offset: -2px;
+}
 .engagement-panel {
   margin-top: 27px;
 }
@@ -1219,15 +1340,15 @@ svg {
   margin: 10px 0 0;
   padding: 0;
   list-style: none;
+  border-top: 1px solid var(--line);
 }
+/* Each column closes with its own rule, so a 3-item list next to a 2-item
+   list still reads as two finished lists instead of ragged dividers. */
 .engagement-columns li {
   font-size: 15px;
   line-height: 1.55;
-  padding: 6px 0;
-  border-top: 1px solid var(--line);
-}
-.engagement-columns li:first-child {
-  border-top: 0;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
 }
 .engagement-next {
   margin-top: 24px !important;
@@ -1435,50 +1556,6 @@ svg {
   padding: 0 30px 20px 0;
   margin-top: 0 !important;
 }
-.search-results {
-  margin-top: 24px;
-}
-.search-results > a {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 22px 10px;
-  border-bottom: 1px solid var(--line);
-}
-.search-results > a:hover {
-  background: var(--hover);
-}
-.search-results > a:active {
-  background: var(--selected);
-}
-.search-results > a > svg:first-child {
-  color: var(--accent);
-}
-.search-results > a > svg:last-child {
-  margin-left: auto;
-  transition: transform 150ms ease-out;
-}
-.search-results > a:hover > svg:last-child {
-  transform: translateX(3px);
-}
-.search-results h2 {
-  font-size: 18px;
-}
-.search-results p {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  font-size: 14px !important;
-}
-.empty-state {
-  margin-top: 40px;
-  padding-block: 24px;
-}
-.empty-state > svg {
-  color: var(--muted);
-  margin-bottom: 18px;
-}
 .activity-calendar-scroll {
   margin-top: 24px;
   overflow-x: auto;
@@ -1583,12 +1660,10 @@ svg {
   color: var(--text);
 }
 @media (min-width: 1100px) and (min-height: 740px) {
-  .explorer-sidebar {
-    position: sticky;
-    top: 0;
-    align-self: start;
-    min-height: calc(100svh - 138px);
-  }
+  /* The sidebar is a grid item in a fixed-height window that scrolls
+     internally, so it stretches to its rows. A sticky sidebar with a
+     hand-computed min-height overhung the status bar on short viewports
+     and pushed it outside the clipped window on tall ones. */
   .explorer-window {
     background: linear-gradient(
       to right,
@@ -1808,12 +1883,17 @@ svg {
     display: inline-flex;
     align-items: center;
   }
+  /* iOS stacks its footer rows centered rather than spreading them across
+     one line, so the legal group reads as deliberate instead of trailing
+     the copyright by a few pixels. */
   .site-footer {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     width: 100%;
     padding: 14px 22px max(18px, env(safe-area-inset-bottom));
-    flex-wrap: wrap;
-    gap: 5px 16px;
+    gap: 2px;
   }
   .site-footer > span {
     justify-self: unset;
@@ -1821,6 +1901,7 @@ svg {
   .site-footer nav {
     gap: 16px;
     flex-wrap: wrap;
+    justify-content: center;
     justify-self: unset;
   }
   .site-footer a {
@@ -1828,7 +1909,10 @@ svg {
   }
   .site-footer-right {
     width: 100%;
-    justify-content: space-between;
+    justify-self: unset;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px 18px;
   }
   .project-browser {
     display: block;
@@ -1948,7 +2032,7 @@ svg {
     --selected: #253f60;
     --selected-text: #c0dcff;
     --hover: #2b3543;
-    --focus: #9bc6ff;
+    --focus: #84b9ff;
     --window-shadow: 0 18px 50px -20px rgb(0 0 0 / 60%);
   }
   .brand svg path:first-child {
@@ -2017,8 +2101,7 @@ svg {
   .files-tab-bar a:active,
   .project-folder:active .folder-image-lift,
   .project-screenshot-trigger:hover,
-  .service-links a:hover > svg:last-child,
-  .search-results > a:hover > svg:last-child {
+  .service-links a:hover > svg:last-child {
     transform: none;
   }
 }
