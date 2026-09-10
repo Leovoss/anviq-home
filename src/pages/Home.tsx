@@ -711,7 +711,9 @@ function SuggestionGroups({
                   onMouseEnter={() => setHighlighted(index)}
                   onClick={() => goTo(item.href)}
                 >
-                  <FileText size={17} aria-hidden="true" />
+                  <span className="suggestion-icon">
+                    <FileText size={17} aria-hidden="true" />
+                  </span>
                   <span>
                     <strong>{item.title}</strong>
                     <small>{item.body}</small>
@@ -855,10 +857,25 @@ function CommandPalette() {
     setHighlighted(0);
   }, [search]);
 
-  // Global Cmd/Ctrl+K opens the palette from anywhere.
+  // Global Cmd/Ctrl+K opens the palette from anywhere. Ctrl+K is reserved by
+  // Chrome/Edge on Windows for the omnibox and never reaches page JS there,
+  // so "/" (used by GitHub, Slack, Notion) is a reliable fallback - guarded
+  // so it doesn't hijack typing in a real text field.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setOpen(true);
+        return;
+      }
+      if (event.key === "/" && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        const target = event.target as HTMLElement | null;
+        const isTyping =
+          target &&
+          (target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.isContentEditable);
+        if (isTyping) return;
         event.preventDefault();
         setOpen(true);
       }
@@ -932,7 +949,7 @@ function CommandPalette() {
         type="button"
         ref={triggerRef}
         className="icon-button search-trigger"
-        aria-label="Search Anviq (Cmd+K)"
+        aria-label="Search Anviq (press / or Cmd+K)"
         onClick={() => setOpen(true)}
       >
         <Search size={18} aria-hidden="true" />
