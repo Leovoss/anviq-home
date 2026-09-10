@@ -22,6 +22,7 @@ async function contributionsTotal(env: Env): Promise<Response> {
   const tokenPresent = typeof env.github_PAT === "string" && env.github_PAT.length > 0;
   const tokenLength = tokenPresent ? env.github_PAT.length : 0;
   const tokenPrefix = tokenPresent ? env.github_PAT.slice(0, 4) : null;
+  const envKeys = Object.keys(env as object);
 
   const upstream = await fetch("https://api.github.com/graphql", {
     method: "POST",
@@ -44,6 +45,7 @@ async function contributionsTotal(env: Env): Promise<Response> {
         tokenPresent,
         tokenLength,
         tokenPrefix,
+        envKeys,
       }),
       { status: 502, headers: { "content-type": "application/json" } },
     );
