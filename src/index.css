@@ -185,9 +185,9 @@ svg {
   font-weight: 500;
 }
 .nav-link {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 13px;
   min-height: 44px;
   padding: 10px 14px;
   font-size: 15px;
@@ -204,16 +204,29 @@ svg {
 }
 .is-selected,
 .is-selected:hover {
-  background: var(--selected);
   color: var(--selected-text);
 }
 .nav-link.is-selected {
   font-weight: 550;
 }
-.about-link {
+.nav-link-content {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 13px;
+}
+.nav-pill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: var(--radius-control);
+  background: var(--selected);
+}
+.about-link {
+  position: relative;
+  display: flex;
+  align-items: center;
   color: var(--muted);
   margin-top: 44px;
   border-radius: var(--radius-control);
