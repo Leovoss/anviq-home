@@ -82,8 +82,13 @@ const NAV = [
   },
 ];
 const SLUGS = ["steadyward", "lv-matching", "addreach"];
-// TODO: replace with real bio text once supplied.
-const FOUNDER_BIO = "Bio pending.";
+const FOUNDER_BIO = [
+  "I work where customers, product, and regulated environments meet. Over the past four years, across forex brokerage, fintech, and iGaming, I've managed high-value client portfolios and turned what customers struggle with into requirements that engineering, compliance, and risk teams can act on.",
+  "I run Anviq as a forward deployed engineer, and I'm now looking to bring the same approach inside a product company, in an FDE or product management role. The common thread: sit with the customer, find the real problem, and own it through to something shipped and running.",
+  "I've owned AML, KYC, and Source-of-Wealth processes for the German market, and managed a 200+ VIP portfolio generating roughly €10M a year with 82% retention.",
+  "I sit close to users, find the friction, and turn it into something a product team can build; at Entain that meant a 15% cross-sell uplift, and earlier CRM and support roles saw 91% CSAT and measurable churn reduction. Through Anviq I build and run production systems for companies without engineers of their own: custom software, automation, integrations, and GDPR-compliant cloud infrastructure, using AI development tools daily to scope, prototype, and ship faster.",
+  "I'm a computer science student at Uninettuno, an international distance-learning university in Italy, and spend most of my free time on the technical side. Native German speaker with deep DACH market experience, open to remote roles globally, particularly platform- and developer-focused products, and willing to relocate to Australia, the US, or Switzerland.",
+];
 const SEARCH_ENTRIES = [
   ...NAV.filter((item) => item.id !== "overview").map((item) => ({
     title: item.label,
@@ -520,10 +525,14 @@ function About() {
       <div className="founder-card">
         <img
           className="founder-photo"
-          src="/images/founder.jpg"
+          src="/images/founder.png"
           alt="Enrique Voss"
         />
-        <p>{FOUNDER_BIO}</p>
+        <div className="founder-bio">
+          {FOUNDER_BIO.map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </div>
       </div>
     </DocumentPage>
   );
