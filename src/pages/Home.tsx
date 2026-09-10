@@ -38,6 +38,9 @@ import {
   IDEA,
 } from "@/data/content";
 import { PublicActivity } from "@/components/PublicActivity";
+import { GitHubActivity } from "@/components/ui/github-activity";
+import { useContributionsTotal } from "@/lib/useContributionsTotal";
+import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
 const NAV = [
   { id: "overview", label: "Overview", icon: House, href: "/" },
@@ -107,6 +110,13 @@ const subscribeMobile = (callback: () => void) => {
 };
 const getMobile = () => window.matchMedia("(max-width: 760px)").matches;
 const getServerMobile = () => false;
+const filesQuery = "(max-width: 1180px), (pointer: coarse)";
+const subscribeFiles = (callback: () => void) => {
+  const media = window.matchMedia(filesQuery);
+  media.addEventListener("change", callback);
+  return () => media.removeEventListener("change", callback);
+};
+const getFilesLayout = () => window.matchMedia(filesQuery).matches;
 
 function FolderImage({ small = false }: { small?: boolean }) {
   return (
@@ -123,14 +133,18 @@ function FolderImage({ small = false }: { small?: boolean }) {
 function ContactLink({
   children = "Start a conversation",
   compact = false,
+  href = "https://calendly.com/lvoss-anviq/30min?month=2026-09",
 }: {
   children?: ReactNode;
   compact?: boolean;
+  href?: string;
 }) {
   return (
     <a
       className={`primary-button ${compact ? "compact-button" : ""}`}
-      href="mailto:lvoss@anviq.net"
+      href={href}
+      target={href.startsWith("mailto:") ? undefined : "_blank"}
+      rel={href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
     >
       {children}
       {!compact && <ArrowRight size={18} aria-hidden="true" />}
@@ -220,13 +234,13 @@ function Overview() {
     </div>
   );
 }
-function ProjectBrowser({ slug, mobile }: { slug?: string; mobile: boolean }) {
-  const selected = slug ? SLUGS.indexOf(slug) : mobile ? -1 : 0;
+function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { slug?: string; filesLayout: boolean; view: FilesView; setView: (view: FilesView) => void; sort: FilesSort; setSort: (sort: FilesSort) => void }) {
+  const selected = slug ? SLUGS.indexOf(slug) : filesLayout ? -1 : 0;
   if (slug && selected === -1) return <MissingPage />;
   const project = WORK_SELECTED[selected];
   return (
     <div className={`project-browser ${slug ? "has-project" : ""}`}>
-      <section className="project-list" aria-labelledby="project-list-title">
+      {filesLayout ? (!slug && <FilesProjects view={view} setView={setView} sort={sort} setSort={setSort} />) : <section className="project-list" aria-labelledby="project-list-title">
         <h1 id="project-list-title">Selected work</h1>
         <p>Independent builds</p>
         <nav aria-label="Projects">
@@ -246,7 +260,7 @@ function ProjectBrowser({ slug, mobile }: { slug?: string; mobile: boolean }) {
             </Link>
           ))}
         </nav>
-      </section>
+      </section>}
       {project && (
         <article
           className="project-preview"
@@ -259,7 +273,7 @@ function ProjectBrowser({ slug, mobile }: { slug?: string; mobile: boolean }) {
           </Link>
           <p className="document-label">Project overview</p>
           <FolderImage />
-          {mobile ? (
+          {filesLayout ? (
             <h1 id="project-title">{project.name}</h1>
           ) : (
             <h2 id="project-title">{project.name}</h2>
@@ -619,6 +633,10 @@ export function Home() {
     getServerMobile,
   );
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const contributionsTotal = useContributionsTotal();
+  const filesLayout = useSyncExternalStore(subscribeFiles, getFilesLayout, getServerMobile);
+  const [fileView, setFileView] = useState<FilesView>("icons");
+  const [fileSort, setFileSort] = useState<FilesSort>("name");
   const mainRef = useRef<HTMLElement>(null);
   const lastLocation = useRef(location.key);
   const isProject = location.pathname.startsWith("/projects/");
@@ -653,10 +671,10 @@ export function Home() {
   let content: ReactNode;
   switch (active) {
     case "overview":
-      content = <Overview />;
+      content = filesLayout ? <FilesOverview /> : <Overview />;
       break;
     case "projects":
-      content = <ProjectBrowser slug={slug} mobile={mobile} />;
+      content = <ProjectBrowser slug={slug} filesLayout={filesLayout} view={fileView} setView={setFileView} sort={fileSort} setSort={setFileSort} />;
       break;
     case "services":
       content = <Services />;
@@ -674,8 +692,16 @@ export function Home() {
       content = (
         <DocumentPage
           title="Public activity."
-          intro="Public repositories only; client work is under NDA. This pulls live from GitHub."
+          intro="This pulls live from GitHub. The calendar and list below show public repositories only; client work is under NDA."
         >
+          {contributionsTotal !== null && (
+            <p className="activity-total-stat">
+              {contributionsTotal} contributions in the past year, across public and private work.
+            </p>
+          )}
+          <div className="activity-calendar-scroll">
+            <GitHubActivity username="Leovoss" showMonths className="anviq-github-activity" />
+          </div>
           <PublicActivity />
           <a
             className="external-link"
@@ -694,7 +720,7 @@ export function Home() {
       content = <About />;
       break;
     case "browse":
-      content = (
+      content = filesLayout ? <FilesBrowse /> : (
         <DocumentPage title="Browse Anviq">
           <Navigation active="browse" />
           <Link className="external-link" to="/explore/about">
@@ -721,8 +747,13 @@ export function Home() {
   };
   if (location.pathname === "/" && legacy[location.hash])
     return <Navigate to={legacy[location.hash]} replace />;
+  const filesBack = isProject
+    ? { href: "/explore/projects", label: "Selected work" }
+    : active === "browse"
+      ? { href: "/", label: "Anviq" }
+      : { href: "/explore/browse", label: "Browse" };
   return (
-    <>
+    <div className={filesLayout ? `files-layout ${mobile ? "phone-layout" : "tablet-layout"}` : "desktop-layout"}>
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
@@ -734,6 +765,7 @@ export function Home() {
           id="desktop-sidebar"
           hidden={!sidebarOpen || mobile}
         >
+          {filesLayout && <p className="files-sidebar-title">Browse</p>}
           <Link to="/" className="brand" aria-label="Anviq overview">
             <Logo />
             <span>Anviq</span>
@@ -748,7 +780,7 @@ export function Home() {
             About Anviq
           </Link>
         </aside>
-        <header className="explorer-toolbar">
+        {filesLayout ? <FilesToolbar title={currentProject?.name ?? (active === "overview" ? "Anviq" : label)} phone={mobile} sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} back={filesBack}><SearchControl key={query} query={query} /></FilesToolbar> : <header className="explorer-toolbar">
           {mobile ? (
             <Link
               className="browse-button"
@@ -775,7 +807,7 @@ export function Home() {
           </nav>
           <SearchControl key={query} query={query} />
           <ContactLink compact>Get in touch</ContactLink>
-        </header>
+        </header>}
         <main
           id="main-content"
           className="explorer-main"
@@ -819,6 +851,7 @@ export function Home() {
         </nav>
         <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
       </footer>
-    </>
+      {mobile && <FilesTabBar active={active} />}
+    </div>
   );
 }

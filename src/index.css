@@ -796,6 +796,19 @@ svg {
   color: var(--muted);
   margin-bottom: 18px;
 }
+.activity-total-stat {
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.activity-calendar-scroll {
+  overflow-x: auto;
+  margin-top: 28px;
+}
+.activity-calendar-scroll .anviq-github-activity {
+  max-width: none;
+}
 .activity-message {
   margin: 32px 0;
   padding: 24px 0;
