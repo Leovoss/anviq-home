@@ -802,18 +802,127 @@ svg {
   font-weight: 600;
   color: var(--text);
 }
-.activity-calendar-scroll {
-  overflow-x: auto;
-  margin-top: 28px;
+.contribution-calendar {
+  margin-top: 24px;
 }
-.activity-calendar-scroll .anviq-github-activity {
-  max-width: none;
+.contribution-calendar-months {
+  display: flex;
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: var(--muted);
 }
-.activity-calendar-scroll .anviq-github-activity > p:first-child {
-  display: none;
+.contribution-calendar-months span {
+  flex: 1;
+  min-width: 0;
 }
-.activity-calendar-scroll .anviq-github-activity [data-slot="github-activity-grid"] {
-  margin-top: 4px;
+.contribution-calendar-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 3px;
+}
+.contribution-calendar-week {
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);
+  gap: 3px;
+}
+.contribution-calendar-day {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  background: var(--line);
+}
+.contribution-calendar-day.level-1 {
+  background: #39d353;
+  opacity: 0.3;
+}
+.contribution-calendar-day.level-2 {
+  background: #39d353;
+  opacity: 0.52;
+}
+.contribution-calendar-day.level-3 {
+  background: #39d353;
+  opacity: 0.76;
+}
+.contribution-calendar-day.level-4 {
+  background: #39d353;
+  opacity: 1;
+}
+@media (max-width: 760px) {
+  .contribution-calendar-months {
+    display: none;
+  }
+  .contribution-calendar-grid,
+  .contribution-calendar-week {
+    gap: 1px;
+  }
+}
+.contribution-top-repos {
+  margin-top: 16px;
+  border-radius: 14px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.contribution-top-repos-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 16px;
+  font-size: 15px;
+  color: var(--text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+.contribution-top-repos-toggle > span:first-child {
+  flex: 1;
+}
+.contribution-top-repos-avatars {
+  display: flex;
+}
+.contribution-top-repo-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--surface);
+  margin-left: -8px;
+  background: var(--line);
+}
+.contribution-top-repos-avatars .contribution-top-repo-avatar:first-child {
+  margin-left: 0;
+}
+.contribution-top-repos-chevron {
+  color: var(--muted);
+  transition: transform 0.15s ease;
+}
+.contribution-top-repos-chevron.is-open {
+  transform: rotate(180deg);
+}
+.contribution-top-repos-list a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 8px 4px;
+  padding: 8px;
+  border-radius: 10px;
+}
+.contribution-top-repos-list a:hover {
+  background: var(--line);
+}
+.contribution-top-repos-list .contribution-top-repo-avatar {
+  margin-left: 0;
+  border: none;
+}
+.contribution-top-repos-list span:nth-child(2) {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text);
+}
+.contribution-top-repo-count {
+  font-size: 14px;
+  color: var(--muted);
 }
 .activity-message {
   margin: 32px 0;
