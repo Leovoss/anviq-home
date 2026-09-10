@@ -279,6 +279,11 @@ svg {
   margin-left: auto;
   width: clamp(150px, 20vw, 280px);
   min-width: 130px;
+  transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.search-field-wrap.is-collapsed {
+  width: 40px;
+  min-width: 40px;
 }
 .search-field {
   display: flex;
@@ -289,6 +294,15 @@ svg {
   height: 40px;
   background: var(--sidebar);
   color: var(--muted);
+  transition: background-color 150ms ease-out;
+}
+.is-collapsed .search-field {
+  background: transparent;
+}
+.is-collapsed .search-field input,
+.is-collapsed .search-field button[aria-label="Clear search"] {
+  opacity: 0;
+  pointer-events: none;
 }
 .search-field:focus-within {
   outline: 3px solid var(--focus);
@@ -388,12 +402,20 @@ svg {
   font-size: 16px;
   font-weight: 500;
   line-height: 1.4;
+  box-shadow: 0 1px 2px rgb(0 101 219 / 15%);
+  transition:
+    background-color 150ms ease-out,
+    transform 100ms ease-out,
+    box-shadow 150ms ease-out;
 }
 .primary-button:hover {
   background: var(--accent-hover);
+  box-shadow: 0 4px 14px rgb(0 101 219 / 30%);
+  transform: translateY(-1px);
 }
 .primary-button:active {
-  transform: translateY(1px);
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 1px 2px rgb(0 101 219 / 15%);
 }
 .compact-button {
   white-space: nowrap;
@@ -596,8 +618,8 @@ svg {
 .social-links a {
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   min-height: 0;
   border-radius: 50%;
   color: var(--muted);
@@ -783,6 +805,11 @@ svg {
 }
 .document-sections > section:last-child {
   border-bottom: 1px solid var(--line);
+}
+.founder-heading {
+  margin-top: 40px !important;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
 }
 .founder-card {
   display: flex;
