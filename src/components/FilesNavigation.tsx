@@ -22,13 +22,7 @@ export function FilesToolbar({ title, phone, sidebarOpen, onToggleSidebar, back,
   return <header className="files-toolbar">
     <div className="files-toolbar-row">
       {phone ? <Link to={back.href} className="files-back"><ChevronLeft size={24} aria-hidden="true" /><span>{back.label}</span></Link> : <div className="files-toolbar-leading"><button className="icon-button" aria-label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} aria-expanded={sidebarOpen} aria-controls="desktop-sidebar" onClick={onToggleSidebar}><PanelLeft size={23} aria-hidden="true" /></button>{back.href !== "/explore/browse" && <Link to={back.href} className="files-back"><ChevronLeft size={22} aria-hidden="true" /><span>{back.label}</span></Link>}</div>}
-      {title === "Anviq" ? (
-        <span className="files-toolbar-title files-toolbar-brand" aria-label="Anviq">
-          <Logo />
-        </span>
-      ) : (
-        <span className="files-toolbar-title">{title}</span>
-      )}
+      <span className="files-toolbar-title">{title}</span>
       <a href="https://calendly.com/lvoss-anviq/30min?month=2026-09" target="_blank" rel="noopener noreferrer" className="files-contact" aria-label="Contact Anviq"><Mail size={22} strokeWidth={1.7} aria-hidden="true" /><span>Contact</span></a>
     </div>
     <div className="files-search-row">{children}</div>
@@ -44,7 +38,7 @@ export function FilesTabBar({ active }: { active: string }) {
 
 export function FilesOverview() {
   return <div className="files-overview files-screen">
-    <div className="files-page-heading"><h1>Anviq</h1><p>Independent AI engineering</p></div>
+    <div className="files-page-heading"><Logo /><h1>Anviq</h1><p>Independent AI engineering</p></div>
     <section className="files-welcome-document" aria-labelledby="files-welcome-title">
       <div className="files-document-heading"><FilesArtwork document /><div><span>Read me</span><h2 id="files-welcome-title">Systems built to hold.</h2></div></div>
       <p>Bespoke agents, integration, and infrastructure — one engineer, end-to-end accountability.</p>
