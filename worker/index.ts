@@ -1,5 +1,5 @@
 interface Env {
-  github_PAT: string;
+  gh_PAT: string;
   ASSETS: { fetch(request: Request): Promise<Response> };
 }
 
@@ -46,16 +46,10 @@ async function contributionsTotal(env: Env): Promise<Response> {
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
-  const raw = env.github_PAT ?? "";
-  const tokenLength = raw.length;
-  const tokenPrefix = raw.slice(0, 5);
-  const tokenSuffix = raw.slice(-3);
-  const hasWhitespace = /\s/.test(raw);
-
   const upstream = await fetch("https://api.github.com/graphql", {
     method: "POST",
     headers: {
-      Authorization: `bearer ${env.github_PAT}`,
+      Authorization: `bearer ${env.gh_PAT}`,
       "Content-Type": "application/json",
       "User-Agent": "anviq-home",
     },
@@ -63,19 +57,10 @@ async function contributionsTotal(env: Env): Promise<Response> {
   });
 
   if (!upstream.ok) {
-    const body = await upstream.text();
-    return new Response(
-      JSON.stringify({
-        error: "upstream",
-        status: upstream.status,
-        body: body.slice(0, 500),
-        tokenLength,
-        tokenPrefix,
-        tokenSuffix,
-        hasWhitespace,
-      }),
-      { status: 502, headers: { "content-type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ error: "upstream" }), {
+      status: 502,
+      headers: { "content-type": "application/json" },
+    });
   }
 
   const data: unknown = await upstream.json();
