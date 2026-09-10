@@ -1,6 +1,12 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 
+// Same spring shape as the GitHub activity widget's SPRING constant, so
+// motion feels consistent site-wide. No bounce: content swaps should settle
+// decisively, not oscillate.
+const ENTER = { type: "spring", bounce: 0, duration: 0.32 } as const;
+const EXIT = { duration: 0.15, ease: "easeIn" } as const;
+
 export function ExplorerPane({
   animKey,
   children,
@@ -17,16 +23,12 @@ export function ExplorerPane({
         animate={{
           opacity: 1,
           y: 0,
-          transition: reducedMotion
-            ? { duration: 0 }
-            : { duration: 0.24, ease: [0.16, 1, 0.3, 1] },
+          transition: reducedMotion ? { duration: 0 } : ENTER,
         }}
         exit={{
           opacity: reducedMotion ? 1 : 0,
           y: reducedMotion ? 0 : -6,
-          transition: reducedMotion
-            ? { duration: 0 }
-            : { duration: 0.15, ease: [0.4, 0, 1, 1] },
+          transition: reducedMotion ? { duration: 0 } : EXIT,
         }}
       >
         {children}
