@@ -779,9 +779,15 @@ svg {
   background: var(--sidebar);
   flex-shrink: 0;
 }
-.founder-card p {
+.founder-bio {
+  min-width: 0;
+  max-width: 62ch;
+}
+.founder-bio p {
   margin-top: 0 !important;
-  max-width: 60ch;
+}
+.founder-bio p + p {
+  margin-top: 14px !important;
 }
 .service-detail {
   display: flex;
@@ -1103,6 +1109,9 @@ svg {
 @media (max-width: 760px) {
   :root {
     background: var(--surface);
+  }
+  .founder-card {
+    flex-direction: column;
   }
   .explorer-window,
   .explorer-window.sidebar-hidden {
