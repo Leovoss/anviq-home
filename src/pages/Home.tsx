@@ -520,8 +520,9 @@ function About() {
           src="/images/founder.png"
           alt="Leonardo Voss"
         />
+        <h2>Leonardo Voss</h2>
+        <p className="founder-role">Founder, Anviq</p>
         <div className="founder-bio">
-          <h2>Leonardo Voss</h2>
           {FOUNDER_BIO.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
