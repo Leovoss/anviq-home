@@ -8,10 +8,25 @@ const QUERY = `query {
     contributionsCollection {
       contributionCalendar {
         totalContributions
+        weeks {
+          contributionDays {
+            date
+            contributionCount
+          }
+        }
       }
     }
   }
 }`;
+
+// Same bucketing GitHub's own public contribution graph uses.
+function levelFor(count: number): 0 | 1 | 2 | 3 | 4 {
+  if (count <= 0) return 0;
+  if (count <= 3) return 1;
+  if (count <= 6) return 2;
+  if (count <= 9) return 3;
+  return 4;
+}
 
 async function contributionsTotal(env: Env): Promise<Response> {
   const cache = (caches as unknown as { default: Cache }).default;
@@ -37,18 +52,22 @@ async function contributionsTotal(env: Env): Promise<Response> {
   }
 
   const data: unknown = await upstream.json();
-  const count = (
+  const calendar = (
     data as {
       data?: {
         viewer?: {
           contributionsCollection?: {
-            contributionCalendar?: { totalContributions?: number };
+            contributionCalendar?: {
+              totalContributions?: number;
+              weeks?: { contributionDays?: { date: string; contributionCount: number }[] }[];
+            };
           };
         };
       };
     }
-  )?.data?.viewer?.contributionsCollection?.contributionCalendar?.totalContributions;
+  )?.data?.viewer?.contributionsCollection?.contributionCalendar;
 
+  const count = calendar?.totalContributions;
   if (typeof count !== "number") {
     return new Response(JSON.stringify({ error: "invalid" }), {
       status: 502,
@@ -56,7 +75,15 @@ async function contributionsTotal(env: Env): Promise<Response> {
     });
   }
 
-  const response = new Response(JSON.stringify({ count }), {
+  const days = (calendar.weeks ?? []).flatMap((week) =>
+    (week.contributionDays ?? []).map((day) => ({
+      date: day.date,
+      count: day.contributionCount,
+      level: levelFor(day.contributionCount),
+    })),
+  );
+
+  const response = new Response(JSON.stringify({ count, days }), {
     headers: {
       "content-type": "application/json",
       "cache-control": "public, max-age=3600",
