@@ -557,53 +557,12 @@ function MissingPage() {
     </DocumentPage>
   );
 }
-function SearchResults({ query }: { query: string }) {
-  const matches = searchEntries(query);
-  return (
-    <DocumentPage
-      title="Search Anviq"
-      intro={
-        query.trim()
-          ? `${matches.length} ${matches.length === 1 ? "result" : "results"} for "${query.trim()}"`
-          : "Search services, projects, and information using the field above."
-      }
-    >
-      {query.trim() && !matches.length && (
-        <div className="empty-state">
-          <Search size={32} aria-hidden="true" />
-          <h2>No matching pages</h2>
-          <p>
-            Try a project name or a topic such as "agents", "hosting", or
-            "assessment".
-          </p>
-          <Link className="external-link" to="/">
-            Browse the overview <ArrowRight size={18} aria-hidden="true" />
-          </Link>
-        </div>
-      )}
-      <div className="search-results">
-        {matches.map((item) => (
-          <Link to={item.href} key={item.href}>
-            <FileText size={24} aria-hidden="true" />
-            <div>
-              <h2>{item.title}</h2>
-              <p>{item.body}</p>
-            </div>
-            <ChevronRight size={18} aria-hidden="true" />
-          </Link>
-        ))}
-      </div>
-    </DocumentPage>
-  );
-}
 function SearchControl({
-  query,
   alwaysExpanded = false,
 }: {
-  query: string;
   alwaysExpanded?: boolean;
 }) {
-  const [search, setSearch] = useState(query);
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const [highlighted, setHighlighted] = useState(0);
@@ -650,15 +609,15 @@ function SearchControl({
 
   const goTo = (href: string) => {
     setOpen(false);
+    setFocused(false);
+    setSearch("");
     navigate(href);
   };
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    if (showSuggestions && suggestions[highlighted]) {
+    if (suggestions[highlighted]) {
       goTo(suggestions[highlighted].href);
-    } else {
-      goTo(`/explore/search?q=${encodeURIComponent(search.trim())}`);
     }
   };
 
@@ -780,7 +739,6 @@ export function Home() {
     ? WORK_SELECTED[SLUGS.indexOf(slug ?? "")]
     : undefined;
   const specialLabels: Record<string, string> = {
-    search: "Search",
     browse: "Browse",
     about: "About Anviq",
   };
@@ -788,7 +746,6 @@ export function Home() {
     NAV.find((item) => item.id === active)?.label ??
     specialLabels[active] ??
     "Page not found";
-  const query = new URLSearchParams(location.search).get("q") ?? "";
   useEffect(() => {
     document.title = `${currentProject?.name ?? label} - Anviq`;
     if (lastLocation.current !== location.key) {
@@ -876,9 +833,6 @@ export function Home() {
         </DocumentPage>
       );
       break;
-    case "search":
-      content = <SearchResults query={query} />;
-      break;
     default:
       content = <MissingPage />;
   }
@@ -926,7 +880,7 @@ export function Home() {
             About Anviq
           </Link>
         </aside>
-        {filesLayout ? <FilesToolbar title={currentProject?.name ?? (active === "overview" ? "Anviq" : label)} phone={mobile} sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} back={filesBack}><SearchControl key={query} query={query} alwaysExpanded /></FilesToolbar> : <header className="explorer-toolbar">
+        {filesLayout ? <FilesToolbar title={currentProject?.name ?? (active === "overview" ? "Anviq" : label)} phone={mobile} sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} back={filesBack}><SearchControl alwaysExpanded /></FilesToolbar> : <header className="explorer-toolbar">
           {mobile ? (
             <Link
               className="browse-button"
@@ -951,7 +905,7 @@ export function Home() {
             <span aria-hidden="true">/</span>
             <span aria-current="page">{label}</span>
           </nav>
-          <SearchControl key={query} query={query} />
+          <SearchControl />
           <ContactLink compact>Get in touch</ContactLink>
         </header>}
         <main
