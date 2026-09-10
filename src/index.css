@@ -277,13 +277,13 @@ svg {
 .search-field-wrap {
   position: relative;
   margin-left: auto;
-  width: clamp(150px, 20vw, 280px);
-  min-width: 130px;
-  transition: width 220ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-.search-field-wrap.is-collapsed {
-  width: 40px;
+  width: 100%;
   min-width: 40px;
+  max-width: 40px;
+  transition: max-width 240ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.search-field-wrap.is-expanded {
+  max-width: clamp(150px, 20vw, 280px);
 }
 .search-field {
   display: flex;
@@ -294,7 +294,7 @@ svg {
   height: 40px;
   background: var(--sidebar);
   color: var(--muted);
-  transition: background-color 150ms ease-out;
+  transition: background-color 200ms ease-out;
 }
 .is-collapsed .search-field {
   background: transparent;
@@ -303,6 +303,11 @@ svg {
 .is-collapsed .search-field button[aria-label="Clear search"] {
   opacity: 0;
   pointer-events: none;
+  transition: opacity 100ms ease-out;
+}
+.is-expanded .search-field input {
+  opacity: 1;
+  transition: opacity 200ms ease-out 80ms;
 }
 .search-field:focus-within {
   outline: 3px solid var(--focus);
