@@ -1,14 +1,34 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { motion, useReducedMotion } from "motion/react";
 import { Activity, ArrowRight, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Compass, FileText, Folder, House, Layers, LayoutGrid, List, Mail, PanelLeft, Server, Workflow } from "lucide-react";
 import { WORK, WORK_SELECTED } from "@/data/content";
 import { Logo } from "@/components/Logo";
 
 const projectSlugs = ["steadyward", "lv-matching", "addreach", "recruitment-crm"];
 const serviceIcons = [Workflow, Layers, Server];
+// Matches FOLDER_LAYOUT_TRANSITION in src/pages/Home.tsx - both FolderImage
+// and FilesArtwork share layoutId={`project-folder-${slug}`}, so opening a
+// project morphs the same folder art into the preview, whichever grid it
+// was opened from.
+const FOLDER_LAYOUT_TRANSITION = { type: "spring", bounce: 0.1, duration: 0.42 } as const;
 
-export function FilesArtwork({ document = false }: { document?: boolean }) {
-  return document ? <span className="files-document-icon" aria-hidden="true"><FileText size={31} strokeWidth={1.75} /></span> : <img className="files-folder-art" src="/images/folder.png" width="112" height="112" alt="" draggable="false" />;
+export function FilesArtwork({ document = false, slug }: { document?: boolean; slug?: string }) {
+  const reducedMotion = useReducedMotion();
+  if (document) return <span className="files-document-icon" aria-hidden="true"><FileText size={31} strokeWidth={1.75} /></span>;
+  if (!slug) return <img className="files-folder-art" src="/images/folder.png" width="112" height="112" alt="" draggable="false" />;
+  return (
+    <motion.img
+      layoutId={`project-folder-${slug}`}
+      className="files-folder-art"
+      src="/images/folder.png"
+      width="112"
+      height="112"
+      alt=""
+      draggable="false"
+      transition={reducedMotion ? { duration: 0 } : FOLDER_LAYOUT_TRANSITION}
+    />
+  );
 }
 
 export function FilesToolbar({ title, phone, sidebarOpen, onToggleSidebar, back, children }: {
@@ -45,7 +65,7 @@ export function FilesOverview() {
       <a href="https://calendly.com/lvoss-anviq/30min?month=2026-09" target="_blank" rel="noopener noreferrer">Start a conversation <ArrowRight size={17} aria-hidden="true" /></a>
     </section>
     <section className="files-overview-work" aria-labelledby="files-work-title"><div className="files-section-heading"><h2 id="files-work-title">Selected work</h2><Link to="/explore/projects">See all<ChevronRight size={16} aria-hidden="true" /></Link></div>
-      <div className="files-grid">{WORK_SELECTED.map((project, index) => <Link className="files-item" key={project.name} to={`/projects/${projectSlugs[index]}`}><FilesArtwork /><span className="files-item-name">{project.name}</span><span className="files-item-kind">Project</span></Link>)}</div>
+      <div className="files-grid">{WORK_SELECTED.map((project, index) => <Link className="files-item" key={project.name} to={`/projects/${projectSlugs[index]}`}><FilesArtwork slug={projectSlugs[index]} /><span className="files-item-name">{project.name}</span><span className="files-item-kind">Project</span></Link>)}</div>
     </section>
     <section className="files-services" aria-labelledby="files-services-title"><h2 id="files-services-title">Services</h2><div className="files-grouped-list">{WORK.map((item, index) => { const Icon = serviceIcons[index]; return <Link key={item.title} to={`/explore/services#service-${index}`}><Icon size={22} strokeWidth={1.75} aria-hidden="true" /><span>{item.title}</span><ChevronRight size={17} aria-hidden="true" /></Link> })}</div></section>
   </div>;
@@ -66,7 +86,7 @@ export function FilesProjects({ view, setView, sort, setSort }: { view: FilesVie
   const projects = WORK_SELECTED.map((item, index) => ({ ...item, slug: projectSlugs[index] })).sort((a, b) => (sort === "name" ? a.name.localeCompare(b.name) : a.tag.localeCompare(b.tag)));
   return <section className="files-projects files-screen" aria-labelledby="files-projects-title"><div className="files-page-heading"><h1 id="files-projects-title">Selected work</h1><p>Independent builds, end to end.</p></div>
     <div className="files-view-toolbar"><label className="files-sort">Sort by <select aria-label="Sort projects" value={sort} onChange={event => setSort(event.target.value as FilesSort)}><option value="name">Name</option><option value="kind">Type</option></select></label><div className="files-view-switch" role="group" aria-label="Project view"><button aria-label="Icon view" aria-pressed={view === "icons"} onClick={() => setView("icons")}><LayoutGrid size={19} aria-hidden="true" /></button><button aria-label="List view" aria-pressed={view === "list"} onClick={() => setView("list")}><List size={22} aria-hidden="true" /></button></div></div>
-    <nav className={view === "icons" ? "files-grid" : "files-project-rows"} aria-label="Projects">{projects.map(project => <Link className="files-item" key={project.slug} to={`/projects/${project.slug}`}><FilesArtwork /><span className="files-item-name">{project.name}</span><span className="files-item-kind">{project.tag}</span>{view === "list" && <ChevronRight size={17} aria-hidden="true" />}</Link>)}</nav>
+    <nav className={view === "icons" ? "files-grid" : "files-project-rows"} aria-label="Projects">{projects.map(project => <Link className="files-item" key={project.slug} to={`/projects/${project.slug}`}><FilesArtwork slug={project.slug} /><span className="files-item-name">{project.name}</span><span className="files-item-kind">{project.tag}</span>{view === "list" && <ChevronRight size={17} aria-hidden="true" />}</Link>)}</nav>
     <p className="files-item-count">{WORK_SELECTED.length} projects</p>
     <p className="files-collection-note">Client engagements are covered by discretion. These are independent products built and operated end to end.</p>
   </section>;
