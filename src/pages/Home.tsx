@@ -634,18 +634,50 @@ function Approach() {
   );
 }
 function Engagement() {
+  const [mode, setMode] = useState(ENGAGEMENT[0].id);
+  const active = ENGAGEMENT.find((item) => item.id === mode) ?? ENGAGEMENT[0];
   return (
     <DocumentPage
       title="Working together."
-      intro="Every engagement starts with a scoped technical assessment before any commitment to build. From there, I quote a fixed scope or an ongoing arrangement, whichever fits the work."
+      intro="Every engagement starts with a scoped technical assessment before any commitment to build. Pick a stage to see what's in it."
     >
-      <div className="document-sections">
+      <div
+        className="segmented-control"
+        role="tablist"
+        aria-label="Engagement stage"
+      >
         {ENGAGEMENT.map((item) => (
-          <section key={item.title}>
-            <h2>{item.title}</h2>
-            <p>{item.body}</p>
-          </section>
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            aria-selected={mode === item.id}
+            onClick={() => setMode(item.id)}
+          >
+            {item.title}
+          </button>
         ))}
+      </div>
+      <div className="engagement-panel" role="tabpanel">
+        <div className="engagement-columns">
+          <div>
+            <h3>What's in</h3>
+            <ul>
+              {active.in.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3>What's out</h3>
+            <ul>
+              {active.out.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <p className="engagement-next">{active.next}</p>
       </div>
       <Link className="external-link" to="/explore/constraints">
         Hosting, access, and compliance boundaries{" "}
