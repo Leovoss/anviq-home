@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import type { FormEvent, ReactNode } from "react";
 import {
   Link,
@@ -40,7 +41,7 @@ import {
 import { PublicActivity } from "@/components/PublicActivity";
 import { ExplorerPane } from "@/components/ExplorerPane";
 import { ScreenshotLightbox } from "@/components/ScreenshotLightbox";
-import { motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { Variants } from "motion/react";
 import { GitHubActivity } from "@/components/ui/github-activity";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
@@ -99,6 +100,7 @@ const SEARCH_ENTRIES = [
   ...NAV.filter((item) => item.id !== "overview").map((item) => ({
     title: item.label,
     href: item.href,
+    group: "Explore" as const,
     body:
       item.id === "services"
         ? WORK.map((s) => s.body).join(" ")
@@ -113,11 +115,13 @@ const SEARCH_ENTRIES = [
   ...WORK_SELECTED.map((item, index) => ({
     title: item.name,
     href: `/projects/${SLUGS[index]}`,
+    group: "Projects" as const,
     body: `${item.tag}. ${item.body}`,
   })),
   {
     title: "About Anviq",
     href: "/explore/about",
+    group: "Explore" as const,
     body: "Independent AI engineering practice. One engineer, full accountability.",
   },
 ];
@@ -662,163 +666,217 @@ function MissingPage() {
     </DocumentPage>
   );
 }
-function SearchControl({
-  alwaysExpanded = false,
-}: {
-  alwaysExpanded?: boolean;
-}) {
-  const [search, setSearch] = useState("");
+const PALETTE_FADE = { duration: 0.15 } as const;
+const SEARCH_GROUPS = ["Explore", "Projects"] as const;
+
+function SearchControl() {
   const [open, setOpen] = useState(false);
-  const [focused, setFocused] = useState(false);
+  const [search, setSearch] = useState("");
   const [highlighted, setHighlighted] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const wrapRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const suggestions = search.trim() ? searchEntries(search).slice(0, 6) : [];
-  const showSuggestions = open && suggestions.length > 0;
-  const expanded = alwaysExpanded || focused || search.trim().length > 0;
+  const reducedMotion = useReducedMotion();
+
+  const suggestions = search.trim() ? searchEntries(search).slice(0, 8) : [];
+  const groups = SEARCH_GROUPS.map((label) => ({
+    label,
+    items: suggestions.filter((item) => item.group === label),
+  })).filter((group) => group.items.length > 0);
 
   useEffect(() => {
     setHighlighted(0);
   }, [search]);
 
+  // Global Cmd/Ctrl+K opens the palette from anywhere.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        setFocused(true);
-        requestAnimationFrame(() => {
-          inputRef.current?.focus();
-          inputRef.current?.select();
-        });
-      }
-      if (event.key === "Escape" && document.activeElement === inputRef.current) {
-        document.getElementById("main-content")?.focus();
-        setFocused(false);
+        setOpen(true);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
+  // Focus the input on open; trap Tab and handle Escape while open; restore
+  // focus to the trigger on close.
   useEffect(() => {
-    const onPointerDown = (event: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) {
+    if (!open) return;
+    inputRef.current?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
         setOpen(false);
-        setFocused(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const dialog = dialogRef.current;
+      const focusable = dialog
+        ? [
+            ...dialog.querySelectorAll<HTMLElement>(
+              'button, input, [href], [tabindex]:not([tabindex="-1"])',
+            ),
+          ]
+        : [];
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
       }
     };
-    document.addEventListener("mousedown", onPointerDown);
-    return () => document.removeEventListener("mousedown", onPointerDown);
-  }, []);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      triggerRef.current?.focus();
+    };
+  }, [open]);
 
   const goTo = (href: string) => {
     setOpen(false);
-    setFocused(false);
     setSearch("");
     navigate(href);
   };
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    if (suggestions[highlighted]) {
-      goTo(suggestions[highlighted].href);
-    }
+    if (suggestions[highlighted]) goTo(suggestions[highlighted].href);
   };
 
-  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showSuggestions) return;
+  const onInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!suggestions.length) return;
     if (event.key === "ArrowDown") {
       event.preventDefault();
       setHighlighted((h) => Math.min(h + 1, suggestions.length - 1));
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
       setHighlighted((h) => Math.max(h - 1, 0));
-    } else if (event.key === "Escape") {
-      setOpen(false);
     }
   };
 
   return (
-    <div
-      className={`search-field-wrap ${expanded ? "is-expanded" : "is-collapsed"}`}
-      ref={wrapRef}
-    >
-      <form className="search-field" role="search" onSubmit={submit}>
-        <button
-          type={expanded ? "submit" : "button"}
-          aria-label="Search Anviq"
-          onClick={() => {
-            if (!expanded) {
-              setFocused(true);
-              requestAnimationFrame(() => inputRef.current?.focus());
-            }
-          }}
-        >
-          <Search size={18} aria-hidden="true" />
-        </button>
-        <input
-          ref={inputRef}
-          type="search"
-          name="q"
-          value={search}
-          tabIndex={expanded ? 0 : -1}
-          onChange={(event) => {
-            setSearch(event.target.value);
-            setOpen(true);
-          }}
-          onFocus={() => {
-            setFocused(true);
-            setOpen(true);
-          }}
-          onKeyDown={onKeyDown}
-          placeholder="Search Anviq..."
-          aria-label="Search Anviq"
-          autoComplete="off"
-          role="combobox"
-          aria-expanded={showSuggestions}
-          aria-controls="search-suggestions"
-          aria-activedescendant={
-            showSuggestions ? `search-suggestion-${highlighted}` : undefined
-          }
-        />
-        {search && (
-          <button
-            type="button"
-            aria-label="Clear search"
-            onClick={() => {
-              setSearch("");
-              inputRef.current?.focus();
-            }}
+    <>
+      <button
+        type="button"
+        ref={triggerRef}
+        className="icon-button search-trigger"
+        aria-label="Search Anviq (Cmd+K)"
+        onClick={() => setOpen(true)}
+      >
+        <Search size={18} aria-hidden="true" />
+      </button>
+      {createPortal(
+        <AnimatePresence>
+          {open && (
+          <motion.div
+            className="command-palette-backdrop"
+            onClick={() => setOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={reducedMotion ? { duration: 0 } : PALETTE_FADE}
           >
-            <X size={16} aria-hidden="true" />
-          </button>
-        )}
-      </form>
-      {showSuggestions && (
-        <ul className="search-suggestions" id="search-suggestions" role="listbox">
-          {suggestions.map((item, index) => (
-            <li key={item.href} role="presentation">
-              <button
-                type="button"
-                id={`search-suggestion-${index}`}
-                role="option"
-                aria-selected={index === highlighted}
-                className={index === highlighted ? "is-highlighted" : ""}
-                onMouseEnter={() => setHighlighted(index)}
-                onClick={() => goTo(item.href)}
-              >
-                <FileText size={17} aria-hidden="true" />
-                <span>
-                  <strong>{item.title}</strong>
-                  <small>{item.body}</small>
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
+            <motion.div
+              ref={dialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Search Anviq"
+              className="command-palette-dialog"
+              onClick={(event) => event.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={reducedMotion ? { duration: 0 } : PALETTE_FADE}
+            >
+              <form className="search-field" role="search" onSubmit={submit}>
+                <Search size={18} aria-hidden="true" />
+                <input
+                  ref={inputRef}
+                  type="search"
+                  name="q"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  onKeyDown={onInputKeyDown}
+                  placeholder="Search Anviq..."
+                  aria-label="Search Anviq"
+                  autoComplete="off"
+                  role="combobox"
+                  aria-expanded={suggestions.length > 0}
+                  aria-controls="search-suggestions"
+                  aria-activedescendant={
+                    suggestions.length
+                      ? `search-suggestion-${highlighted}`
+                      : undefined
+                  }
+                />
+                {search && (
+                  <button
+                    type="button"
+                    aria-label="Clear search"
+                    onClick={() => {
+                      setSearch("");
+                      inputRef.current?.focus();
+                    }}
+                  >
+                    <X size={16} aria-hidden="true" />
+                  </button>
+                )}
+              </form>
+              {groups.length > 0 ? (
+                <ul
+                  className="search-suggestions palette-results"
+                  id="search-suggestions"
+                  role="listbox"
+                >
+                  {groups.map((group) => (
+                    <li key={group.label} role="presentation" className="palette-group">
+                      <div role="group" aria-label={group.label}>
+                        <p className="palette-group-label" aria-hidden="true">
+                          {group.label}
+                        </p>
+                        {group.items.map((item) => {
+                          const index = suggestions.indexOf(item);
+                          return (
+                            <button
+                              key={item.href}
+                              type="button"
+                              id={`search-suggestion-${index}`}
+                              role="option"
+                              aria-selected={index === highlighted}
+                              className={index === highlighted ? "is-highlighted" : ""}
+                              onMouseEnter={() => setHighlighted(index)}
+                              onClick={() => goTo(item.href)}
+                            >
+                              <FileText size={17} aria-hidden="true" />
+                              <span>
+                                <strong>{item.title}</strong>
+                                <small>{item.body}</small>
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                search.trim() && (
+                  <p className="palette-empty">No results for "{search}"</p>
+                )
+              )}
+            </motion.div>
+          </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body,
       )}
-    </div>
+    </>
   );
 }
 export function Home() {
@@ -996,7 +1054,7 @@ export function Home() {
             </span>
           </Link>
         </aside>
-        {filesLayout ? <FilesToolbar title={currentProject?.name ?? (active === "overview" ? "Anviq" : label)} phone={mobile} sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} back={filesBack}><SearchControl alwaysExpanded /></FilesToolbar> : <header className="explorer-toolbar">
+        {filesLayout ? <FilesToolbar title={currentProject?.name ?? (active === "overview" ? "Anviq" : label)} phone={mobile} sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} back={filesBack}><SearchControl /></FilesToolbar> : <header className="explorer-toolbar">
           {mobile ? (
             <Link
               className="browse-button"
