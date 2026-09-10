@@ -1,8 +1,10 @@
-import { Legal } from '@/components/Legal'
+import { DocumentPage } from '@/components/DocumentPage'
 
 export function Privacy() {
   return (
-    <Legal title="Privacy Policy" updated="9 September 2026">
+    <DocumentPage title="Privacy Policy">
+      <p className="legal-updated">Last updated: 9 September 2026</p>
+      <div className="legal-copy">
       <p>
         This Privacy Policy explains how we handle personal data in connection with this website (the
         "Site") at anviq.net. It covers the marketing website only. Any client engagement is governed by
@@ -49,7 +51,7 @@ export function Privacy() {
         The Site uses your device's built-in system fonts and loads no fonts, scripts, or other resources from
         Google or any other third-party font provider.
       </p>
-      <p>We set no cookies and run no analytics on this Site. See our <a href="/cookies">Cookie Policy</a> for detail.</p>
+      <p>We set no cookies and run no analytics on this Site. See our <a href="/explore/cookies">Cookie Policy</a> for detail.</p>
 
       <h2>3. Why we use your data, and our legal bases (UK and EU GDPR)</h2>
       <ul>
@@ -154,6 +156,7 @@ export function Privacy() {
       <p>
         Questions or requests about privacy: <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>.
       </p>
-    </Legal>
+      </div>
+    </DocumentPage>
   )
 }
