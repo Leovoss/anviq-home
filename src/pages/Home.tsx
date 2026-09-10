@@ -38,6 +38,7 @@ import {
   IDEA,
 } from "@/data/content";
 import { PublicActivity } from "@/components/PublicActivity";
+import { ExplorerPane } from "@/components/ExplorerPane";
 import { GitHubActivity } from "@/components/ui/github-activity";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
@@ -899,7 +900,9 @@ export function Home() {
           ref={mainRef}
           tabIndex={-1}
         >
-          {content}
+          <ExplorerPane animKey={`${active}-${slug ?? ""}`}>
+            {content}
+          </ExplorerPane>
         </main>
         <footer className="explorer-status">
           <nav aria-label="Current location">
