@@ -26,6 +26,7 @@ import {
   PanelLeft,
   Search,
   Server,
+  ShieldCheck,
   UserRound,
   Workflow,
   X,
@@ -36,6 +37,7 @@ import {
   WORK_SELECTED,
   PROCESS,
   ENGAGEMENT,
+  CONSTRAINTS,
   FAQ,
   IDEA,
 } from "@/data/content";
@@ -85,6 +87,12 @@ const NAV = [
     href: "/explore/engagement",
   },
   {
+    id: "constraints",
+    label: "Constraints",
+    icon: ShieldCheck,
+    href: "/explore/constraints",
+  },
+  {
     id: "questions",
     label: "Questions",
     icon: CircleHelp,
@@ -115,8 +123,10 @@ const SEARCH_ENTRIES = [
           ? PROCESS.map((s) => s.body).join(" ")
           : item.id === "engagement"
             ? ENGAGEMENT.map((s) => s.body).join(" ")
-            : item.id === "questions"
-              ? FAQ.map((s) => s.q + " " + s.a).join(" ")
+            : item.id === "constraints"
+              ? CONSTRAINTS.map((s) => s.body).join(" ")
+              : item.id === "questions"
+                ? FAQ.map((s) => s.q + " " + s.a).join(" ")
               : item.label,
   })),
   ...WORK_SELECTED.map((item, index) => ({
@@ -637,7 +647,28 @@ function Engagement() {
           </section>
         ))}
       </div>
+      <Link className="external-link" to="/explore/constraints">
+        Hosting, access, and compliance boundaries{" "}
+        <ArrowRight size={18} aria-hidden="true" />
+      </Link>
       <ContactLink />
+    </DocumentPage>
+  );
+}
+function Constraints() {
+  return (
+    <DocumentPage
+      title="How this is operated."
+      intro="The boundaries every engagement runs inside, agreed up front, not discovered later."
+    >
+      <div className="document-sections">
+        {CONSTRAINTS.map((item) => (
+          <section key={item.title}>
+            <h2>{item.title}</h2>
+            <p>{item.body}</p>
+          </section>
+        ))}
+      </div>
     </DocumentPage>
   );
 }
@@ -689,6 +720,10 @@ function About() {
       <Link className="external-link" to="/explore/founder">
         <UserRound size={18} aria-hidden="true" />
         Meet the founder
+      </Link>
+      <Link className="external-link" to="/explore/constraints">
+        <ShieldCheck size={18} aria-hidden="true" />
+        Hosting, access, and compliance boundaries
       </Link>
     </DocumentPage>
   );
@@ -1180,6 +1215,9 @@ export function Home() {
       break;
     case "engagement":
       content = <Engagement />;
+      break;
+    case "constraints":
+      content = <Constraints />;
       break;
     case "questions":
       content = <Questions />;
