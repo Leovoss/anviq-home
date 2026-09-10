@@ -1266,6 +1266,33 @@ svg {
   color: var(--muted);
   font-size: 15px;
 }
+.dach-list {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.dach-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 10px;
+  padding: 8px 0;
+}
+.dach-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  background: var(--selected);
+  color: var(--selected-text);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.dach-note {
+  color: var(--muted);
+  font-size: 14px;
+}
 .document-sections > section {
   padding: 27px 0;
   border-top: 1px solid var(--line);

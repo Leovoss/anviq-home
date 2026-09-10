@@ -39,6 +39,7 @@ import {
   PROCESS,
   ENGAGEMENT,
   CONSTRAINTS,
+  DACH,
   SHIP_LOG,
   FAQ,
   IDEA,
@@ -132,7 +133,9 @@ const SEARCH_ENTRIES = [
           : item.id === "engagement"
             ? ENGAGEMENT.map((s) => s.body).join(" ")
             : item.id === "constraints"
-              ? CONSTRAINTS.map((s) => s.body).join(" ")
+              ? CONSTRAINTS.map((s) => s.body).join(" ") +
+                " " +
+                DACH.map((s) => `${s.label} ${s.note}`).join(" ")
               : item.id === "ship-log"
                 ? SHIP_LOG.map((s) => s.title).join(" ")
                 : item.id === "questions"
@@ -710,7 +713,22 @@ function Constraints() {
             <p>{item.body}</p>
           </section>
         ))}
+        <section>
+          <h2>DACH</h2>
+          <ul className="dach-list">
+            {DACH.map((item) => (
+              <li key={item.label}>
+                <span className="dach-label">{item.label}</span>
+                <span className="dach-note">{item.note}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
+      <Link className="external-link" to="/projects/recruitment-crm">
+        <ExternalLink size={18} aria-hidden="true" />
+        See it in the Recruitment CRM
+      </Link>
     </DocumentPage>
   );
 }
