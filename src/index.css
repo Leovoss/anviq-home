@@ -124,10 +124,12 @@ svg {
   max-width: 1464px;
   margin: 32px auto 0;
   width: calc(100% - 64px);
-  min-height: calc(100svh - 96px);
+  height: calc(100svh - 96px);
+  max-height: 900px;
   background: var(--surface);
   border-radius: 16px;
   box-shadow: var(--window-shadow);
+  overflow: hidden;
 }
 .explorer-window.sidebar-hidden {
   grid-template-columns: 0 minmax(0, 1fr);
@@ -138,6 +140,7 @@ svg {
   background: var(--sidebar);
   border-radius: 16px 0 0 0;
   padding: 0 15px 32px;
+  overflow-y: auto;
 }
 .brand {
   display: flex;
@@ -387,6 +390,7 @@ svg {
   grid-column: 2;
   grid-row: 2;
   min-width: 0;
+  overflow-y: auto;
 }
 .explorer-main:focus {
   outline: none;
@@ -572,13 +576,13 @@ svg {
 }
 .social-links {
   display: flex;
-  gap: 4px;
+  gap: 0;
 }
 .social-links a {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   min-height: 0;
   border-radius: 50%;
   color: var(--muted);
