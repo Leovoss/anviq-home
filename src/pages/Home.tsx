@@ -39,7 +39,7 @@ import {
 } from "@/data/content";
 import { PublicActivity } from "@/components/PublicActivity";
 import { GitHubActivity } from "@/components/ui/github-activity";
-import { useContributionsTotal } from "@/lib/useContributionsTotal";
+import { useContributions } from "@/lib/useContributionsTotal";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
 const NAV = [
@@ -82,6 +82,8 @@ const NAV = [
   },
 ];
 const SLUGS = ["steadyward", "lv-matching", "addreach"];
+// TODO: replace with real bio text once supplied.
+const FOUNDER_BIO = "Bio pending.";
 const SEARCH_ENTRIES = [
   ...NAV.filter((item) => item.id !== "overview").map((item) => ({
     title: item.label,
@@ -153,6 +155,20 @@ const subscribeFiles = (callback: () => void) => {
 };
 const getFilesLayout = () => window.matchMedia(filesQuery).matches;
 
+function LinkedinLogo() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.446-2.136 2.94v5.666H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.114 20.452H3.558V9h3.556v11.452z" />
+    </svg>
+  );
+}
+function XLogo() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
 function FolderImage({ small = false }: { small?: boolean }) {
   return (
     <img
@@ -494,32 +510,21 @@ function About() {
           </section>
         ))}
       </div>
-      <details className="brand-notes">
-        <summary>Brand and writing notes</summary>
-        <p>
-          A forged mark, a disciplined grid, a restrained signal color. No robot
-          hands, no glowing neural clouds, no purple swirls, no sparks.
-        </p>
-        <h3>From claim to commitment</h3>
-        <p>
-          Avoid: "We harness cutting-edge AI to revolutionize your business with
-          seamless, future-proof automation."
-        </p>
-        <p>
-          Anviq voice: I work inside your team to build agents, automate
-          workflows, and connect existing systems. I own delivery from the first
-          technical assessment through deployment and documentation. Hosting,
-          access controls, and data handling are agreed before implementation.
-        </p>
-        <p>
-          Use: build, integrate, deploy, maintain; engineer, system, workflow;
-          tested, documented, measured.
-        </p>
-        <p>
-          Avoid: revolutionize, disrupt, supercharge; AI wizard, magic,
-          ecosystem; seamless, flawless, effortless.
-        </p>
-      </details>
+      <p>
+        I work inside your team to build agents, automate workflows, and
+        connect existing systems. I own delivery from the first technical
+        assessment through deployment and documentation. Hosting, access
+        controls, and data handling are agreed before implementation.
+      </p>
+      <h2>Enrique Voss</h2>
+      <div className="founder-card">
+        <img
+          className="founder-photo"
+          src="/images/founder.jpg"
+          alt="Enrique Voss"
+        />
+        <p>{FOUNDER_BIO}</p>
+      </div>
     </DocumentPage>
   );
 }
@@ -715,7 +720,7 @@ export function Home() {
     getServerMobile,
   );
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const contributionsTotal = useContributionsTotal();
+  const contributions = useContributions();
   const filesLayout = useSyncExternalStore(subscribeFiles, getFilesLayout, getServerMobile);
   const [fileView, setFileView] = useState<FilesView>("icons");
   const [fileSort, setFileSort] = useState<FilesSort>("name");
@@ -779,11 +784,12 @@ export function Home() {
           <div className="activity-calendar-scroll">
             <GitHubActivity
               username="Leovoss"
+              contributions={contributions?.days}
               showMonths={!filesLayout}
               cellSize={filesLayout ? 3 : 11}
               headingOverride={
-                contributionsTotal !== null
-                  ? `${contributionsTotal} contributions in the past year (public and private)`
+                contributions
+                  ? `${contributions.count} contributions in the past year (public and private)`
                   : undefined
               }
               className="anviq-github-activity"
@@ -936,7 +942,27 @@ export function Home() {
           <Link to="/cookies">Cookies</Link>
           <Link to="/terms">Terms &amp; disclaimer</Link>
         </nav>
-        <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
+        <div className="site-footer-right">
+          <nav className="social-links" aria-label="Social">
+            <a
+              href="https://www.linkedin.com/in/v-leonardo/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Enrique Voss on LinkedIn"
+            >
+              <LinkedinLogo />
+            </a>
+            <a
+              href="https://x.com/thereallvoss"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Enrique Voss on X"
+            >
+              <XLogo />
+            </a>
+          </nav>
+          <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
+        </div>
       </footer>
       {mobile && <FilesTabBar active={active} />}
     </div>

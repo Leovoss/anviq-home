@@ -175,7 +175,6 @@
 .files-layout .document-page { max-width: 900px; padding: 31px 34px 45px; }
 .files-layout .document-page h1 { font-size: 32px; }
 .files-layout .document-sections > section { scroll-margin-top: 134px; }
-.files-layout .brand-notes summary { min-height: 44px; }
 .anviq-github-activity { --color-foreground: var(--text); --color-background: var(--surface); --color-card: var(--surface); background: var(--surface); color: var(--text); }
 .anviq-github-activity [class~="text-foreground/40"] { color: var(--muted); }
 .anviq-github-activity [data-slot="github-activity-panel"] { background: var(--chrome-glass); }

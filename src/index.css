@@ -565,6 +565,29 @@ svg {
 .site-footer a:hover {
   text-decoration: underline;
 }
+.site-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.social-links {
+  display: flex;
+  gap: 4px;
+}
+.social-links a {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  min-height: 0;
+  border-radius: 50%;
+  color: var(--muted);
+}
+.social-links a:hover {
+  color: var(--accent);
+  background: var(--hover);
+  text-decoration: none;
+}
 .project-browser {
   display: grid;
   grid-template-columns: minmax(240px, 33%) minmax(0, 1fr);
@@ -742,6 +765,24 @@ svg {
 .document-sections > section:last-child {
   border-bottom: 1px solid var(--line);
 }
+.founder-card {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-top: 16px;
+}
+.founder-photo {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--sidebar);
+  flex-shrink: 0;
+}
+.founder-card p {
+  margin-top: 0 !important;
+  max-width: 60ch;
+}
 .service-detail {
   display: flex;
   gap: 20px;
@@ -802,19 +843,6 @@ svg {
 .faq-list details p {
   padding: 0 30px 20px 0;
   margin-top: 0 !important;
-}
-.brand-notes {
-  margin-top: 36px;
-  border-top: 1px solid var(--line);
-  padding-top: 20px;
-}
-.brand-notes summary {
-  min-height: 44px;
-  cursor: pointer;
-}
-.brand-notes h3 {
-  margin-top: 24px;
-  font-weight: 600;
 }
 .search-results {
   margin-top: 24px;
@@ -1235,8 +1263,9 @@ svg {
   .site-footer a {
     min-height: 44px;
   }
-  .site-footer > a {
+  .site-footer-right {
     width: 100%;
+    justify-content: space-between;
   }
   .project-browser {
     display: block;
