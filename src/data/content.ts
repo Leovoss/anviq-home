@@ -79,14 +79,6 @@ export const WORK_SELECTED = [
     domain: null,
     screenshot: null,
   },
-  {
-    href: null,
-    tag: "Developer tooling",
-    name: "Anviq Forge",
-    body: "An open-source, Fedora-first workstation provisioning tool: small, composable, independently testable Bash modules that install exactly what you ask for and explain every effect, instead of a black-box setup script.",
-    domain: null,
-    screenshot: null,
-  },
 ];
 
 export const ENGAGEMENT = [
