@@ -15,6 +15,18 @@ const QUERY = `query {
           }
         }
       }
+      commitContributionsByRepository(maxRepositories: 5) {
+        contributions {
+          totalCount
+        }
+        repository {
+          name
+          isPrivate
+          owner {
+            login
+          }
+        }
+      }
     }
   }
 }`;
@@ -30,7 +42,7 @@ function levelFor(count: number): 0 | 1 | 2 | 3 | 4 {
 
 async function contributionsTotal(env: Env): Promise<Response> {
   const cache = (caches as unknown as { default: Cache }).default;
-  const cacheKey = new Request("https://anviq.net/api/contributions?v=2");
+  const cacheKey = new Request("https://anviq.net/api/contributions?v=3");
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
@@ -52,7 +64,12 @@ async function contributionsTotal(env: Env): Promise<Response> {
   }
 
   const data: unknown = await upstream.json();
-  const calendar = (
+  type RepoContribution = {
+    contributions?: { totalCount?: number };
+    repository?: { name?: string; isPrivate?: boolean; owner?: { login?: string } };
+  };
+
+  const collection = (
     data as {
       data?: {
         viewer?: {
@@ -61,12 +78,14 @@ async function contributionsTotal(env: Env): Promise<Response> {
               totalContributions?: number;
               weeks?: { contributionDays?: { date: string; contributionCount: number }[] }[];
             };
+            commitContributionsByRepository?: RepoContribution[];
           };
         };
       };
     }
-  )?.data?.viewer?.contributionsCollection?.contributionCalendar;
+  )?.data?.viewer?.contributionsCollection;
 
+  const calendar = collection?.contributionCalendar;
   const count = calendar?.totalContributions;
   if (typeof count !== "number") {
     return new Response(JSON.stringify({ error: "invalid" }), {
@@ -83,7 +102,17 @@ async function contributionsTotal(env: Env): Promise<Response> {
     })),
   );
 
-  const response = new Response(JSON.stringify({ count, days }), {
+  const repos = (collection?.commitContributionsByRepository ?? [])
+    .filter((r) => r.repository?.name && r.repository.owner?.login)
+    .map((r) => ({
+      name: r.repository!.name!,
+      owner: r.repository!.owner!.login!,
+      isPrivate: !!r.repository!.isPrivate,
+      count: r.contributions?.totalCount ?? 0,
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  const response = new Response(JSON.stringify({ count, days, repos }), {
     headers: {
       "content-type": "application/json",
       "cache-control": "public, max-age=3600",
