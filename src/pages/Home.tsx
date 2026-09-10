@@ -38,7 +38,7 @@ import {
   IDEA,
 } from "@/data/content";
 import { PublicActivity } from "@/components/PublicActivity";
-import { GitHubActivity } from "@/components/ui/github-activity";
+import { ContributionCalendar } from "@/components/ContributionCalendar";
 import { useContributionsTotal } from "@/lib/useContributionsTotal";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
@@ -699,14 +699,7 @@ export function Home() {
               {contributionsTotal} contributions in the past year, across public and private work.
             </p>
           )}
-          <div className="activity-calendar-scroll">
-            <GitHubActivity
-              username="Leovoss"
-              showMonths={!filesLayout}
-              cellSize={filesLayout ? 3 : 11}
-              className="anviq-github-activity"
-            />
-          </div>
+          <ContributionCalendar username="Leovoss" />
           <PublicActivity />
           <a
             className="external-link"
