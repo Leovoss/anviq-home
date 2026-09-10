@@ -668,8 +668,177 @@ function MissingPage() {
 }
 const PALETTE_FADE = { duration: 0.15 } as const;
 const SEARCH_GROUPS = ["Explore", "Projects"] as const;
+type SearchEntry = (typeof SEARCH_ENTRIES)[number];
 
-function SearchControl() {
+function groupSuggestions(suggestions: SearchEntry[]) {
+  return SEARCH_GROUPS.map((label) => ({
+    label,
+    items: suggestions.filter((item) => item.group === label),
+  })).filter((group) => group.items.length > 0);
+}
+
+function SuggestionGroups({
+  groups,
+  suggestions,
+  highlighted,
+  setHighlighted,
+  goTo,
+}: {
+  groups: ReturnType<typeof groupSuggestions>;
+  suggestions: SearchEntry[];
+  highlighted: number;
+  setHighlighted: (index: number) => void;
+  goTo: (href: string) => void;
+}) {
+  return (
+    <>
+      {groups.map((group) => (
+        <li key={group.label} role="presentation" className="palette-group">
+          <div role="group" aria-label={group.label}>
+            <p className="palette-group-label" aria-hidden="true">
+              {group.label}
+            </p>
+            {group.items.map((item) => {
+              const index = suggestions.indexOf(item);
+              return (
+                <button
+                  key={item.href}
+                  type="button"
+                  id={`search-suggestion-${index}`}
+                  role="option"
+                  aria-selected={index === highlighted}
+                  className={index === highlighted ? "is-highlighted" : ""}
+                  onMouseEnter={() => setHighlighted(index)}
+                  onClick={() => goTo(item.href)}
+                >
+                  <FileText size={17} aria-hidden="true" />
+                  <span>
+                    <strong>{item.title}</strong>
+                    <small>{item.body}</small>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </li>
+      ))}
+    </>
+  );
+}
+
+function SearchControl({
+  variant = "palette",
+}: {
+  variant?: "palette" | "inline";
+}) {
+  return variant === "inline" ? <InlineSearch /> : <CommandPalette />;
+}
+
+function InlineSearch() {
+  const [search, setSearch] = useState("");
+  const [focused, setFocused] = useState(false);
+  const [highlighted, setHighlighted] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  const suggestions = search.trim() ? searchEntries(search).slice(0, 8) : [];
+  const groups = groupSuggestions(suggestions);
+  const showSuggestions = focused && suggestions.length > 0;
+
+  useEffect(() => {
+    setHighlighted(0);
+  }, [search]);
+
+  useEffect(() => {
+    const onPointerDown = (event: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) {
+        setFocused(false);
+      }
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    return () => document.removeEventListener("mousedown", onPointerDown);
+  }, []);
+
+  const goTo = (href: string) => {
+    setFocused(false);
+    setSearch("");
+    navigate(href);
+  };
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (suggestions[highlighted]) goTo(suggestions[highlighted].href);
+  };
+
+  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions) {
+      if (event.key === "Escape") inputRef.current?.blur();
+      return;
+    }
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setHighlighted((h) => Math.min(h + 1, suggestions.length - 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setHighlighted((h) => Math.max(h - 1, 0));
+    } else if (event.key === "Escape") {
+      setFocused(false);
+      inputRef.current?.blur();
+    }
+  };
+
+  return (
+    <div className="search-field-wrap" ref={wrapRef}>
+      <form className="search-field" role="search" onSubmit={submit}>
+        <Search size={18} aria-hidden="true" />
+        <input
+          ref={inputRef}
+          type="search"
+          name="q"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          onFocus={() => setFocused(true)}
+          onKeyDown={onKeyDown}
+          placeholder="Search Anviq..."
+          aria-label="Search Anviq"
+          autoComplete="off"
+          role="combobox"
+          aria-expanded={showSuggestions}
+          aria-controls="search-suggestions"
+          aria-activedescendant={
+            showSuggestions ? `search-suggestion-${highlighted}` : undefined
+          }
+        />
+        {search && (
+          <button
+            type="button"
+            aria-label="Clear search"
+            onClick={() => {
+              setSearch("");
+              inputRef.current?.focus();
+            }}
+          >
+            <X size={16} aria-hidden="true" />
+          </button>
+        )}
+      </form>
+      {showSuggestions && (
+        <ul className="search-suggestions" id="search-suggestions" role="listbox">
+          <SuggestionGroups
+            groups={groups}
+            suggestions={suggestions}
+            highlighted={highlighted}
+            setHighlighted={setHighlighted}
+            goTo={goTo}
+          />
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [highlighted, setHighlighted] = useState(0);
@@ -680,10 +849,7 @@ function SearchControl() {
   const reducedMotion = useReducedMotion();
 
   const suggestions = search.trim() ? searchEntries(search).slice(0, 8) : [];
-  const groups = SEARCH_GROUPS.map((label) => ({
-    label,
-    items: suggestions.filter((item) => item.group === label),
-  })).filter((group) => group.items.length > 0);
+  const groups = groupSuggestions(suggestions);
 
   useEffect(() => {
     setHighlighted(0);
@@ -834,36 +1000,13 @@ function SearchControl() {
                   id="search-suggestions"
                   role="listbox"
                 >
-                  {groups.map((group) => (
-                    <li key={group.label} role="presentation" className="palette-group">
-                      <div role="group" aria-label={group.label}>
-                        <p className="palette-group-label" aria-hidden="true">
-                          {group.label}
-                        </p>
-                        {group.items.map((item) => {
-                          const index = suggestions.indexOf(item);
-                          return (
-                            <button
-                              key={item.href}
-                              type="button"
-                              id={`search-suggestion-${index}`}
-                              role="option"
-                              aria-selected={index === highlighted}
-                              className={index === highlighted ? "is-highlighted" : ""}
-                              onMouseEnter={() => setHighlighted(index)}
-                              onClick={() => goTo(item.href)}
-                            >
-                              <FileText size={17} aria-hidden="true" />
-                              <span>
-                                <strong>{item.title}</strong>
-                                <small>{item.body}</small>
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </li>
-                  ))}
+                  <SuggestionGroups
+                    groups={groups}
+                    suggestions={suggestions}
+                    highlighted={highlighted}
+                    setHighlighted={setHighlighted}
+                    goTo={goTo}
+                  />
                 </ul>
               ) : (
                 search.trim() && (
@@ -1054,7 +1197,7 @@ export function Home() {
             </span>
           </Link>
         </aside>
-        {filesLayout ? <FilesToolbar title={currentProject?.name ?? (active === "overview" ? "Anviq" : label)} phone={mobile} sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} back={filesBack}><SearchControl /></FilesToolbar> : <header className="explorer-toolbar">
+        {filesLayout ? <FilesToolbar title={currentProject?.name ?? (active === "overview" ? "Anviq" : label)} phone={mobile} sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} back={filesBack}><SearchControl variant="inline" /></FilesToolbar> : <header className="explorer-toolbar">
           {mobile ? (
             <Link
               className="browse-button"

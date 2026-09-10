@@ -79,6 +79,10 @@
 }
 .files-contact:hover { background: var(--selected); }
 .files-search-row { margin-top: 5px; }
+.files-search-row .search-field {
+  background: var(--files-canvas);
+  border-radius: 11px;
+}
 .files-layout .explorer-main { background: var(--surface); }
 .files-screen { padding: 29px 30px 36px; }
 .files-page-heading { margin-bottom: 25px; }
