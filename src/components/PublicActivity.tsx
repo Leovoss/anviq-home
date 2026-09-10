@@ -35,15 +35,17 @@ export function PublicActivity() {
         if (!response.ok) throw new Error("GitHub unavailable");
         const data: unknown = await response.json();
         if (!Array.isArray(data)) throw new Error("Invalid response");
-        const events = data.filter(
-          (item): item is PublicEvent =>
-            typeof item?.id === "string" &&
-            typeof item?.type === "string" &&
-            item.type !== "WatchEvent" &&
-            typeof item?.repo?.name === "string" &&
-            typeof item?.created_at === "string" &&
-            Number.isFinite(Date.parse(item.created_at)),
-        );
+        const events = data
+          .filter(
+            (item): item is PublicEvent =>
+              typeof item?.id === "string" &&
+              typeof item?.type === "string" &&
+              item.type !== "WatchEvent" &&
+              typeof item?.repo?.name === "string" &&
+              typeof item?.created_at === "string" &&
+              Number.isFinite(Date.parse(item.created_at)),
+          )
+          .slice(0, 3);
         if (active) setState({ status: "ready", events });
       })
       .catch(() => {
