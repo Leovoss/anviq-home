@@ -39,12 +39,17 @@ import {
 } from "@/data/content";
 import { PublicActivity } from "@/components/PublicActivity";
 import { ExplorerPane } from "@/components/ExplorerPane";
+import { ScreenshotLightbox } from "@/components/ScreenshotLightbox";
 import { motion, useReducedMotion } from "motion/react";
 import type { Variants } from "motion/react";
 import { GitHubActivity } from "@/components/ui/github-activity";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
 const NAV_PILL_SPRING = { type: "spring", bounce: 0, duration: 0.32 } as const;
+// Shared across FolderImage (Home.tsx) and FilesArtwork (FilesNavigation.tsx) -
+// both use layoutId={`project-folder-${slug}`}, so opening a project from
+// either grid morphs into the same preview image.
+const FOLDER_LAYOUT_TRANSITION = { type: "spring", bounce: 0.1, duration: 0.42 } as const;
 const NAV = [
   { id: "overview", label: "Overview", icon: House, href: "/" },
   {
@@ -180,15 +185,30 @@ function XLogo() {
     </svg>
   );
 }
-function FolderImage({ small = false }: { small?: boolean }) {
+function FolderImage({ small = false, slug }: { small?: boolean; slug?: string }) {
+  const reducedMotion = useReducedMotion();
+  const className = small ? "folder-image folder-small" : "folder-image";
+  if (!slug)
+    return (
+      <img
+        className={className}
+        src="/images/folder.png"
+        alt=""
+        width="128"
+        height="128"
+        draggable="false"
+      />
+    );
   return (
-    <img
-      className={small ? "folder-image folder-small" : "folder-image"}
+    <motion.img
+      layoutId={`project-folder-${slug}`}
+      className={className}
       src="/images/folder.png"
       alt=""
       width="128"
       height="128"
       draggable="false"
+      transition={reducedMotion ? { duration: 0 } : FOLDER_LAYOUT_TRANSITION}
     />
   );
 }
@@ -282,7 +302,9 @@ function Overview() {
               key={project.name}
               to={`/projects/${SLUGS[index]}`}
             >
-              <FolderImage />
+              <span className="folder-image-lift">
+                <FolderImage slug={SLUGS[index]} />
+              </span>
               <h3>{project.name}</h3>
               <p>{project.tag}</p>
             </Link>
@@ -348,7 +370,7 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
             Selected work
           </Link>
           <p className="document-label">Project overview</p>
-          <FolderImage />
+          <FolderImage slug={SLUGS[selected]} />
           {filesLayout ? (
             <h1 id="project-title">{project.name}</h1>
           ) : (
@@ -365,11 +387,10 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
             ))}
           </dl>
           {project.screenshot && (
-            <img
-              className="project-screenshot"
+            <ScreenshotLightbox
               src={project.screenshot}
               alt={`${project.name} landing page`}
-              loading="lazy"
+              label={`${project.name} screenshot`}
             />
           )}
           {project.href ? (
