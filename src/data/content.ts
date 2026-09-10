@@ -189,6 +189,29 @@ export const WORK_SELECTED = [
   },
 ];
 
+export const CONSTRAINTS = [
+  {
+    title: "Hosting",
+    body: "EU hosting by default. Region and provider are agreed with you before implementation starts, not decided after the fact.",
+  },
+  {
+    title: "Access",
+    body: "Access controls are scoped per project: who can see what, set and logged from day one.",
+  },
+  {
+    title: "GDPR",
+    body: "Retention, deletion, and processing basis are built into the schema up front, not added on after a request.",
+  },
+  {
+    title: "AI Act boundary",
+    body: "No automated decision with legal or similarly significant effect on a person. Where that boundary applies, the logic is deterministic code, not a model.",
+  },
+  {
+    title: "Discretion",
+    body: "Client details and internal builds stay covered by discretion unless you choose to be named.",
+  },
+];
+
 export const ENGAGEMENT = [
   {
     title: "Technical assessment",
