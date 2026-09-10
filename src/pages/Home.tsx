@@ -332,7 +332,7 @@ function Overview() {
     </div>
   );
 }
-function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { slug?: string; filesLayout: boolean; view: FilesView; setView: (view: FilesView) => void; sort: FilesSort; setSort: (sort: FilesSort) => void }) {
+function ProjectBrowser({ slug, filesLayout, mobile, view, setView, sort, setSort }: { slug?: string; filesLayout: boolean; mobile: boolean; view: FilesView; setView: (view: FilesView) => void; sort: FilesSort; setSort: (sort: FilesSort) => void }) {
   const selected = slug ? SLUGS.indexOf(slug) : filesLayout ? -1 : 0;
   if (slug && selected === -1) return <MissingPage />;
   const project = WORK_SELECTED[selected];
@@ -386,7 +386,15 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
               </div>
             ))}
           </dl>
-          {project.screenshot && (
+          {project.screenshot && mobile && (
+            <img
+              className="project-screenshot project-screenshot-static"
+              src={project.screenshot}
+              alt={`${project.name} landing page`}
+              loading="lazy"
+            />
+          )}
+          {project.screenshot && !mobile && (
             <ScreenshotLightbox
               src={project.screenshot}
               alt={`${project.name} landing page`}
@@ -414,8 +422,10 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
             </a>
           )}
           <p className="project-note">
-            A sample of independent builds. Client engagements are covered by
-            discretion; these are products built and operated end to end.
+            A sample of independent builds, operated end to end. Some are
+            covered by discretion, built for internal use. Others are sold
+            as products with their own landing page, where more detail is
+            shared.
           </p>
         </article>
       )}
@@ -874,7 +884,7 @@ export function Home() {
       content = filesLayout ? <FilesOverview /> : <Overview />;
       break;
     case "projects":
-      content = <ProjectBrowser slug={slug} filesLayout={filesLayout} view={fileView} setView={setFileView} sort={fileSort} setSort={setFileSort} />;
+      content = <ProjectBrowser slug={slug} filesLayout={filesLayout} mobile={mobile} view={fileView} setView={setFileView} sort={fileSort} setSort={setFileSort} />;
       break;
     case "services":
       content = <Services />;
