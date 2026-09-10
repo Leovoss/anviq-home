@@ -145,6 +145,7 @@ svg {
   align-items: center;
   padding: 23px 14px 30px;
   font-size: 27px;
+  line-height: 1;
   letter-spacing: -0.025em;
   font-weight: 650;
   min-height: 92px;
@@ -152,6 +153,7 @@ svg {
 .brand svg {
   width: 42px;
   height: 30px;
+  flex-shrink: 0;
 }
 .nav-group + .nav-group {
   margin-top: 28px;
@@ -193,12 +195,12 @@ svg {
 .about-link {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 13px;
   color: var(--muted);
   margin-top: 44px;
   border-radius: var(--radius-control);
-  font-size: 13px;
-  padding: 12px 14px;
+  font-size: 15px;
+  padding: 10px 14px;
   min-height: 44px;
 }
 .explorer-toolbar {

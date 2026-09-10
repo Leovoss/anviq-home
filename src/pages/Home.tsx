@@ -188,7 +188,7 @@ function Overview() {
         <h1 id="welcome-title">Systems built to hold.</h1>
         <p className="intro">
           Independent AI engineering. Bespoke agents, integration, and
-          infrastructure — one engineer, end-to-end accountability.
+          infrastructure. One engineer, end-to-end accountability.
         </p>
         <ContactLink />
       </section>
@@ -446,7 +446,7 @@ function About() {
         Built for European enterprises. Hosting and access controls agreed
         upfront. Documented decisions, clear responsibilities.
       </p>
-      <h2>One letter away from “anvil.”</h2>
+      <h2>One letter away from "anvil."</h2>
       <p>
         The metaphor is construction, testing and accountability, not spectacle.
         What gets built is meant to be inspected, not marveled at.
@@ -467,8 +467,8 @@ function About() {
         </p>
         <h3>From claim to commitment</h3>
         <p>
-          Avoid: “We harness cutting-edge AI to revolutionize your business with
-          seamless, future-proof automation.”
+          Avoid: "We harness cutting-edge AI to revolutionize your business with
+          seamless, future-proof automation."
         </p>
         <p>
           Anviq voice: I work inside your team to build agents, automate
@@ -477,12 +477,12 @@ function About() {
           access controls, and data handling are agreed before implementation.
         </p>
         <p>
-          Use: build, integrate, deploy, maintain — engineer, system, workflow —
+          Use: build, integrate, deploy, maintain; engineer, system, workflow;
           tested, documented, measured.
         </p>
         <p>
-          Avoid: revolutionize, disrupt, supercharge — AI wizard, magic,
-          ecosystem — seamless, flawless, effortless.
+          Avoid: revolutionize, disrupt, supercharge; AI wizard, magic,
+          ecosystem; seamless, flawless, effortless.
         </p>
       </details>
     </DocumentPage>
@@ -491,8 +491,8 @@ function About() {
 function MissingPage() {
   return (
     <DocumentPage
-      title="This page isn’t here."
-      intro="The link may have changed. You can browse Anviq’s services and projects from the overview."
+      title="This page isn't here."
+      intro="The link may have changed. You can browse Anviq's services and projects from the overview."
     >
       <Link className="external-link" to="/">
         <ArrowLeft size={18} aria-hidden="true" />
@@ -541,7 +541,7 @@ function SearchResults({ query }: { query: string }) {
       title="Search Anviq"
       intro={
         query.trim()
-          ? `${matches.length} ${matches.length === 1 ? "result" : "results"} for “${query.trim()}”`
+          ? `${matches.length} ${matches.length === 1 ? "result" : "results"} for "${query.trim()}"`
           : "Search services, projects, and information using the field above."
       }
     >
@@ -550,8 +550,8 @@ function SearchResults({ query }: { query: string }) {
           <Search size={32} aria-hidden="true" />
           <h2>No matching pages</h2>
           <p>
-            Try a project name or a topic such as “agents”, “hosting”, or
-            “assessment”.
+            Try a project name or a topic such as "agents", "hosting", or
+            "assessment".
           </p>
           <Link className="external-link" to="/">
             Browse the overview <ArrowRight size={18} aria-hidden="true" />
@@ -605,7 +605,7 @@ function SearchControl({ query }: { query: string }) {
         name="q"
         value={search}
         onChange={(event) => setSearch(event.target.value)}
-        placeholder="Search Anviq…"
+        placeholder="Search Anviq..."
         aria-label="Search Anviq"
         autoComplete="off"
       />
@@ -657,7 +657,7 @@ export function Home() {
     "Page not found";
   const query = new URLSearchParams(location.search).get("q") ?? "";
   useEffect(() => {
-    document.title = `${currentProject?.name ?? label} — Anviq`;
+    document.title = `${currentProject?.name ?? label} - Anviq`;
     if (lastLocation.current !== location.key) {
       lastLocation.current = location.key;
       mainRef.current?.focus({ preventScroll: true });
