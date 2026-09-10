@@ -351,7 +351,13 @@ function Overview() {
     </div>
   );
 }
-function ProjectFiles({ files }: { files: { name: string; body: string[] }[] }) {
+type ProjectFile = {
+  name: string;
+  body: string[];
+  boundary?: string;
+  proof?: string[][];
+};
+function ProjectFiles({ files }: { files: ProjectFile[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   if (openIndex !== null) {
     const file = files[openIndex];
@@ -369,6 +375,17 @@ function ProjectFiles({ files }: { files: { name: string; body: string[] }[] }) 
         {file.body.map((paragraph, index) => (
           <p key={index}>{paragraph}</p>
         ))}
+        {file.boundary && <p className="project-file-boundary">{file.boundary}</p>}
+        {file.proof && (
+          <dl className="project-file-proof">
+            {file.proof.map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </div>
     );
   }

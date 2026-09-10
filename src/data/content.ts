@@ -76,6 +76,17 @@ export const WORK_SELECTED = [
           "Hosting region and data retention are agreed per broker before onboarding.",
         ],
       },
+      {
+        name: "proof.md",
+        body: [],
+        boundary:
+          "What broke: retention teams found out a trader was about to churn from a spreadsheet updated once a week, well after it mattered.",
+        proof: [
+          ["Signal", "3 consecutive high-risk sessions"],
+          ["Alert latency", "Under 5 minutes from pattern match"],
+          ["Access level", "Read-only, no trade endpoints called"],
+        ],
+      },
     ],
   },
   {
@@ -93,6 +104,17 @@ export const WORK_SELECTED = [
           "EU-hosted authentication; tenant data is isolated at the database level, not just filtered in application code.",
         ],
       },
+      {
+        name: "proof.md",
+        body: [],
+        boundary:
+          "What broke: estimators matched bill-of-quantities line items by hand across spreadsheets per tenant, with no shared audit trail.",
+        proof: [
+          ["Match confidence", "Surfaced per line item, not hidden"],
+          ["Tenant isolation", "Separate schema per tenant, not a shared table with a tenant_id filter"],
+          ["Audit", "Every accepted match logged with who and when"],
+        ],
+      },
     ],
   },
   {
@@ -108,6 +130,17 @@ export const WORK_SELECTED = [
         body: [
           "Cold-outreach sending infrastructure built for the German market, where outreach compliance isn't optional.",
           "Deliverability tooling and legal sequencing sit inside the send pipeline, not as a separate checklist someone can skip.",
+        ],
+      },
+      {
+        name: "proof.md",
+        body: [],
+        boundary:
+          "What broke: outreach sequencing lived in a spreadsheet no compliance review ever saw before sends went out.",
+        proof: [
+          ["Send eligibility", "Checked against opt-out and sequencing rules before queueing"],
+          ["Deliverability", "Domain and sender reputation monitored per campaign"],
+          ["Compliance gate", "A send blocks automatically if the legal window hasn't passed"],
         ],
       },
     ],
@@ -139,6 +172,17 @@ export const WORK_SELECTED = [
         body: [
           "No AI in the matching path: under the EU AI Act, an automated match with legal or similarly significant effect on a candidate carries obligations this system is built to avoid entirely.",
           "Outreach ordered to UWG §7 Abs. 2, not to whatever is fastest to send.",
+        ],
+      },
+      {
+        name: "proof.md",
+        body: [],
+        boundary:
+          "What broke: candidate outreach went out whenever a recruiter had time, not when the law required a gap since the ad response.",
+        proof: [
+          ["Matching", "Deterministic rules engine, not a model"],
+          ["Outreach timing", "Blocked until the UWG §7 Abs. 2 window has passed"],
+          ["Data isolation", "Candidate and company records separated at the database role level"],
         ],
       },
     ],
