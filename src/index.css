@@ -1232,7 +1232,10 @@ svg {
   .explorer-window.sidebar-hidden {
     width: 100%;
     margin: 0;
+    height: auto;
+    max-height: none;
     min-height: calc(100svh - 110px);
+    overflow: visible;
     grid-template-columns: minmax(0, 1fr);
     border-radius: 0;
     box-shadow: none;
