@@ -5,7 +5,7 @@ export function Privacy() {
     <Legal title="Privacy Policy" updated="9 September 2026">
       <p>
         This Privacy Policy explains how we handle personal data in connection with this website (the
-        &ldquo;Site&rdquo;) at anviq.net. It covers the marketing website only. Any client engagement is governed by
+        "Site") at anviq.net. It covers the marketing website only. Any client engagement is governed by
         a separate agreement and data processing terms provided directly to that client.
       </p>
       <p>
@@ -44,12 +44,11 @@ export function Privacy() {
           time of your request. This is standard for any website and is used to deliver the pages and keep the Site
           secure.
         </li>
-        <li>
-          <strong>Google Fonts.</strong> The Site loads two typefaces from Google Fonts. Loading a font file sends
-          your IP address and browser information to Google. See Google&rsquo;s own privacy policy for how it
-          handles that request.
-        </li>
       </ul>
+      <p>
+        The Site uses your device's built-in system fonts and loads no fonts, scripts, or other resources from
+        Google or any other third-party font provider.
+      </p>
       <p>We set no cookies and run no analytics on this Site. See our <a href="/cookies">Cookie Policy</a> for detail.</p>
 
       <h2>3. Why we use your data, and our legal bases (UK and EU GDPR)</h2>
@@ -80,9 +79,6 @@ export function Privacy() {
       <ul>
         <li>
           <strong>Hosting / CDN:</strong> serving the Site and security logging.
-        </li>
-        <li>
-          <strong>Fonts</strong> (Google Fonts): loading typefaces, as described above.
         </li>
         <li>
           <strong>Email</strong> (our email provider): receiving and replying to your messages.
@@ -117,7 +113,7 @@ export function Privacy() {
       </ul>
       <p>
         To exercise any of these, email <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>. You also have the
-        right to complain to your data protection authority. In the UK that is the Information Commissioner&rsquo;s
+        right to complain to your data protection authority. In the UK that is the Information Commissioner's
         Office (<a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>); in the EU it is the
         supervisory authority in your country.
       </p>
@@ -125,7 +121,7 @@ export function Privacy() {
       <h2>8. Your rights (United States)</h2>
       <p>
         Depending on your state of residence, you may have the right to know what personal information we collect,
-        to access or delete it, to correct it, and to opt out of its &ldquo;sale&rdquo; or &ldquo;sharing&rdquo; for
+        to access or delete it, to correct it, and to opt out of its "sale" or "sharing" for
         targeted advertising.
       </p>
       <p>
@@ -150,7 +146,7 @@ export function Privacy() {
 
       <h2>11. Changes to this policy</h2>
       <p>
-        We may update this policy from time to time. The &ldquo;last updated&rdquo; date at the top shows when it
+        We may update this policy from time to time. The "last updated" date at the top shows when it
         last changed. Material changes will be reflected here.
       </p>
 

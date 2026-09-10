@@ -38,7 +38,7 @@ import {
   IDEA,
 } from "@/data/content";
 import { PublicActivity } from "@/components/PublicActivity";
-import { ContributionCalendar } from "@/components/ContributionCalendar";
+import { GitHubActivity } from "@/components/ui/github-activity";
 import { useContributionsTotal } from "@/lib/useContributionsTotal";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
@@ -776,12 +776,19 @@ export function Home() {
           title="Public activity."
           intro="This pulls live from GitHub. The calendar and list below show public repositories only; client work is under NDA."
         >
-          {contributionsTotal !== null && (
-            <p className="activity-total-stat">
-              {contributionsTotal} contributions in the past year, across public and private work.
-            </p>
-          )}
-          <ContributionCalendar username="Leovoss" />
+          <div className="activity-calendar-scroll">
+            <GitHubActivity
+              username="Leovoss"
+              showMonths={!filesLayout}
+              cellSize={filesLayout ? 3 : 11}
+              headingOverride={
+                contributionsTotal !== null
+                  ? `${contributionsTotal} contributions in the past year (public and private)`
+                  : undefined
+              }
+              className="anviq-github-activity"
+            />
+          </div>
           <PublicActivity />
           <a
             className="external-link"
