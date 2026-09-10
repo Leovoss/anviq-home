@@ -332,9 +332,6 @@ svg {
   background: transparent;
   border-bottom: 1px solid var(--line);
 }
-.command-palette-dialog .search-field:focus-within {
-  outline-offset: -3px;
-}
 .search-field {
   display: flex;
   align-items: center;
@@ -346,10 +343,12 @@ svg {
   border-radius: var(--radius-control);
   background: var(--sidebar);
   color: var(--muted);
+  transition: box-shadow 150ms ease-out;
 }
+/* A soft glow, not a hard outline - :focus-within fires on tap as well as
+   keyboard focus, and a heavy 3px ring on every tap read as unpolished. */
 .search-field:focus-within {
-  outline: 3px solid var(--focus);
-  outline-offset: 2px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 30%, transparent);
 }
 .search-field > svg {
   flex-shrink: 0;
@@ -469,26 +468,44 @@ svg {
   gap: 16px;
   padding: 12px 20px;
   min-height: 46px;
-  background: var(--accent);
+  background-image: linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 28%),
+    rgb(255 255 255 / 0%) 55%
+  );
+  background-color: color-mix(in srgb, var(--accent) 88%, transparent);
   color: #fff;
   border-radius: var(--radius-control);
+  border: 1px solid color-mix(in srgb, white 25%, var(--accent) 75%);
   font-size: 16px;
   font-weight: 500;
   line-height: 1.4;
-  box-shadow: 0 1px 2px rgb(0 101 219 / 15%);
+  box-shadow:
+    0 1px 2px rgb(0 101 219 / 15%),
+    inset 0 1px 0 rgb(255 255 255 / 30%);
   transition:
     background-color 150ms ease-out,
     transform 100ms ease-out,
     box-shadow 150ms ease-out;
 }
+@supports (backdrop-filter: blur(16px)) {
+  .primary-button {
+    backdrop-filter: blur(16px) saturate(1.8);
+    -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  }
+}
 .primary-button:hover {
-  background: var(--accent-hover);
-  box-shadow: 0 4px 14px rgb(0 101 219 / 30%);
+  background-color: color-mix(in srgb, var(--accent-hover) 90%, transparent);
+  box-shadow:
+    0 4px 14px rgb(0 101 219 / 30%),
+    inset 0 1px 0 rgb(255 255 255 / 30%);
   transform: translateY(-1px);
 }
 .primary-button:active {
   transform: translateY(0) scale(0.97);
-  box-shadow: 0 1px 2px rgb(0 101 219 / 15%);
+  box-shadow:
+    0 1px 2px rgb(0 101 219 / 15%),
+    inset 0 1px 0 rgb(255 255 255 / 25%);
 }
 .compact-button {
   white-space: nowrap;
@@ -1690,6 +1707,10 @@ svg {
   .explorer-sidebar {
     backdrop-filter: none;
     background: var(--sidebar);
+  }
+  .primary-button {
+    backdrop-filter: none;
+    background-color: var(--accent);
   }
 }
 @media (prefers-reduced-motion: reduce) {
