@@ -239,6 +239,9 @@ svg {
   padding: 10px 14px;
   min-height: 44px;
 }
+.founder-link {
+  margin-top: 3px;
+}
 .explorer-toolbar {
   grid-column: 2;
   grid-row: 1;
@@ -315,22 +318,33 @@ svg {
 }
 .command-palette-dialog {
   width: 100%;
-  max-width: 560px;
-  max-height: 70vh;
+  max-width: 640px;
+  max-height: 65vh;
   display: flex;
   flex-direction: column;
-  border-radius: 16px;
+  border-radius: 18px;
   background: var(--surface);
   box-shadow: var(--window-shadow);
   overflow: hidden;
 }
 .command-palette-dialog .search-field {
   flex-shrink: 0;
+  gap: 14px;
   border-radius: 0;
-  height: 56px;
-  padding-inline: 18px;
+  height: 64px;
+  padding-inline: 20px;
   background: transparent;
   border-bottom: 1px solid var(--line);
+}
+.command-palette-dialog .search-field input {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.command-palette-dialog .search-field > svg {
+  width: 21px;
+  height: 21px;
+  color: var(--muted);
 }
 .search-field {
   display: flex;
@@ -408,7 +422,29 @@ svg {
 .search-suggestions.palette-results {
   flex: 1;
   overflow-y: auto;
-  padding: 8px;
+  padding: 8px 8px 20px;
+  /* Fades the last row toward transparent instead of hard-clipping it at
+     the dialog's rounded corner when the list scrolls - macOS lists use
+     the same trick so a cut-off row never looks like a rendering bug. */
+  mask-image: linear-gradient(to bottom, black calc(100% - 28px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 28px), transparent 100%);
+}
+.command-palette-dialog .suggestion-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: var(--sidebar);
+}
+.command-palette-dialog .search-suggestions button svg {
+  color: var(--accent);
+}
+.command-palette-dialog .search-suggestions button {
+  padding: 8px 10px;
+  gap: 13px;
+  border-radius: 10px;
 }
 .palette-group + .palette-group {
   margin-top: 4px;
@@ -432,6 +468,7 @@ svg {
   align-items: center;
   gap: 11px;
   width: 100%;
+  min-width: 0;
   text-align: left;
   padding: 9px 10px;
   border: 0;
@@ -450,62 +487,89 @@ svg {
 }
 .search-suggestions strong {
   display: block;
+  min-width: 0;
   font-size: 14px;
   font-weight: 600;
-}
-.search-suggestions small {
-  display: block;
-  font-size: 12px;
-  color: var(--muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* Two layers: ::before is the glass itself (the exact recipe uses a dozen
+   inset shadows to fake a lensed edge, plus its own filter:blur so the
+   material reads as frosted) sitting behind .primary-button-content, which
+   stays perfectly crisp. filter:blur on the button itself would blur the
+   label too - keeping them separate is the whole trick. */
 .primary-button {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  gap: 16px;
-  padding: 12px 20px;
-  min-height: 46px;
-  background-image: linear-gradient(
-    to bottom,
-    rgb(255 255 255 / 28%),
-    rgb(255 255 255 / 0%) 55%
-  );
-  background-color: color-mix(in srgb, var(--accent) 88%, transparent);
-  color: #fff;
-  border-radius: var(--radius-control);
-  border: 1px solid color-mix(in srgb, white 25%, var(--accent) 75%);
+  min-height: 48px;
+  padding-inline: 22px;
+  border-radius: 9999px;
+  color: var(--text);
   font-size: 16px;
   font-weight: 500;
   line-height: 1.4;
+  transition: transform 100ms ease-out;
+}
+.primary-button::before {
+  /* Crisp layer: defines the visible pill edge. Unblurred, so the shape
+     stays legible - only the sheen layer below gets the soft glass blur. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  border-radius: inherit;
   box-shadow:
-    0 1px 2px rgb(0 101 219 / 15%),
-    inset 0 1px 0 rgb(255 255 255 / 30%);
-  transition:
-    background-color 150ms ease-out,
-    transform 100ms ease-out,
-    box-shadow 150ms ease-out;
+    1.25px 0 0 -0.75px rgb(219 219 219 / 100%),
+    -1.25px 0 0 -0.75px rgb(219 219 219 / 100%),
+    0 0 0 0.5px rgb(219 219 219 / 100%),
+    0 8px 15px 0 rgb(0 0 0 / 6%),
+    0 1px 0 0 inset rgb(255 255 255 / 70%),
+    0 -1px 0 0 inset rgb(24 32 44 / 10%);
+  background: linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 60%),
+    rgb(255 255 255 / 18%) 55%,
+    rgb(255 255 255 / 6%)
+  );
+}
+.primary-button::after {
+  /* Soft layer: a blurred diagonal sheen for the frosted/lensed feel,
+     inset slightly so its blur doesn't bleed past the crisp edge above. */
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    rgb(255 255 255 / 55%),
+    rgb(255 255 255 / 0%) 45%,
+    rgb(24 32 44 / 6%) 100%
+  );
+  filter: blur(3px);
 }
 @supports (backdrop-filter: blur(16px)) {
   .primary-button {
-    backdrop-filter: blur(16px) saturate(1.8);
-    -webkit-backdrop-filter: blur(16px) saturate(1.8);
+    backdrop-filter: blur(20px) saturate(2.2);
+    -webkit-backdrop-filter: blur(20px) saturate(2.2);
   }
 }
+.primary-button-content {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+}
 .primary-button:hover {
-  background-color: color-mix(in srgb, var(--accent-hover) 90%, transparent);
-  box-shadow:
-    0 4px 14px rgb(0 101 219 / 30%),
-    inset 0 1px 0 rgb(255 255 255 / 30%);
   transform: translateY(-1px);
 }
 .primary-button:active {
   transform: translateY(0) scale(0.97);
-  box-shadow:
-    0 1px 2px rgb(0 101 219 / 15%),
-    inset 0 1px 0 rgb(255 255 255 / 25%);
 }
 .compact-button {
   white-space: nowrap;
@@ -723,7 +787,8 @@ svg {
 }
 .social-links {
   display: flex;
-  gap: 0;
+  align-items: center;
+  gap: 4px;
 }
 .social-links a {
   display: grid;
@@ -860,6 +925,14 @@ svg {
   border: 0;
   background: none;
   text-align: left;
+  /* The lift lives on the button, not the image - .project-screenshot is a
+     motion.img with a shared layoutId, and Motion owns that element's
+     transform for the Quick Look animation. A CSS transform on the same
+     element would fight it, same issue as the folder-image-lift wrapper. */
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.project-screenshot-trigger:hover {
+  transform: translateY(-3px);
 }
 .project-screenshot-trigger:focus-visible {
   outline: 3px solid var(--focus);
@@ -872,58 +945,55 @@ svg {
   border-radius: 12px;
   border: 1px solid var(--line);
   box-shadow: 0 12px 32px rgb(24 32 44 / 10%);
-  transition:
-    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-/* On mobile the screenshot renders as a plain, non-interactive image
-   (no lightbox trigger wrapper), so it needs its own top margin. */
-.project-screenshot-static {
-  max-width: 640px;
-  margin-top: 24px;
+  transition: box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .project-screenshot-trigger:hover .project-screenshot {
-  transform: translateY(-3px);
   box-shadow: 0 18px 40px rgb(24 32 44 / 14%);
 }
-.lightbox-backdrop {
+.quicklook-backdrop {
   position: fixed;
   inset: 0;
   z-index: 200;
   display: grid;
   place-items: center;
-  padding: 24px;
-  background: rgb(15 20 28 / 65%);
+  padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+  background: rgb(15 20 28 / 72%);
 }
-.lightbox-dialog {
+@supports (backdrop-filter: blur(20px)) {
+  .quicklook-backdrop {
+    backdrop-filter: blur(20px);
+  }
+}
+.quicklook-dialog {
   position: relative;
-  max-width: min(90vw, 1100px);
+  max-width: min(92vw, 1100px);
   max-height: 90vh;
-  overflow: auto;
-  border-radius: 14px;
-  background: var(--surface);
-  padding: 16px;
-  box-shadow: var(--window-shadow);
+  outline: none;
 }
-.lightbox-dialog img {
+.quicklook-dialog img {
   display: block;
-  width: 100%;
-  border-radius: 8px;
+  max-width: min(92vw, 1100px);
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: 0 30px 80px rgb(0 0 0 / 35%);
 }
-.lightbox-close {
+.quicklook-close {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: -16px;
+  right: -16px;
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 9999px;
   background: var(--surface);
   color: var(--muted);
-  box-shadow: 0 4px 14px rgb(24 32 44 / 18%);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 25%);
 }
-.lightbox-close:hover {
+.quicklook-close:hover {
   background: var(--hover);
   color: var(--accent);
 }
@@ -992,25 +1062,25 @@ svg {
 .document-sections > section:last-child {
   border-bottom: 1px solid var(--line);
 }
-.founder-heading {
-  margin-top: 40px !important;
-  padding-top: 24px;
+/* The only page that centers instead of the site's usual left-aligned
+   document flow - matches the centered macOS Account panel it's based on. */
+.document-page-centered {
+  text-align: center;
 }
-.founder-card {
+.document-page-centered .founder-bio {
+  text-align: left;
+}
+/* macOS System Settings account panel: centered photo, name, email. */
+.founder-profile {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: 20px;
-  padding: 40px 36px;
-  border-radius: 20px;
-  background: var(--chrome-glass);
-  border: 1px solid var(--line);
-  box-shadow: 0 1px 2px rgb(24 32 44 / 4%);
+  padding-bottom: 8px;
 }
 .founder-photo {
-  width: 120px;
-  height: 120px;
+  width: 108px;
+  height: 108px;
   border-radius: 50%;
   object-fit: cover;
   background: var(--sidebar);
@@ -1018,22 +1088,25 @@ svg {
   box-shadow: 0 0 0 1px var(--line);
   flex-shrink: 0;
 }
-.founder-card h2 {
-  margin-top: 20px !important;
-  font-size: 22px;
+.founder-profile h2 {
+  margin-top: 18px !important;
+  font-size: 21px;
   font-weight: 650;
   letter-spacing: -0.015em;
 }
-.founder-role {
-  margin-top: 4px !important;
+.founder-email {
+  margin-top: 3px !important;
   color: var(--muted);
   font-size: 15px !important;
+}
+.founder-email:hover {
+  color: var(--accent);
 }
 .founder-bio {
   min-width: 0;
   max-width: 60ch;
   text-align: left;
-  margin-top: 28px;
+  margin: 32px auto 0;
 }
 .founder-bio p {
   margin-top: 12px !important;
@@ -1226,39 +1299,6 @@ svg {
   font-size: 17px;
   min-height: 52px;
 }
-.legal-window {
-  max-width: 1040px;
-  background: var(--surface);
-  margin: 32px auto;
-  border-radius: 16px;
-  box-shadow: var(--window-shadow);
-}
-.legal-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  padding: 12px 30px;
-  background: var(--chrome);
-  border-bottom: 1px solid var(--line);
-  border-radius: 16px 16px 0 0;
-}
-.legal-toolbar .brand {
-  padding: 4px 0;
-  min-height: 44px;
-  font-size: 23px;
-}
-.legal-content {
-  padding: 45px 48px;
-  max-width: 820px;
-  margin-inline: auto;
-}
-.legal-content h1 {
-  font-size: 36px;
-  line-height: 1.2;
-  letter-spacing: -0.03em;
-  font-weight: 650;
-}
 .legal-updated {
   margin-top: 15px;
   color: var(--muted);
@@ -1294,21 +1334,6 @@ svg {
 .legal-copy strong {
   color: var(--text);
 }
-.legal-footer {
-  padding: 22px 30px;
-  border-top: 1px solid var(--line);
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  font-size: 13px;
-  color: var(--muted);
-}
-.legal-footer a {
-  min-height: 36px;
-  display: inline-flex;
-  align-items: center;
-}
-
 @media (min-width: 1100px) and (min-height: 740px) {
   .explorer-sidebar {
     position: sticky;
@@ -1384,9 +1409,6 @@ svg {
 @media (max-width: 760px) {
   :root {
     background: var(--surface);
-  }
-  .founder-card {
-    flex-direction: column;
   }
   .explorer-window,
   .explorer-window.sidebar-hidden {
@@ -1633,27 +1655,6 @@ svg {
   .activity-list time {
     margin-left: 31px;
   }
-  .legal-window {
-    margin: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  .legal-toolbar {
-    padding: 12px 20px;
-    border-radius: 0;
-  }
-  .legal-content {
-    padding: 32px 24px;
-  }
-  .legal-content h1 {
-    font-size: 30px;
-  }
-  .legal-footer {
-    padding: 20px 24px;
-  }
-  .legal-footer a {
-    min-height: 44px;
-  }
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -1673,9 +1674,6 @@ svg {
     --hover: #2b3543;
     --focus: #9bc6ff;
     --window-shadow: 0 18px 50px -20px rgb(0 0 0 / 60%);
-  }
-  .primary-button {
-    color: #102743;
   }
   .brand svg path:first-child {
     fill: var(--text);
@@ -1710,7 +1708,14 @@ svg {
   }
   .primary-button {
     backdrop-filter: none;
-    background-color: var(--accent);
+  }
+  .primary-button::before {
+    box-shadow: none;
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .primary-button::after {
+    display: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1731,7 +1736,7 @@ svg {
   .social-links a:active,
   .files-tab-bar a:active,
   .project-folder:active .folder-image-lift,
-  .project-screenshot-trigger:hover .project-screenshot,
+  .project-screenshot-trigger:hover,
   .service-links a:hover > svg:last-child,
   .search-results > a:hover > svg:last-child {
     transform: none;

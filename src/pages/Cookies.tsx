@@ -1,8 +1,10 @@
-import { Legal } from '@/components/Legal'
+import { DocumentPage } from '@/components/DocumentPage'
 
 export function Cookies() {
   return (
-    <Legal title="Cookie Policy" updated="9 September 2026">
+    <DocumentPage title="Cookie Policy">
+      <p className="legal-updated">Last updated: 9 September 2026</p>
+      <div className="legal-copy">
       <p>
         Cookies are small files a website can store on your device. This page explains what this website
         (anviq.net) does, which is very little.
@@ -55,8 +57,9 @@ export function Cookies() {
       <h2>5. Contact</h2>
       <p>
         Questions about cookies: <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>. See also our{' '}
-        <a href="/privacy">Privacy Policy</a>.
+        <a href="/explore/privacy">Privacy Policy</a>.
       </p>
-    </Legal>
+      </div>
+    </DocumentPage>
   )
 }

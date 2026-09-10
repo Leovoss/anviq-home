@@ -26,6 +26,7 @@ import {
   PanelLeft,
   Search,
   Server,
+  UserRound,
   Workflow,
   X,
 } from "lucide-react";
@@ -44,6 +45,12 @@ import { ScreenshotLightbox } from "@/components/ScreenshotLightbox";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { Variants } from "motion/react";
 import { GitHubActivity } from "@/components/ui/github-activity";
+import { EmojiReaction } from "@/components/ui/emoji-reaction";
+import { sendReaction } from "@/lib/reactions";
+import { DocumentPage } from "@/components/DocumentPage";
+import { Privacy } from "@/pages/Privacy";
+import { Cookies } from "@/pages/Cookies";
+import { Terms } from "@/pages/Terms";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
 const NAV_PILL_SPRING = { type: "spring", bounce: 0, duration: 0.32 } as const;
@@ -123,6 +130,12 @@ const SEARCH_ENTRIES = [
     href: "/explore/about",
     group: "Explore" as const,
     body: "Independent AI engineering practice. One engineer, full accountability.",
+  },
+  {
+    title: "Founder",
+    href: "/explore/founder",
+    group: "Explore" as const,
+    body: "Leonardo Voss, founder of Anviq.",
   },
 ];
 function searchEntries(query: string) {
@@ -232,8 +245,10 @@ function ContactLink({
       target={href.startsWith("mailto:") ? undefined : "_blank"}
       rel={href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
     >
-      {children}
-      {!compact && <ArrowRight size={18} aria-hidden="true" />}
+      <span className="primary-button-content">
+        {children}
+        {!compact && <ArrowRight size={18} aria-hidden="true" />}
+      </span>
     </a>
   );
 }
@@ -336,7 +351,7 @@ function Overview() {
     </div>
   );
 }
-function ProjectBrowser({ slug, filesLayout, mobile, view, setView, sort, setSort }: { slug?: string; filesLayout: boolean; mobile: boolean; view: FilesView; setView: (view: FilesView) => void; sort: FilesSort; setSort: (sort: FilesSort) => void }) {
+function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { slug?: string; filesLayout: boolean; view: FilesView; setView: (view: FilesView) => void; sort: FilesSort; setSort: (sort: FilesSort) => void }) {
   const selected = slug ? SLUGS.indexOf(slug) : filesLayout ? -1 : 0;
   if (slug && selected === -1) return <MissingPage />;
   const project = WORK_SELECTED[selected];
@@ -390,19 +405,12 @@ function ProjectBrowser({ slug, filesLayout, mobile, view, setView, sort, setSor
               </div>
             ))}
           </dl>
-          {project.screenshot && mobile && (
-            <img
-              className="project-screenshot project-screenshot-static"
-              src={project.screenshot}
-              alt={`${project.name} landing page`}
-              loading="lazy"
-            />
-          )}
-          {project.screenshot && !mobile && (
+          {project.screenshot && (
             <ScreenshotLightbox
               src={project.screenshot}
               alt={`${project.name} landing page`}
               label={`${project.name} screenshot`}
+              layoutId={SLUGS[selected]}
             />
           )}
           {project.href ? (
@@ -434,23 +442,6 @@ function ProjectBrowser({ slug, filesLayout, mobile, view, setView, sort, setSor
         </article>
       )}
     </div>
-  );
-}
-function DocumentPage({
-  title,
-  intro,
-  children,
-}: {
-  title: string;
-  intro?: string;
-  children: ReactNode;
-}) {
-  return (
-    <article className="document-page">
-      <h1>{title}</h1>
-      {intro && <p className="intro">{intro}</p>}
-      {children}
-    </article>
   );
 }
 function Services() {
@@ -635,20 +626,31 @@ function About() {
           </section>
         ))}
       </div>
-      <h2 className="founder-heading">Founder</h2>
-      <div className="founder-card">
+      <Link className="external-link" to="/explore/founder">
+        <UserRound size={18} aria-hidden="true" />
+        Meet the founder
+      </Link>
+    </DocumentPage>
+  );
+}
+function Founder() {
+  return (
+    <DocumentPage title="Founder." className="document-page-centered">
+      <div className="founder-profile">
         <img
           className="founder-photo"
           src="/images/founder.png"
           alt="Leonardo Voss"
         />
         <h2>Leonardo Voss</h2>
-        <p className="founder-role">Founder, Anviq</p>
-        <div className="founder-bio">
-          {FOUNDER_BIO.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </div>
+        <a className="founder-email" href="mailto:lvoss@anviq.net">
+          lvoss@anviq.net
+        </a>
+      </div>
+      <div className="founder-bio">
+        {FOUNDER_BIO.map((paragraph, index) => (
+          <p key={index}>{paragraph}</p>
+        ))}
       </div>
     </DocumentPage>
   );
@@ -711,11 +713,10 @@ function SuggestionGroups({
                   onMouseEnter={() => setHighlighted(index)}
                   onClick={() => goTo(item.href)}
                 >
-                  <FileText size={17} aria-hidden="true" />
-                  <span>
-                    <strong>{item.title}</strong>
-                    <small>{item.body}</small>
+                  <span className="suggestion-icon">
+                    <FileText size={17} aria-hidden="true" />
                   </span>
+                  <strong>{item.title}</strong>
                 </button>
               );
             })}
@@ -855,10 +856,25 @@ function CommandPalette() {
     setHighlighted(0);
   }, [search]);
 
-  // Global Cmd/Ctrl+K opens the palette from anywhere.
+  // Global Cmd/Ctrl+K opens the palette from anywhere. Ctrl+K is reserved by
+  // Chrome/Edge on Windows for the omnibox and never reaches page JS there,
+  // so "/" (used by GitHub, Slack, Notion) is a reliable fallback - guarded
+  // so it doesn't hijack typing in a real text field.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setOpen(true);
+        return;
+      }
+      if (event.key === "/" && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        const target = event.target as HTMLElement | null;
+        const isTyping =
+          target &&
+          (target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.isContentEditable);
+        if (isTyping) return;
         event.preventDefault();
         setOpen(true);
       }
@@ -932,7 +948,7 @@ function CommandPalette() {
         type="button"
         ref={triggerRef}
         className="icon-button search-trigger"
-        aria-label="Search Anviq (Cmd+K)"
+        aria-label="Search Anviq (press / or Cmd+K)"
         onClick={() => setOpen(true)}
       >
         <Search size={18} aria-hidden="true" />
@@ -960,7 +976,7 @@ function CommandPalette() {
               exit={{ opacity: 0 }}
               transition={reducedMotion ? { duration: 0 } : PALETTE_FADE}
             >
-              <form className="search-field" role="search" onSubmit={submit}>
+              <form className="search-field magic-search-field" role="search" onSubmit={submit}>
                 <Search size={18} aria-hidden="true" />
                 <input
                   ref={inputRef}
@@ -969,7 +985,7 @@ function CommandPalette() {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   onKeyDown={onInputKeyDown}
-                  placeholder="Search Anviq..."
+                  placeholder="Make magic happen..."
                   aria-label="Search Anviq"
                   autoComplete="off"
                   role="combobox"
@@ -1048,6 +1064,10 @@ export function Home() {
   const specialLabels: Record<string, string> = {
     browse: "Browse",
     about: "About Anviq",
+    founder: "Founder",
+    privacy: "Privacy Policy",
+    cookies: "Cookie Policy",
+    terms: "Terms & Disclaimer",
   };
   const label =
     NAV.find((item) => item.id === active)?.label ??
@@ -1085,7 +1105,7 @@ export function Home() {
       content = filesLayout ? <FilesOverview /> : <Overview />;
       break;
     case "projects":
-      content = <ProjectBrowser slug={slug} filesLayout={filesLayout} mobile={mobile} view={fileView} setView={setFileView} sort={fileSort} setSort={setFileSort} />;
+      content = <ProjectBrowser slug={slug} filesLayout={filesLayout} view={fileView} setView={setFileView} sort={fileSort} setSort={setFileSort} />;
       break;
     case "services":
       content = <Services />;
@@ -1129,6 +1149,18 @@ export function Home() {
       break;
     case "about":
       content = <About />;
+      break;
+    case "founder":
+      content = <Founder />;
+      break;
+    case "privacy":
+      content = <Privacy />;
+      break;
+    case "cookies":
+      content = <Cookies />;
+      break;
+    case "terms":
+      content = <Terms />;
       break;
     case "browse":
       content = filesLayout ? <FilesBrowse /> : (
@@ -1194,6 +1226,23 @@ export function Home() {
             <span className="nav-link-content">
               <BookOpen size={17} aria-hidden="true" />
               About Anviq
+            </span>
+          </Link>
+          <Link
+            className={`about-link founder-link ${active === "founder" ? "is-selected" : ""}`}
+            aria-current={active === "founder" ? "page" : undefined}
+            to="/explore/founder"
+          >
+            {active === "founder" && (
+              <motion.span
+                layoutId="explorer-nav-active"
+                className="nav-pill"
+                transition={aboutPillTransition}
+              />
+            )}
+            <span className="nav-link-content">
+              <UserRound size={17} aria-hidden="true" />
+              Founder
             </span>
           </Link>
         </aside>
@@ -1267,9 +1316,9 @@ export function Home() {
       <footer className="site-footer">
         <span>© 2026 Anviq</span>
         <nav aria-label="Legal">
-          <Link to="/privacy">Privacy</Link>
-          <Link to="/cookies">Cookies</Link>
-          <Link to="/terms">Terms &amp; disclaimer</Link>
+          <Link to="/explore/privacy">Privacy</Link>
+          <Link to="/explore/cookies">Cookies</Link>
+          <Link to="/explore/terms">Terms &amp; disclaimer</Link>
         </nav>
         <div className="site-footer-right">
           <nav className="social-links" aria-label="Social">
@@ -1289,6 +1338,7 @@ export function Home() {
             >
               <XLogo />
             </a>
+            <EmojiReaction onReact={sendReaction} size="sm" />
           </nav>
           <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
         </div>

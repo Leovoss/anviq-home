@@ -1,8 +1,10 @@
-import { Legal } from '@/components/Legal'
+import { DocumentPage } from '@/components/DocumentPage'
 
 export function Terms() {
   return (
-    <Legal title="Terms & Disclaimer" updated="9 September 2026">
+    <DocumentPage title="Terms & Disclaimer">
+      <p className="legal-updated">Last updated: 9 September 2026</p>
+      <div className="legal-copy">
       <p>
         These terms apply to your use of this website (the "Site") at anviq.net. By using the Site you
         agree to them. If you do not agree, please do not use the Site. The Site is operated by{' '}
@@ -88,8 +90,9 @@ export function Terms() {
       <h2>11. Contact</h2>
       <p>
         Questions about these terms: <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>. See also our{' '}
-        <a href="/privacy">Privacy Policy</a> and <a href="/cookies">Cookie Policy</a>.
+        <a href="/explore/privacy">Privacy Policy</a> and <a href="/explore/cookies">Cookie Policy</a>.
       </p>
-    </Legal>
+      </div>
+    </DocumentPage>
   )
 }

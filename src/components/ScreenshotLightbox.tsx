@@ -1,18 +1,24 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { X } from "lucide-react";
 
 const BACKDROP_TRANSITION = { duration: 0.18 } as const;
-const DIALOG_SPRING = { type: "spring", bounce: 0, duration: 0.32 } as const;
+const QUICK_LOOK_SPRING = { type: "spring", bounce: 0.1, duration: 0.42 } as const;
 
+// iOS/macOS Quick Look: tap the thumbnail and it grows in place into a large
+// preview (shared layoutId on the <img> itself does the morph), instead of a
+// generic lightbox fading in over it. Works the same on touch as on desktop.
 export function ScreenshotLightbox({
   src,
   alt,
   label,
+  layoutId,
 }: {
   src: string;
   alt: string;
   label: string;
+  layoutId: string;
 }) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -21,29 +27,10 @@ export function ScreenshotLightbox({
 
   useEffect(() => {
     if (!open) return;
-    const dialog = dialogRef.current;
-    const focusable = dialog
-      ? [
-          ...dialog.querySelectorAll<HTMLElement>(
-            'button, [href], [tabindex]:not([tabindex="-1"])',
-          ),
-        ]
-      : [];
-    focusable[0]?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" || event.key === " ") {
+        event.preventDefault();
         setOpen(false);
-        return;
-      }
-      if (event.key !== "Tab" || focusable.length === 0) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
       }
     };
     document.addEventListener("keydown", onKeyDown);
@@ -51,6 +38,10 @@ export function ScreenshotLightbox({
       document.removeEventListener("keydown", onKeyDown);
       triggerRef.current?.focus();
     };
+  }, [open]);
+
+  useEffect(() => {
+    if (open) dialogRef.current?.focus();
   }, [open]);
 
   return (
@@ -62,43 +53,56 @@ export function ScreenshotLightbox({
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
       >
-        <img className="project-screenshot" src={src} alt={alt} loading="lazy" />
+        <motion.img
+          layoutId={`screenshot-${layoutId}`}
+          className="project-screenshot"
+          style={{ opacity: open ? 0 : 1 }}
+          src={src}
+          alt={alt}
+          loading="lazy"
+          transition={reducedMotion ? { duration: 0 } : QUICK_LOOK_SPRING}
+        />
       </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="lightbox-backdrop"
-            onClick={() => setOpen(false)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={reducedMotion ? { duration: 0 } : BACKDROP_TRANSITION}
-          >
+      {createPortal(
+        <AnimatePresence>
+          {open && (
             <motion.div
-              ref={dialogRef}
-              role="dialog"
-              aria-modal="true"
-              aria-label={label}
-              className="lightbox-dialog"
-              onClick={(event) => event.stopPropagation()}
-              initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: reducedMotion ? 1 : 0.96 }}
-              transition={reducedMotion ? { duration: 0 } : DIALOG_SPRING}
+              className="quicklook-backdrop"
+              onClick={() => setOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={reducedMotion ? { duration: 0 } : BACKDROP_TRANSITION}
             >
-              <button
-                type="button"
-                className="lightbox-close"
-                onClick={() => setOpen(false)}
-                aria-label="Close screenshot"
+              <div
+                ref={dialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label={label}
+                tabIndex={-1}
+                className="quicklook-dialog"
+                onClick={(event) => event.stopPropagation()}
               >
-                <X size={20} aria-hidden="true" />
-              </button>
-              <img src={src} alt={alt} />
+                <motion.img
+                  layoutId={`screenshot-${layoutId}`}
+                  src={src}
+                  alt={alt}
+                  transition={reducedMotion ? { duration: 0 } : QUICK_LOOK_SPRING}
+                />
+                <button
+                  type="button"
+                  className="quicklook-close"
+                  onClick={() => setOpen(false)}
+                  aria-label="Close preview"
+                >
+                  <X size={18} aria-hidden="true" />
+                </button>
+              </div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
     </>
   );
 }
