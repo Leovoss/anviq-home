@@ -582,29 +582,27 @@ const GitHubActivity = ({
   );
 
   return (
-    <div
-      data-slot="github-activity"
-      className={cn(
-        "relative max-w-full overflow-hidden rounded-[28px] bg-white p-4 dark:bg-black",
-        repos.length > 0 && "pb-[76px]",
-        className,
-      )}
-      style={{ width, ...style }}
-      {...props}
-    >
-      <p className="mb-4 text-base font-medium text-foreground px-1.5">
-        {heading}
-      </p>
+    <div className={className}>
+      <div
+        data-slot="github-activity"
+        className="relative max-w-full overflow-hidden rounded-[28px] bg-white p-4 dark:bg-black"
+        style={{ width, ...style }}
+        {...props}
+      >
+        <p className="mb-4 text-base font-medium text-foreground px-1.5">
+          {heading}
+        </p>
 
-      <ContributionGrid
-        contributions={contributions}
-        scale={scale}
-        cellSize={cellSize}
-        months={months}
-        showMonths={showMonths}
-        label={heading}
-        reduceMotion={reduceMotion}
-      />
+        <ContributionGrid
+          contributions={contributions}
+          scale={scale}
+          cellSize={cellSize}
+          months={months}
+          showMonths={showMonths}
+          label={heading}
+          reduceMotion={reduceMotion}
+        />
+      </div>
 
       {repos.length > 0 && (
         <motion.div
@@ -612,10 +610,7 @@ const GitHubActivity = ({
           id={`${uid}-panel`}
           data-slot="github-activity-panel"
           data-state={open ? "open" : "closed"}
-          className={cn(
-            "absolute inset-x-3 bottom-3 overflow-hidden bg-card/90 backdrop-blur-xl",
-            open && "top-3",
-          )}
+          className="relative mt-3 max-w-full overflow-hidden bg-card/90 backdrop-blur-xl"
           style={{ borderRadius: 18 }}
           transition={transition}
         >
