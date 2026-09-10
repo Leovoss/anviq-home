@@ -39,7 +39,6 @@ import {
 } from "@/data/content";
 import { PublicActivity } from "@/components/PublicActivity";
 import { GitHubActivity } from "@/components/ui/github-activity";
-import { useContributions } from "@/lib/useContributionsTotal";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
 const NAV = [
@@ -725,7 +724,6 @@ export function Home() {
     getServerMobile,
   );
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const contributions = useContributions();
   const filesLayout = useSyncExternalStore(subscribeFiles, getFilesLayout, getServerMobile);
   const [fileView, setFileView] = useState<FilesView>("icons");
   const [fileSort, setFileSort] = useState<FilesSort>("name");
@@ -787,21 +785,8 @@ export function Home() {
           <div className="activity-calendar-scroll">
             <GitHubActivity
               username="Leovoss"
-              contributions={contributions?.days}
-              repos={contributions?.repos.map((repo) => ({
-                name: repo.isPrivate ? `${repo.name} (private)` : repo.name,
-                count: repo.count,
-                href: repo.isPrivate
-                  ? undefined
-                  : `https://github.com/${repo.owner}/${repo.name}`,
-              }))}
               showMonths
               cellSize={filesLayout ? 14 : 11}
-              headingOverride={
-                contributions
-                  ? `${contributions.count} contributions in the past year (public and private)`
-                  : undefined
-              }
               className="anviq-github-activity"
             />
           </div>
