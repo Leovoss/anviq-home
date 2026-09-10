@@ -351,6 +351,48 @@ function Overview() {
     </div>
   );
 }
+function ProjectFiles({ files }: { files: { name: string; body: string[] }[] }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  if (openIndex !== null) {
+    const file = files[openIndex];
+    return (
+      <div className="project-files project-file-open">
+        <button
+          type="button"
+          className="quiet-link project-file-back"
+          onClick={() => setOpenIndex(null)}
+        >
+          <ChevronLeft size={17} aria-hidden="true" />
+          Files
+        </button>
+        <p className="project-file-name">{file.name}</p>
+        {file.body.map((paragraph, index) => (
+          <p key={index}>{paragraph}</p>
+        ))}
+      </div>
+    );
+  }
+  return (
+    <div className="project-files">
+      <p className="document-label">Files</p>
+      <ul className="project-file-list">
+        {files.map((file, index) => (
+          <li key={file.name}>
+            <button type="button" onClick={() => setOpenIndex(index)}>
+              <FileText size={17} aria-hidden="true" />
+              {file.name}
+              <ChevronRight
+                size={16}
+                aria-hidden="true"
+                className="project-file-chevron"
+              />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { slug?: string; filesLayout: boolean; view: FilesView; setView: (view: FilesView) => void; sort: FilesSort; setSort: (sort: FilesSort) => void }) {
   const selected = slug ? SLUGS.indexOf(slug) : filesLayout ? -1 : 0;
   if (slug && selected === -1) return <MissingPage />;
@@ -405,6 +447,7 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
               </div>
             ))}
           </dl>
+          <ProjectFiles files={project.files} />
           {project.screenshot && (
             <ScreenshotLightbox
               src={project.screenshot}
