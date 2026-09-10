@@ -764,16 +764,24 @@ export function Home() {
     NAV.find((item) => item.id === active)?.label ??
     specialLabels[active] ??
     "Page not found";
+  const syncScrollAndFocus = () => {
+    mainRef.current?.focus({ preventScroll: true });
+    if (location.hash)
+      document
+        .getElementById(location.hash.slice(1))
+        ?.scrollIntoView({ block: "start" });
+    else if (mainRef.current) mainRef.current.scrollTop = 0;
+  };
   useEffect(() => {
     document.title = `${currentProject?.name ?? label} - Anviq`;
     if (lastLocation.current !== location.key) {
       lastLocation.current = location.key;
-      mainRef.current?.focus({ preventScroll: true });
-      if (location.hash)
-        document
-          .getElementById(location.hash.slice(1))
-          ?.scrollIntoView({ block: "start" });
-      else window.scrollTo({ top: 0, behavior: "instant" });
+      // Handles same-pane hash jumps (e.g. switching #service-N anchors)
+      // immediately. When the active section/project itself changes, the
+      // new pane hasn't mounted yet under AnimatePresence mode="wait" - this
+      // call is a harmless no-op then, and ExplorerPane's onEnter (below)
+      // re-runs the same logic once the new content is actually in the DOM.
+      syncScrollAndFocus();
     }
   }, [location.key, location.hash, currentProject?.name, label]);
   let content: ReactNode;
@@ -928,7 +936,10 @@ export function Home() {
           ref={mainRef}
           tabIndex={-1}
         >
-          <ExplorerPane animKey={`${active}-${slug ?? ""}`}>
+          <ExplorerPane
+            animKey={`${active}-${slug ?? ""}`}
+            onEnter={syncScrollAndFocus}
+          >
             {content}
           </ExplorerPane>
         </main>
@@ -953,7 +964,7 @@ export function Home() {
           </nav>
           <span>
             {active === "projects" || active === "overview"
-              ? "3 projects"
+              ? `${WORK_SELECTED.length} projects`
               : "Independent practice"}
           </span>
         </footer>
