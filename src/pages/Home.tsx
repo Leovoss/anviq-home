@@ -109,11 +109,23 @@ const SLUGS = ["steadyward", "lv-matching", "addreach", "recruitment-crm"];
 // One credibility line, not an autobiography - LinkedIn holds the story.
 const FOUNDER_LINE =
   "Four years in regulated commercial operations (brokerage, fintech, iGaming) before going technical. Native German speaker, DACH market.";
+// Short subheaders for search rows, the same shape as a Selected work row
+// (name + tag). The body below is match text only, never displayed.
+const SEARCH_SUBS: Record<string, string> = {
+  services: "What I build",
+  projects: "Independent builds",
+  approach: "Assess, build, deploy, maintain",
+  engagement: "Assessment, Build, Retain",
+  constraints: "Hosting, access, compliance",
+  questions: "Common questions",
+  activity: "Public GitHub activity",
+};
 const SEARCH_ENTRIES = [
   ...NAV.filter((item) => item.id !== "overview").map((item) => ({
     title: item.label,
     href: item.href,
     group: "Explore" as const,
+    sub: SEARCH_SUBS[item.id] ?? item.label,
     body:
       item.id === "services"
         ? WORK.map((s) => s.body).join(" ")
@@ -133,12 +145,14 @@ const SEARCH_ENTRIES = [
     title: item.name,
     href: `/projects/${SLUGS[index]}`,
     group: "Projects" as const,
+    sub: item.tag,
     body: `${item.tag}. ${item.body}`,
   })),
   {
     title: "About Anviq",
     href: "/explore/about",
     group: "Explore" as const,
+    sub: "The practice",
     body: "Independent IT consulting and software practice. Commercial judgment and technical delivery, one person, full accountability. Leonardo Voss.",
   },
 ];
@@ -496,6 +510,7 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
               alt={`${project.name} landing page`}
               label={`${project.name} screenshot`}
               layoutId={SLUGS[selected]}
+              inline={!filesLayout}
             />
           )}
           {project.href ? (
@@ -557,7 +572,7 @@ function Services() {
         One engineer embeds with your team and owns delivery from the first
         technical assessment through deployment and documentation.
       </p>
-      <Link className="external-link" to="/explore/approach">
+      <Link className="internal-link" to="/explore/approach">
         See the approach <ArrowRight size={18} aria-hidden="true" />
       </Link>
       <ContactLink />
@@ -587,27 +602,60 @@ function Approach() {
       ? [...listRef.current.querySelectorAll<HTMLLIElement>("li")]
       : [];
     if (!items.length) return;
-    const ratios = new Map<string, number>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          const step = entry.target.getAttribute("data-step");
-          if (step) ratios.set(step, entry.intersectionRatio);
+    // Desktop scrolls inside .explorer-main, not the viewport, so the observer
+    // has to use that element as its root or every step keeps the same
+    // intersection and the focus sticks on one item.
+    let root: Element | null = null;
+    for (
+      let node = listRef.current?.parentElement ?? null;
+      node;
+      node = node.parentElement
+    ) {
+      const overflowY = getComputedStyle(node).overflowY;
+      if (overflowY === "auto" || overflowY === "scroll") {
+        root = node;
+        break;
+      }
+    }
+    // A reading line rather than an intersection band: the step that most
+    // recently crossed it takes focus, so 01 through 04 each get their turn,
+    // and the last step wins once the pane is scrolled to the bottom.
+    const scroller: Element | Window = root ?? window;
+    let frame = 0;
+    const compute = () => {
+      frame = 0;
+      const viewTop = root ? root.getBoundingClientRect().top : 0;
+      const viewHeight = root ? root.clientHeight : window.innerHeight;
+      const scrolled = root ?? document.scrollingElement;
+      // The line drifts down the pane as the scroll runs out, otherwise the
+      // last steps never get their turn on a page that stops scrolling
+      // before they reach the middle.
+      const range = scrolled
+        ? scrolled.scrollHeight - scrolled.clientHeight
+        : 0;
+      const progress = range > 0 ? Math.min(1, scrolled!.scrollTop / range) : 0;
+      const line = viewTop + viewHeight * (0.42 + 0.5 * progress);
+      let next: string | null = null;
+      for (const item of items) {
+        const box = item.getBoundingClientRect();
+        if (box.top <= line && box.bottom > viewTop) {
+          next = item.getAttribute("data-step");
         }
-        let best: string | null = null;
-        let bestRatio = 0.1;
-        for (const [step, ratio] of ratios) {
-          if (ratio > bestRatio) {
-            bestRatio = ratio;
-            best = step;
-          }
-        }
-        setFocusedStep(best);
-      },
-      { threshold: [0, 0.25, 0.5, 0.75, 1], rootMargin: "-35% 0px -35% 0px" },
-    );
-    items.forEach((item) => observer.observe(item));
-    return () => observer.disconnect();
+      }
+      setFocusedStep(next);
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(compute);
+    };
+    compute();
+    scroller.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      scroller.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   return (
@@ -642,7 +690,7 @@ function Approach() {
           </motion.li>
         ))}
       </motion.ol>
-      <Link className="external-link" to="/explore/engagement">
+      <Link className="internal-link" to="/explore/engagement">
         How an engagement works <ArrowRight size={18} aria-hidden="true" />
       </Link>
     </DocumentPage>
@@ -660,20 +708,41 @@ function Engagement() {
         className="segmented-control"
         role="tablist"
         aria-label="Engagement stage"
+        onKeyDown={(event) => {
+          const step =
+            event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+          if (!step) return;
+          event.preventDefault();
+          const index = ENGAGEMENT.findIndex((item) => item.id === mode);
+          const next =
+            ENGAGEMENT[(index + step + ENGAGEMENT.length) % ENGAGEMENT.length];
+          setMode(next.id);
+          event.currentTarget
+            .querySelector<HTMLButtonElement>(`#engagement-tab-${next.id}`)
+            ?.focus();
+        }}
       >
         {ENGAGEMENT.map((item) => (
           <button
             key={item.id}
             type="button"
             role="tab"
+            id={`engagement-tab-${item.id}`}
+            aria-controls={`engagement-panel-${item.id}`}
             aria-selected={mode === item.id}
+            tabIndex={mode === item.id ? 0 : -1}
             onClick={() => setMode(item.id)}
           >
             {item.title}
           </button>
         ))}
       </div>
-      <div className="engagement-panel" role="tabpanel">
+      <div
+        className="engagement-panel"
+        role="tabpanel"
+        id={`engagement-panel-${active.id}`}
+        aria-labelledby={`engagement-tab-${active.id}`}
+      >
         <div className="engagement-columns">
           <div>
             <h3>What's in</h3>
@@ -694,7 +763,7 @@ function Engagement() {
         </div>
         <p className="engagement-next">{active.next}</p>
       </div>
-      <Link className="external-link" to="/explore/constraints">
+      <Link className="internal-link" to="/explore/constraints">
         Hosting, access, and compliance boundaries{" "}
         <ArrowRight size={18} aria-hidden="true" />
       </Link>
@@ -727,9 +796,9 @@ function Constraints() {
           </ul>
         </section>
       </div>
-      <Link className="external-link" to="/projects/recruitment-crm">
-        <ExternalLink size={18} aria-hidden="true" />
+      <Link className="internal-link" to="/projects/recruitment-crm">
         See it in the Recruitment CRM
+        <ArrowRight size={18} aria-hidden="true" />
       </Link>
     </DocumentPage>
   );
@@ -751,8 +820,10 @@ function Questions() {
           </details>
         ))}
       </div>
-      <p>Something else on your mind?</p>
-      <ContactLink />
+      <div className="page-cta">
+        <p>Something else on your mind?</p>
+        <ContactLink />
+      </div>
     </DocumentPage>
   );
 }
@@ -816,7 +887,7 @@ function MissingPage() {
       title="This page isn't here."
       intro="The link may have changed. You can browse Anviq's services and projects from the overview."
     >
-      <Link className="external-link" to="/">
+      <Link className="internal-link" to="/">
         <ArrowLeft size={18} aria-hidden="true" />
         Back to overview
       </Link>
@@ -873,7 +944,7 @@ function SuggestionGroups({
                   </span>
                   <span className="suggestion-text">
                     <strong>{item.title}</strong>
-                    <small>{item.body}</small>
+                    <small>{item.sub}</small>
                   </span>
                 </button>
               );
@@ -1134,6 +1205,16 @@ function CommandPalette() {
               exit={{ opacity: 0 }}
               transition={reducedMotion ? { duration: 0 } : PALETTE_FADE}
             >
+              <div className="magic-search-chrome">
+                <button
+                  type="button"
+                  className="magic-search-close"
+                  aria-label="Close search"
+                  onClick={() => setOpen(false)}
+                >
+                  <X size={9} strokeWidth={3} aria-hidden="true" />
+                </button>
+              </div>
               <form className="search-field magic-search-field" role="search" onSubmit={submit}>
                 <Search size={18} aria-hidden="true" />
                 <input
@@ -1205,6 +1286,7 @@ export function Home() {
     getServerMobile,
   );
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [reactionFailed, setReactionFailed] = useState(false);
   const reducedMotion = useReducedMotion();
   const aboutPillTransition = reducedMotion ? { duration: 0 } : NAV_PILL_SPRING;
   const filesLayout = useSyncExternalStore(subscribeFiles, getFilesLayout, getServerMobile);
@@ -1323,9 +1405,9 @@ export function Home() {
       content = filesLayout ? <FilesBrowse /> : (
         <DocumentPage title="Browse Anviq">
           <Navigation active="browse" />
-          <Link className="external-link" to="/explore/about">
-            <BookOpen size={18} aria-hidden="true" />
+          <Link className="internal-link" to="/explore/about">
             About Anviq
+            <ArrowRight size={18} aria-hidden="true" />
           </Link>
         </DocumentPage>
       );
@@ -1480,7 +1562,18 @@ export function Home() {
             >
               <XLogo />
             </a>
-            <EmojiReaction onReact={sendReaction} size="sm" />
+            <EmojiReaction
+              onReact={(name) => {
+                setReactionFailed(false);
+                sendReaction(name).catch(() => setReactionFailed(true));
+              }}
+              size="sm"
+            />
+            {reactionFailed && (
+              <span className="reaction-failed" role="status">
+                Not counted
+              </span>
+            )}
           </nav>
           <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
         </div>
