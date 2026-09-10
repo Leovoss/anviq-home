@@ -54,7 +54,7 @@ export function FilesOverview() {
 export function FilesBrowse() {
   const groups = [
     { title: "Locations", items: [{ label: "Anviq", note: "Independent engineering practice", href: "/", Icon: Folder }] },
-    { title: "Favorites", items: [{ label: "Selected work", note: "3 projects", href: "/explore/projects", Icon: Folder }, { label: "Services", href: "/explore/services", Icon: Layers }, { label: "Approach", href: "/explore/approach", Icon: Compass }] },
+    { title: "Favorites", items: [{ label: "Selected work", note: `${WORK_SELECTED.length} projects`, href: "/explore/projects", Icon: Folder }, { label: "Services", href: "/explore/services", Icon: Layers }, { label: "Approach", href: "/explore/approach", Icon: Compass }] },
     { title: "Information", items: [{ label: "Engagement", href: "/explore/engagement", Icon: FileText }, { label: "Questions", href: "/explore/questions", Icon: CircleHelp }, { label: "Activity", href: "/explore/activity", Icon: Activity }, { label: "About Anviq", href: "/explore/about", Icon: BookOpen }] },
   ];
   return <div className="files-browse files-screen"><div className="files-page-heading"><h1>Browse</h1></div>{groups.map(({ title, items }) => <section className="files-browse-group" key={title}><h2>{title}</h2><nav className="files-grouped-list" aria-label={title}>{items.map(({ label, href, Icon, ...rest }) => <Link to={href} key={href}><Icon size={23} strokeWidth={1.75} aria-hidden="true" /><span>{label}{"note" in rest && <small>{rest.note}</small>}</span><ChevronRight size={17} aria-hidden="true" /></Link>)}</nav></section>)}</div>;
@@ -67,7 +67,7 @@ export function FilesProjects({ view, setView, sort, setSort }: { view: FilesVie
   return <section className="files-projects files-screen" aria-labelledby="files-projects-title"><div className="files-page-heading"><h1 id="files-projects-title">Selected work</h1><p>Independent builds, end to end.</p></div>
     <div className="files-view-toolbar"><label className="files-sort">Sort by <select aria-label="Sort projects" value={sort} onChange={event => setSort(event.target.value as FilesSort)}><option value="name">Name</option><option value="kind">Type</option></select></label><div className="files-view-switch" role="group" aria-label="Project view"><button aria-label="Icon view" aria-pressed={view === "icons"} onClick={() => setView("icons")}><LayoutGrid size={19} aria-hidden="true" /></button><button aria-label="List view" aria-pressed={view === "list"} onClick={() => setView("list")}><List size={22} aria-hidden="true" /></button></div></div>
     <nav className={view === "icons" ? "files-grid" : "files-project-rows"} aria-label="Projects">{projects.map(project => <Link className="files-item" key={project.slug} to={`/projects/${project.slug}`}><FilesArtwork /><span className="files-item-name">{project.name}</span><span className="files-item-kind">{project.tag}</span>{view === "list" && <ChevronRight size={17} aria-hidden="true" />}</Link>)}</nav>
-    <p className="files-item-count">3 projects</p>
+    <p className="files-item-count">{WORK_SELECTED.length} projects</p>
     <p className="files-collection-note">Client engagements are covered by discretion. These are independent products built and operated end to end.</p>
   </section>;
 }
