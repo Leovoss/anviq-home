@@ -433,6 +433,7 @@ svg {
   grid-row: 2;
   min-width: 0;
   overflow-y: auto;
+  position: relative;
 }
 .explorer-main:focus {
   outline: none;
