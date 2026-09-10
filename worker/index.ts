@@ -29,14 +29,16 @@ async function contributionsTotal(env: Env): Promise<Response> {
     body: JSON.stringify({ query: QUERY }),
   });
 
+  const bodyText = await upstream.text();
+
   if (!upstream.ok) {
-    return new Response(JSON.stringify({ error: "upstream" }), {
-      status: 502,
-      headers: { "content-type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "upstream", status: upstream.status, body: bodyText.slice(0, 500) }),
+      { status: 502, headers: { "content-type": "application/json" } },
+    );
   }
 
-  const data: unknown = await upstream.json();
+  const data: unknown = JSON.parse(bodyText);
   const count = (
     data as {
       data?: {
@@ -50,10 +52,10 @@ async function contributionsTotal(env: Env): Promise<Response> {
   )?.data?.viewer?.contributionsCollection?.contributionCalendar?.totalContributions;
 
   if (typeof count !== "number") {
-    return new Response(JSON.stringify({ error: "invalid" }), {
-      status: 502,
-      headers: { "content-type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "invalid", body: bodyText.slice(0, 500) }),
+      { status: 502, headers: { "content-type": "application/json" } },
+    );
   }
 
   const response = new Response(JSON.stringify({ count }), {
