@@ -812,14 +812,21 @@ export function Home() {
       content = (
         <DocumentPage
           title="Public activity."
-          intro="This pulls live from GitHub. The calendar and list below show public repositories only; client work is under NDA."
+          intro="This pulls live from GitHub. The calendar shows public and private activity; the linked list below is public repositories only."
         >
           <div className="activity-calendar-scroll">
             <GitHubActivity
               username="Leovoss"
               contributions={contributions?.days}
+              repos={contributions?.repos.map((repo) => ({
+                name: repo.isPrivate ? `${repo.name} (private)` : repo.name,
+                count: repo.count,
+                href: repo.isPrivate
+                  ? undefined
+                  : `https://github.com/${repo.owner}/${repo.name}`,
+              }))}
               showMonths={!filesLayout}
-              cellSize={filesLayout ? 3 : 11}
+              cellSize={filesLayout ? 4 : 11}
               headingOverride={
                 contributions
                   ? `${contributions.count} contributions in the past year (public and private)`
