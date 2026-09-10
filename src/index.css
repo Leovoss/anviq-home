@@ -335,11 +335,28 @@ svg {
 }
 .command-palette-dialog .search-field input {
   font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 .command-palette-dialog .search-field > svg {
   width: 21px;
   height: 21px;
   color: var(--muted);
+}
+.magic-search-icon {
+  color: var(--accent);
+  animation: magic-sparkle 2.6s ease-in-out infinite;
+}
+@keyframes magic-sparkle {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12) rotate(8deg);
+  }
 }
 .search-field {
   display: flex;
@@ -499,26 +516,30 @@ svg {
   gap: 16px;
   padding: 12px 22px;
   min-height: 46px;
+  /* Neutral glass, not a blue fill - the tint comes from the label/icon
+     (currentColor), matching how Apple's Liquid Glass keeps the material
+     itself clear and lets content carry the color. */
   background-image:
     radial-gradient(
       120% 180% at 18% -30%,
-      rgb(255 255 255 / 55%),
+      rgb(255 255 255 / 75%),
       rgb(255 255 255 / 0%) 60%
     ),
-    linear-gradient(to bottom, rgb(255 255 255 / 22%), rgb(255 255 255 / 0%) 50%);
-  background-color: color-mix(in srgb, var(--accent) 72%, transparent);
-  color: #fff;
+    linear-gradient(to bottom, rgb(255 255 255 / 45%), rgb(255 255 255 / 5%) 55%);
+  background-color: color-mix(in srgb, var(--surface) 45%, transparent);
+  color: var(--accent);
   border-radius: 9999px;
-  border: 1px solid color-mix(in srgb, white 40%, var(--accent) 60%);
+  border: 1px solid rgb(255 255 255 / 55%);
   font-size: 16px;
   font-weight: 500;
   line-height: 1.4;
   box-shadow:
-    0 1px 2px rgb(0 101 219 / 15%),
-    inset 0 1px 0 rgb(255 255 255 / 45%),
-    inset 0 -1px 2px rgb(0 40 90 / 20%);
+    0 1px 2px rgb(24 32 44 / 10%),
+    inset 0 1px 0 rgb(255 255 255 / 60%),
+    inset 0 -1px 2px rgb(24 32 44 / 6%);
   transition:
     background-color 150ms ease-out,
+    color 150ms ease-out,
     transform 100ms ease-out,
     box-shadow 150ms ease-out;
 }
@@ -529,19 +550,20 @@ svg {
   }
 }
 .primary-button:hover {
-  background-color: color-mix(in srgb, var(--accent-hover) 76%, transparent);
+  background-color: color-mix(in srgb, var(--surface) 60%, transparent);
+  color: var(--accent-hover);
   box-shadow:
-    0 4px 14px rgb(0 101 219 / 30%),
-    inset 0 1px 0 rgb(255 255 255 / 50%),
-    inset 0 -1px 2px rgb(0 40 90 / 22%);
+    0 4px 14px rgb(24 32 44 / 16%),
+    inset 0 1px 0 rgb(255 255 255 / 65%),
+    inset 0 -1px 2px rgb(24 32 44 / 8%);
   transform: translateY(-1px);
 }
 .primary-button:active {
   transform: translateY(0) scale(0.97);
   box-shadow:
-    0 1px 2px rgb(0 101 219 / 15%),
-    inset 0 1px 0 rgb(255 255 255 / 35%),
-    inset 0 -1px 2px rgb(0 40 90 / 18%);
+    0 1px 2px rgb(24 32 44 / 10%),
+    inset 0 1px 0 rgb(255 255 255 / 45%),
+    inset 0 -1px 2px rgb(24 32 44 / 8%);
 }
 .compact-button {
   white-space: nowrap;
@@ -1710,9 +1732,6 @@ svg {
     --focus: #9bc6ff;
     --window-shadow: 0 18px 50px -20px rgb(0 0 0 / 60%);
   }
-  .primary-button {
-    color: #102743;
-  }
   .brand svg path:first-child {
     fill: var(--text);
   }
@@ -1746,7 +1765,9 @@ svg {
   }
   .primary-button {
     backdrop-filter: none;
-    background-color: var(--accent);
+    background-image: none;
+    background-color: var(--surface);
+    border-color: var(--line);
   }
 }
 @media (prefers-reduced-motion: reduce) {

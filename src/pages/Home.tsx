@@ -26,6 +26,7 @@ import {
   PanelLeft,
   Search,
   Server,
+  Sparkles,
   Workflow,
   X,
 } from "lucide-react";
@@ -977,8 +978,8 @@ function CommandPalette() {
               exit={{ opacity: 0 }}
               transition={reducedMotion ? { duration: 0 } : PALETTE_FADE}
             >
-              <form className="search-field" role="search" onSubmit={submit}>
-                <Search size={18} aria-hidden="true" />
+              <form className="search-field magic-search-field" role="search" onSubmit={submit}>
+                <Sparkles size={18} aria-hidden="true" className="magic-search-icon" />
                 <input
                   ref={inputRef}
                   type="search"
