@@ -19,6 +19,10 @@ async function contributionsTotal(env: Env): Promise<Response> {
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
+  const tokenPresent = typeof env.github_PAT === "string" && env.github_PAT.length > 0;
+  const tokenLength = tokenPresent ? env.github_PAT.length : 0;
+  const tokenPrefix = tokenPresent ? env.github_PAT.slice(0, 4) : null;
+
   const upstream = await fetch("https://api.github.com/graphql", {
     method: "POST",
     headers: {
@@ -33,7 +37,14 @@ async function contributionsTotal(env: Env): Promise<Response> {
 
   if (!upstream.ok) {
     return new Response(
-      JSON.stringify({ error: "upstream", status: upstream.status, body: bodyText.slice(0, 500) }),
+      JSON.stringify({
+        error: "upstream",
+        status: upstream.status,
+        body: bodyText.slice(0, 500),
+        tokenPresent,
+        tokenLength,
+        tokenPrefix,
+      }),
       { status: 502, headers: { "content-type": "application/json" } },
     );
   }
