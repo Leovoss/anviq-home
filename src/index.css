@@ -918,6 +918,19 @@ svg {
   font-variant-numeric: tabular-nums;
   min-width: 26px;
   padding-top: 3px;
+  transition: color 220ms ease-out, font-weight 220ms ease-out;
+}
+.process-list li h2 {
+  transition: color 220ms ease-out;
+}
+.process-list.has-focus li:not(.is-focused) .step-number {
+  color: var(--muted);
+}
+.process-list.has-focus li:not(.is-focused) h2 {
+  color: var(--muted);
+}
+.process-list li.is-focused .step-number {
+  font-weight: 650;
 }
 .faq-list {
   margin: 35px 0;

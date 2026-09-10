@@ -40,6 +40,7 @@ import {
 import { PublicActivity } from "@/components/PublicActivity";
 import { ExplorerPane } from "@/components/ExplorerPane";
 import { motion, useReducedMotion } from "motion/react";
+import type { Variants } from "motion/react";
 import { GitHubActivity } from "@/components/ui/github-activity";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 
@@ -452,7 +453,52 @@ function Services() {
     </DocumentPage>
   );
 }
+const PROCESS_LIST_VARIANTS = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.09 } },
+} satisfies Variants;
+const PROCESS_ITEM_VARIANTS = {
+  hidden: { opacity: 0, y: 14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.32, ease: [0.16, 1, 0.3, 1] as const },
+  },
+} satisfies Variants;
+
 function Approach() {
+  const listRef = useRef<HTMLOListElement>(null);
+  const [focusedStep, setFocusedStep] = useState<string | null>(null);
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const items = listRef.current
+      ? [...listRef.current.querySelectorAll<HTMLLIElement>("li")]
+      : [];
+    if (!items.length) return;
+    const ratios = new Map<string, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const step = entry.target.getAttribute("data-step");
+          if (step) ratios.set(step, entry.intersectionRatio);
+        }
+        let best: string | null = null;
+        let bestRatio = 0.1;
+        for (const [step, ratio] of ratios) {
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            best = step;
+          }
+        }
+        setFocusedStep(best);
+      },
+      { threshold: [0, 0.25, 0.5, 0.75, 1], rootMargin: "-35% 0px -35% 0px" },
+    );
+    items.forEach((item) => observer.observe(item));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <DocumentPage
       title="Own the delivery."
@@ -462,17 +508,29 @@ function Approach() {
         Hosting, access controls, and data handling are agreed before
         implementation.
       </p>
-      <ol className="process-list">
+      <motion.ol
+        ref={listRef}
+        className={`process-list ${focusedStep ? "has-focus" : ""}`}
+        initial={reducedMotion ? undefined : "hidden"}
+        whileInView={reducedMotion ? undefined : "visible"}
+        viewport={{ once: true, amount: 0.3 }}
+        variants={reducedMotion ? undefined : PROCESS_LIST_VARIANTS}
+      >
         {PROCESS.map((step) => (
-          <li key={step.n}>
+          <motion.li
+            key={step.n}
+            data-step={step.n}
+            className={focusedStep === step.n ? "is-focused" : ""}
+            variants={reducedMotion ? undefined : PROCESS_ITEM_VARIANTS}
+          >
             <span className="step-number">{step.n}</span>
             <div>
               <h2>{step.title}</h2>
               <p>{step.body}</p>
             </div>
-          </li>
+          </motion.li>
         ))}
-      </ol>
+      </motion.ol>
       <Link className="external-link" to="/explore/engagement">
         How an engagement works <ArrowRight size={18} aria-hidden="true" />
       </Link>
