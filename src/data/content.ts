@@ -53,6 +53,7 @@ export const WORK_SELECTED = [
     name: "Steadyward",
     body: "A read-only behavioural retention layer for MT4/MT5 brokers: pattern detection on live trading accounts, white-label trader alerts, no execution access.",
     domain: "steadyward.com",
+    screenshot: "/images/steadyward-shot.png",
   },
   {
     href: null,
@@ -60,6 +61,7 @@ export const WORK_SELECTED = [
     name: "LV Matching",
     body: "Construction bill-of-quantities matching for multiple tenants, with a chat-and-grid interface, EU-hosted auth, and data handling built for GDPR from the schema up.",
     domain: null,
+    screenshot: null,
   },
   {
     href: "https://addreach.addvert.de",
@@ -67,6 +69,23 @@ export const WORK_SELECTED = [
     name: "Addreach",
     body: "Cold-outreach product for a German market: automated sending infrastructure with deliverability and compliance built into the pipeline, not bolted on after.",
     domain: "addreach.addvert.de",
+    screenshot: "/images/addreach-shot.png",
+  },
+  {
+    href: null,
+    tag: "Recruitment platform",
+    name: "Automated Recruitment CRM",
+    body: "Runs the full loop from ad-sourced CV intake to legally-sequenced outreach to placement, for a German recruitment operation. Matching is deterministic code, not AI, by design: the EU AI Act was the reason, not a missing feature.",
+    domain: null,
+    screenshot: null,
+  },
+  {
+    href: null,
+    tag: "Developer tooling",
+    name: "Anviq Forge",
+    body: "An open-source, Fedora-first workstation provisioning tool: small, composable, independently testable Bash modules that install exactly what you ask for and explain every effect, instead of a black-box setup script.",
+    domain: null,
+    screenshot: null,
   },
 ];
 

@@ -4,7 +4,7 @@ import { Activity, ArrowRight, BookOpen, ChevronLeft, ChevronRight, CircleHelp, 
 import { WORK, WORK_SELECTED } from "@/data/content";
 import { Logo } from "@/components/Logo";
 
-const projectSlugs = ["steadyward", "lv-matching", "addreach"];
+const projectSlugs = ["steadyward", "lv-matching", "addreach", "recruitment-crm", "anviq-forge"];
 const serviceIcons = [Workflow, Layers, Server];
 
 export function FilesArtwork({ document = false }: { document?: boolean }) {
