@@ -804,6 +804,12 @@ svg {
     transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+/* On mobile the screenshot renders as a plain, non-interactive image
+   (no lightbox trigger wrapper), so it needs its own top margin. */
+.project-screenshot-static {
+  max-width: 640px;
+  margin-top: 24px;
+}
 .project-screenshot-trigger:hover .project-screenshot {
   transform: translateY(-3px);
   box-shadow: 0 18px 40px rgb(24 32 44 / 14%);
@@ -917,7 +923,6 @@ svg {
 .founder-heading {
   margin-top: 40px !important;
   padding-top: 24px;
-  border-top: 1px solid var(--line);
 }
 .founder-card {
   display: flex;
