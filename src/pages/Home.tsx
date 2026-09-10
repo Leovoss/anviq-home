@@ -93,7 +93,7 @@ const SLUGS = ["steadyward", "lv-matching", "addreach", "recruitment-crm"];
 const FOUNDER_BIO = [
   "I work where customers, product, and regulated environments meet. Four years across forex brokerage, fintech, and iGaming, turning what customers struggle with into requirements engineering, compliance, and risk teams can act on: AML, KYC, and Source-of-Wealth for the German market, and a 200+ VIP portfolio generating roughly €10M a year at 82% retention.",
   "Anviq is that same approach applied directly: sit with the customer, find the real problem, own it through to something shipped and running. I build and run production systems for companies without engineers of their own, custom software, automation, integrations, GDPR-compliant infrastructure, using AI tools daily to move faster.",
-  "Native German speaker with deep DACH market experience, studying computer science at Uninettuno alongside the work. Open to remote roles and relocation to Australia, the US, or Switzerland, particularly platform and developer-focused products.",
+  "Native German speaker with deep DACH market experience, studying computer science at Uninettuno alongside the work. Open to remote roles and relocation to Australia, the US, or Switzerland.",
 ];
 const SEARCH_ENTRIES = [
   ...NAV.filter((item) => item.id !== "overview").map((item) => ({
