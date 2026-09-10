@@ -751,6 +751,15 @@ svg {
 .project-details dd {
   margin: 0;
 }
+.project-screenshot {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  margin-top: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 32px rgb(24 32 44 / 10%);
+}
 .external-link {
   display: flex;
   gap: 10px;

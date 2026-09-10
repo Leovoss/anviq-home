@@ -81,7 +81,7 @@ const NAV = [
     href: "/explore/activity",
   },
 ];
-const SLUGS = ["steadyward", "lv-matching", "addreach"];
+const SLUGS = ["steadyward", "lv-matching", "addreach", "recruitment-crm", "anviq-forge"];
 const FOUNDER_BIO = [
   "I work where customers, product, and regulated environments meet. Four years across forex brokerage, fintech, and iGaming, turning what customers struggle with into requirements engineering, compliance, and risk teams can act on: AML, KYC, and Source-of-Wealth for the German market, and a 200+ VIP portfolio generating roughly €10M a year at 82% retention.",
   "Anviq is that same approach applied directly: sit with the customer, find the real problem, own it through to something shipped and running. I build and run production systems for companies without engineers of their own, custom software, automation, integrations, GDPR-compliant infrastructure, using AI tools daily to move faster.",
@@ -141,6 +141,16 @@ const PROJECT_DETAILS = [
     ["Focus", "Cold outreach for the German market"],
     ["Delivery", "Automated sending infrastructure"],
     ["Infrastructure", "Deliverability and compliance within the pipeline"],
+  ],
+  [
+    ["Focus", "Intake, matching, and legally-sequenced outreach"],
+    ["Compliance", "Outreach ordered to UWG §7 Abs. 2, not convenience"],
+    ["Data isolation", "Candidate and company data separated at the database role level"],
+  ],
+  [
+    ["Focus", "Fedora workstation provisioning, one module per tool"],
+    ["Delivery", "Composable Bash modules, each independently testable"],
+    ["Principle", "No privileged action hidden behind magic"],
   ],
 ];
 const subscribeMobile = (callback: () => void) => {
@@ -342,6 +352,14 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
               </div>
             ))}
           </dl>
+          {project.screenshot && (
+            <img
+              className="project-screenshot"
+              src={project.screenshot}
+              alt={`${project.name} landing page`}
+              loading="lazy"
+            />
+          )}
           {project.href ? (
             <a
               href={project.href}
@@ -355,11 +373,11 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
             </a>
           ) : (
             <a
-              href="mailto:lvoss@anviq.net?subject=LV%20Matching"
+              href={`mailto:lvoss@anviq.net?subject=${encodeURIComponent(project.name)}`}
               className="external-link"
             >
               <Mail size={19} aria-hidden="true" />
-              Ask about LV Matching
+              Ask about {project.name}
             </a>
           )}
           <p className="project-note">
