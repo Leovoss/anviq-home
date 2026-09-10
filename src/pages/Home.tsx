@@ -519,7 +519,6 @@ function About() {
         assessment through deployment and documentation. Hosting, access
         controls, and data handling are agreed before implementation.
       </p>
-      <h2>Leonardo Voss</h2>
       <div className="founder-card">
         <img
           className="founder-photo"
@@ -527,6 +526,7 @@ function About() {
           alt="Leonardo Voss"
         />
         <div className="founder-bio">
+          <h2>Leonardo Voss</h2>
           {FOUNDER_BIO.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}

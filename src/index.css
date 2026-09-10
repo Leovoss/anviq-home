@@ -771,27 +771,38 @@ svg {
 }
 .founder-card {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   align-items: flex-start;
-  margin-top: 16px;
+  margin-top: 20px;
+  padding: 28px;
+  border-radius: 20px;
+  background: var(--chrome-glass);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgb(24 32 44 / 4%);
 }
 .founder-photo {
-  width: 84px;
-  height: 84px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   object-fit: cover;
   background: var(--sidebar);
+  border: 3px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
   flex-shrink: 0;
 }
 .founder-bio {
   min-width: 0;
-  max-width: 62ch;
+  max-width: 60ch;
+}
+.founder-bio h2 {
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
 }
 .founder-bio p {
-  margin-top: 0 !important;
-}
-.founder-bio p + p {
-  margin-top: 14px !important;
+  margin-top: 12px !important;
+  font-size: 15px !important;
+  line-height: 1.65 !important;
 }
 .service-detail {
   display: flex;
