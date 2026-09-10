@@ -112,6 +112,13 @@ async function contributionsTotal(env: Env): Promise<Response> {
     }))
     .sort((a, b) => b.count - a.count);
 
+  const graphqlErrors = (data as { errors?: unknown }).errors;
+  if (graphqlErrors) {
+    return new Response(JSON.stringify({ count, days, repos, graphqlErrors }), {
+      headers: { "content-type": "application/json" },
+    });
+  }
+
   const response = new Response(JSON.stringify({ count, days, repos }), {
     headers: {
       "content-type": "application/json",
