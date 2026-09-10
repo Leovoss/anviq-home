@@ -20,6 +20,7 @@ import {
   ExternalLink,
   FileText,
   Folder,
+  History,
   House,
   Layers,
   Mail,
@@ -38,6 +39,7 @@ import {
   PROCESS,
   ENGAGEMENT,
   CONSTRAINTS,
+  SHIP_LOG,
   FAQ,
   IDEA,
 } from "@/data/content";
@@ -104,6 +106,12 @@ const NAV = [
     icon: Activity,
     href: "/explore/activity",
   },
+  {
+    id: "ship-log",
+    label: "Ship log",
+    icon: History,
+    href: "/explore/ship-log",
+  },
 ];
 const SLUGS = ["steadyward", "lv-matching", "addreach", "recruitment-crm"];
 const FOUNDER_BIO = [
@@ -125,8 +133,10 @@ const SEARCH_ENTRIES = [
             ? ENGAGEMENT.map((s) => s.body).join(" ")
             : item.id === "constraints"
               ? CONSTRAINTS.map((s) => s.body).join(" ")
-              : item.id === "questions"
-                ? FAQ.map((s) => s.q + " " + s.a).join(" ")
+              : item.id === "ship-log"
+                ? SHIP_LOG.map((s) => s.title).join(" ")
+                : item.id === "questions"
+                  ? FAQ.map((s) => s.q + " " + s.a).join(" ")
               : item.label,
   })),
   ...WORK_SELECTED.map((item, index) => ({
@@ -1279,6 +1289,33 @@ export function Home() {
             View Leovoss on GitHub
             <span className="sr-only"> (opens in a new tab)</span>
           </a>
+          <Link className="external-link" to="/explore/ship-log">
+            Ship log <ArrowRight size={18} aria-hidden="true" />
+          </Link>
+        </DocumentPage>
+      );
+      break;
+    case "ship-log":
+      content = (
+        <DocumentPage
+          title="Ship log."
+          intro="What went out, month by month. Some entries are redacted for client discretion."
+        >
+          {SHIP_LOG.length === 0 ? (
+            <p className="ship-log-empty">Nothing shipped this month yet.</p>
+          ) : (
+            <ul className="ship-log-list">
+              {SHIP_LOG.map((entry, index) => (
+                <li key={index}>
+                  <span className="ship-log-date">{entry.date}</span>
+                  <span className="ship-log-title">{entry.title}</span>
+                  {entry.note && (
+                    <span className="ship-log-note">{entry.note}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
         </DocumentPage>
       );
       break;

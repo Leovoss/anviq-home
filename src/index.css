@@ -1233,6 +1233,39 @@ svg {
   border-top: 1px solid var(--line);
   color: var(--muted);
 }
+.ship-log-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+.ship-log-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.ship-log-date {
+  min-width: 118px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.ship-log-title {
+  font-size: 16px;
+  font-weight: 550;
+}
+.ship-log-note {
+  width: 100%;
+  margin-left: 132px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.ship-log-empty {
+  color: var(--muted);
+  font-size: 15px;
+}
 .document-sections > section {
   padding: 27px 0;
   border-top: 1px solid var(--line);
@@ -1806,6 +1839,12 @@ svg {
   .engagement-columns {
     grid-template-columns: 1fr;
     gap: 6px;
+  }
+  .ship-log-date {
+    min-width: 100%;
+  }
+  .ship-log-note {
+    margin-left: 0;
   }
   .project-preview .document-label {
     display: none;
