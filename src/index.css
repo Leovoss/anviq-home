@@ -959,6 +959,60 @@ svg {
 .project-details dd {
   margin: 0;
 }
+.project-files {
+  margin-top: 30px;
+}
+.project-file-list {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+.project-file-list li {
+  border-bottom: 1px solid var(--line);
+}
+.project-file-list button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 4px;
+  border: 0;
+  background: none;
+  text-align: left;
+  color: var(--text);
+  font-size: 15px;
+}
+.project-file-list button:hover {
+  color: var(--accent);
+}
+.project-file-list button svg:first-child {
+  color: var(--accent);
+}
+.project-file-chevron {
+  margin-left: auto;
+  color: var(--muted);
+}
+.project-file-back {
+  color: var(--accent);
+  font-size: 15px;
+  margin-bottom: 6px;
+  scroll-margin-top: 96px;
+}
+.project-file-name {
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  margin-bottom: 4px;
+}
+.project-file-open p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 68ch;
+  margin-top: 10px;
+}
 .project-screenshot-trigger {
   display: block;
   width: 100%;
@@ -1661,6 +1715,7 @@ svg {
     color: var(--accent);
     font-size: 16px;
     margin-bottom: 22px;
+    scroll-margin-top: 96px;
   }
   .project-preview .document-label {
     display: none;
