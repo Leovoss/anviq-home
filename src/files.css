@@ -74,13 +74,16 @@
 }
 .files-contact:hover { background: var(--selected); }
 .files-search-row { margin-top: 5px; }
-.files-search-row .search-field {
+.files-search-row .search-field-wrap {
   width: 100%;
+  min-width: 0;
+  margin-left: 0;
+}
+.files-search-row .search-field {
   height: 44px;
   background: var(--files-canvas);
   border: 0;
   border-radius: 11px;
-  margin: 0;
 }
 .files-search-row .search-field input { font-size: 16px; }
 .files-search-row .search-field button { min-width: 44px; height: 44px; }

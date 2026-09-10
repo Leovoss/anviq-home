@@ -82,6 +82,41 @@ const NAV = [
   },
 ];
 const SLUGS = ["steadyward", "lv-matching", "addreach"];
+const SEARCH_ENTRIES = [
+  ...NAV.filter((item) => item.id !== "overview").map((item) => ({
+    title: item.label,
+    href: item.href,
+    body:
+      item.id === "services"
+        ? WORK.map((s) => s.body).join(" ")
+        : item.id === "approach"
+          ? PROCESS.map((s) => s.body).join(" ")
+          : item.id === "engagement"
+            ? ENGAGEMENT.map((s) => s.body).join(" ")
+            : item.id === "questions"
+              ? FAQ.map((s) => s.q + " " + s.a).join(" ")
+              : item.label,
+  })),
+  ...WORK_SELECTED.map((item, index) => ({
+    title: item.name,
+    href: `/projects/${SLUGS[index]}`,
+    body: `${item.tag}. ${item.body}`,
+  })),
+  {
+    title: "About Anviq",
+    href: "/explore/about",
+    body: "Independent AI engineering practice. One engineer, full accountability.",
+  },
+];
+function searchEntries(query: string) {
+  const words = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return [];
+  return SEARCH_ENTRIES.filter((item) =>
+    words.every((word) =>
+      `${item.title} ${item.body}`.toLocaleLowerCase().includes(word),
+    ),
+  );
+}
 const SERVICE_ICONS = [Workflow, Layers, Server];
 const PROJECT_DETAILS = [
   [
@@ -502,40 +537,7 @@ function MissingPage() {
   );
 }
 function SearchResults({ query }: { query: string }) {
-  const entries = [
-    ...NAV.filter((item) => item.id !== "overview").map((item) => ({
-      title: item.label,
-      href: item.href,
-      body:
-        item.id === "services"
-          ? WORK.map((s) => s.body).join(" ")
-          : item.id === "approach"
-            ? PROCESS.map((s) => s.body).join(" ")
-            : item.id === "engagement"
-              ? ENGAGEMENT.map((s) => s.body).join(" ")
-              : item.id === "questions"
-                ? FAQ.map((s) => s.q + " " + s.a).join(" ")
-                : item.label,
-    })),
-    ...WORK_SELECTED.map((item, index) => ({
-      title: item.name,
-      href: `/projects/${SLUGS[index]}`,
-      body: `${item.tag}. ${item.body}`,
-    })),
-    {
-      title: "About Anviq",
-      href: "/explore/about",
-      body: "Independent AI engineering practice. One engineer, full accountability.",
-    },
-  ];
-  const words = query.toLocaleLowerCase().trim().split(/\s+/);
-  const matches = query.trim()
-    ? entries.filter((item) =>
-        words.every((word) =>
-          `${item.title} ${item.body}`.toLocaleLowerCase().includes(word),
-        ),
-      )
-    : [];
+  const matches = searchEntries(query);
   return (
     <DocumentPage
       title="Search Anviq"
@@ -575,8 +577,18 @@ function SearchResults({ query }: { query: string }) {
 }
 function SearchControl({ query }: { query: string }) {
   const [search, setSearch] = useState(query);
+  const [open, setOpen] = useState(false);
+  const [highlighted, setHighlighted] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const suggestions = search.trim() ? searchEntries(search).slice(0, 6) : [];
+  const showSuggestions = open && suggestions.length > 0;
+
+  useEffect(() => {
+    setHighlighted(0);
+  }, [search]);
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
@@ -590,38 +602,108 @@ function SearchControl({ query }: { query: string }) {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
+
+  useEffect(() => {
+    const onPointerDown = (event: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    return () => document.removeEventListener("mousedown", onPointerDown);
+  }, []);
+
+  const goTo = (href: string) => {
+    setOpen(false);
+    navigate(href);
+  };
+
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    navigate(`/explore/search?q=${encodeURIComponent(search.trim())}`);
+    if (showSuggestions && suggestions[highlighted]) {
+      goTo(suggestions[highlighted].href);
+    } else {
+      goTo(`/explore/search?q=${encodeURIComponent(search.trim())}`);
+    }
   };
+
+  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setHighlighted((h) => Math.min(h + 1, suggestions.length - 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setHighlighted((h) => Math.max(h - 1, 0));
+    } else if (event.key === "Escape") {
+      setOpen(false);
+    }
+  };
+
   return (
-    <form className="search-field" role="search" onSubmit={submit}>
-      <button type="submit" aria-label="Search Anviq">
-        <Search size={18} aria-hidden="true" />
-      </button>
-      <input
-        ref={inputRef}
-        type="search"
-        name="q"
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        placeholder="Search Anviq..."
-        aria-label="Search Anviq"
-        autoComplete="off"
-      />
-      {search && (
-        <button
-          type="button"
-          aria-label="Clear search"
-          onClick={() => {
-            setSearch("");
-            inputRef.current?.focus();
-          }}
-        >
-          <X size={16} aria-hidden="true" />
+    <div className="search-field-wrap" ref={wrapRef}>
+      <form className="search-field" role="search" onSubmit={submit}>
+        <button type="submit" aria-label="Search Anviq">
+          <Search size={18} aria-hidden="true" />
         </button>
+        <input
+          ref={inputRef}
+          type="search"
+          name="q"
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          onKeyDown={onKeyDown}
+          placeholder="Search Anviq..."
+          aria-label="Search Anviq"
+          autoComplete="off"
+          role="combobox"
+          aria-expanded={showSuggestions}
+          aria-controls="search-suggestions"
+          aria-activedescendant={
+            showSuggestions ? `search-suggestion-${highlighted}` : undefined
+          }
+        />
+        {search && (
+          <button
+            type="button"
+            aria-label="Clear search"
+            onClick={() => {
+              setSearch("");
+              inputRef.current?.focus();
+            }}
+          >
+            <X size={16} aria-hidden="true" />
+          </button>
+        )}
+      </form>
+      {showSuggestions && (
+        <ul className="search-suggestions" id="search-suggestions" role="listbox">
+          {suggestions.map((item, index) => (
+            <li key={item.href} role="presentation">
+              <button
+                type="button"
+                id={`search-suggestion-${index}`}
+                role="option"
+                aria-selected={index === highlighted}
+                className={index === highlighted ? "is-highlighted" : ""}
+                onMouseEnter={() => setHighlighted(index)}
+                onClick={() => goTo(item.href)}
+              >
+                <FileText size={17} aria-hidden="true" />
+                <span>
+                  <strong>{item.title}</strong>
+                  <small>{item.body}</small>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
-    </form>
+    </div>
   );
 }
 export function Home() {
