@@ -1424,6 +1424,13 @@ export function Home() {
     default:
       content = <MissingPage />;
   }
+  // Sections that no longer exist, guarded here as well as in the router so
+  // the redirect holds however the route was matched.
+  const retired: Record<string, string> = {
+    founder: "/explore/about",
+    "ship-log": "/explore/projects",
+  };
+  if (retired[active]) return <Navigate to={retired[active]} replace />;
   const legacy: Record<string, string> = {
     "#work": "/explore/services",
     "#work-selected": "/explore/projects",

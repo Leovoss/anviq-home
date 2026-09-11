@@ -250,10 +250,6 @@ export const DACH = [
     note: "Outreach ordered to the statutory sequencing window, not convenience.",
   },
   {
-    label: "AML / KYC",
-    note: "Source-of-Wealth and KYC discipline carried over from financial services work.",
-  },
-  {
     label: "Data residency",
     note: "Hosted where your requirements say, EU regions included.",
   },
