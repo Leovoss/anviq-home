@@ -164,7 +164,9 @@ function searchEntries(query: string) {
   if (!words.length) return [];
   return SEARCH_ENTRIES.filter((item) =>
     words.every((word) =>
-      `${item.title} ${item.body}`.toLocaleLowerCase().includes(word),
+      `${item.title} ${item.sub} ${item.href} ${item.body}`
+        .toLocaleLowerCase()
+        .includes(word),
     ),
   );
 }
@@ -488,7 +490,7 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
             <ChevronLeft size={19} aria-hidden="true" />
             Selected work
           </Link>
-          <p className="document-label">Project overview</p>
+          <p className="document-label project-overview-label">Project overview</p>
           <FolderImage slug={SLUGS[selected]} />
           {filesLayout ? (
             <h1 id="project-title">{project.name}</h1>
@@ -1211,16 +1213,6 @@ function CommandPalette() {
               exit={{ opacity: 0 }}
               transition={reducedMotion ? { duration: 0 } : PALETTE_FADE}
             >
-              <div className="magic-search-chrome">
-                <button
-                  type="button"
-                  className="magic-search-close"
-                  aria-label="Close search"
-                  onClick={() => setOpen(false)}
-                >
-                  <X size={9} strokeWidth={3} aria-hidden="true" />
-                </button>
-              </div>
               <form className="search-field magic-search-field" role="search" onSubmit={submit}>
                 <Search size={18} aria-hidden="true" />
                 <input

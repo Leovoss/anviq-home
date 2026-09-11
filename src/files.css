@@ -166,7 +166,7 @@
 .files-layout .project-browser { display: block; min-height: 100%; }
 .files-layout .project-preview { max-width: 820px; padding: 30px 36px 45px; }
 .files-layout .project-preview .mobile-back,
-.files-layout .project-preview .document-label { display: none; }
+.files-layout .project-preview .project-overview-label { display: none; }
 .files-layout .project-preview > .folder-image { margin-top: 0; }
 .files-layout .project-preview h1 { font-size: 34px; font-weight: 700; }
 .files-layout .explorer-status { border-radius: 0; background: var(--surface); }
