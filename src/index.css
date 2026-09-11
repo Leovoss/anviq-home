@@ -1350,6 +1350,9 @@ svg {
   padding: 9px 0;
   border-bottom: 1px solid var(--line);
 }
+.engagement-columns li:last-child {
+  border-bottom: 0;
+}
 .engagement-next {
   margin-top: 24px !important;
   padding-top: 20px;
@@ -1527,9 +1530,6 @@ svg {
 .faq-list details {
   padding-block: 4px;
   border-top: 1px solid var(--line);
-}
-.faq-list details:last-child {
-  border-bottom: 1px solid var(--line);
 }
 .faq-list summary {
   display: flex;
