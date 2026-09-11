@@ -125,6 +125,7 @@ const SEARCH_ENTRIES = [
     title: item.label,
     href: item.href,
     group: "Explore" as const,
+    icon: item.icon,
     sub: SEARCH_SUBS[item.id] ?? item.label,
     body:
       item.id === "services"
@@ -145,6 +146,7 @@ const SEARCH_ENTRIES = [
     title: item.name,
     href: `/projects/${SLUGS[index]}`,
     group: "Projects" as const,
+    icon: Folder,
     sub: item.tag,
     body: `${item.tag}. ${item.body}`,
   })),
@@ -152,6 +154,7 @@ const SEARCH_ENTRIES = [
     title: "About Anviq",
     href: "/explore/about",
     group: "Explore" as const,
+    icon: BookOpen,
     sub: "The practice",
     body: "Independent IT consulting and software practice. Commercial judgment and technical delivery, one person, full accountability. Leonardo Voss.",
   },
@@ -940,7 +943,7 @@ function SuggestionGroups({
                   onClick={() => goTo(item.href)}
                 >
                   <span className="suggestion-icon">
-                    <FileText size={17} aria-hidden="true" />
+                    <item.icon size={17} aria-hidden="true" />
                   </span>
                   <span className="suggestion-text">
                     <strong>{item.title}</strong>
@@ -1033,6 +1036,9 @@ function InlineSearch() {
           placeholder="Search Anviq..."
           aria-label="Search Anviq"
           autoComplete="off"
+          spellCheck={false}
+          autoCorrect="off"
+          autoCapitalize="off"
           role="combobox"
           aria-expanded={showSuggestions}
           aria-controls="search-suggestions"
@@ -1227,6 +1233,9 @@ function CommandPalette() {
                   placeholder="Make magic happen..."
                   aria-label="Search Anviq"
                   autoComplete="off"
+                  spellCheck={false}
+                  autoCorrect="off"
+                  autoCapitalize="off"
                   role="combobox"
                   aria-expanded={suggestions.length > 0}
                   aria-controls="search-suggestions"
