@@ -20,7 +20,6 @@ import {
   ExternalLink,
   FileText,
   Folder,
-  History,
   House,
   Layers,
   Mail,
@@ -28,7 +27,6 @@ import {
   Search,
   Server,
   ShieldCheck,
-  UserRound,
   Workflow,
   X,
 } from "lucide-react";
@@ -40,7 +38,6 @@ import {
   ENGAGEMENT,
   CONSTRAINTS,
   DACH,
-  SHIP_LOG,
   FAQ,
   IDEA,
 } from "@/data/content";
@@ -107,24 +104,29 @@ const NAV = [
     icon: Activity,
     href: "/explore/activity",
   },
-  {
-    id: "ship-log",
-    label: "Ship log",
-    icon: History,
-    href: "/explore/ship-log",
-  },
 ];
 const SLUGS = ["steadyward", "lv-matching", "addreach", "recruitment-crm"];
-const FOUNDER_BIO = [
-  "I work where customers, product, and regulated environments meet. Four years across forex brokerage, fintech, and iGaming, turning what customers struggle with into requirements engineering, compliance, and risk teams can act on: AML, KYC, and Source-of-Wealth for the German market, and a 200+ VIP portfolio generating roughly €10M a year at 82% retention.",
-  "Anviq is that same approach applied directly: sit with the customer, find the real problem, own it through to something shipped and running, the workflow and handoffs as much as the code. I build and run production systems for companies without engineers of their own, custom software, automation, integrations, GDPR-compliant infrastructure, using AI where it earns its place.",
-  "Native German speaker with deep DACH market experience, studying computer science at Uninettuno alongside the work. Open to remote roles and relocation to Australia, the US, or Switzerland.",
-];
+// One credibility line, not an autobiography - LinkedIn holds the story.
+const FOUNDER_LINE =
+  "Four years in regulated commercial operations (brokerage, fintech, iGaming) before going technical. Native German speaker, DACH market.";
+// Short subheaders for search rows, the same shape as a Selected work row
+// (name + tag). The body below is match text only, never displayed.
+const SEARCH_SUBS: Record<string, string> = {
+  services: "What I build",
+  projects: "Independent builds",
+  approach: "Assess, build, deploy, maintain",
+  engagement: "Assessment, Build, Retain",
+  constraints: "Hosting, access, compliance",
+  questions: "Common questions",
+  activity: "Public GitHub activity",
+};
 const SEARCH_ENTRIES = [
   ...NAV.filter((item) => item.id !== "overview").map((item) => ({
     title: item.label,
     href: item.href,
     group: "Explore" as const,
+    icon: item.icon,
+    sub: SEARCH_SUBS[item.id] ?? item.label,
     body:
       item.id === "services"
         ? WORK.map((s) => s.body).join(" ")
@@ -136,29 +138,25 @@ const SEARCH_ENTRIES = [
               ? CONSTRAINTS.map((s) => s.body).join(" ") +
                 " " +
                 DACH.map((s) => `${s.label} ${s.note}`).join(" ")
-              : item.id === "ship-log"
-                ? SHIP_LOG.map((s) => s.title).join(" ")
-                : item.id === "questions"
-                  ? FAQ.map((s) => s.q + " " + s.a).join(" ")
-              : item.label,
+              : item.id === "questions"
+                ? FAQ.map((s) => s.q + " " + s.a).join(" ")
+                : item.label,
   })),
   ...WORK_SELECTED.map((item, index) => ({
     title: item.name,
     href: `/projects/${SLUGS[index]}`,
     group: "Projects" as const,
+    icon: Folder,
+    sub: item.tag,
     body: `${item.tag}. ${item.body}`,
   })),
   {
     title: "About Anviq",
     href: "/explore/about",
     group: "Explore" as const,
-    body: "Independent IT consulting and software practice. Commercial judgment and technical delivery, one person, full accountability.",
-  },
-  {
-    title: "Founder",
-    href: "/explore/founder",
-    group: "Explore" as const,
-    body: "Leonardo Voss, founder of Anviq.",
+    icon: BookOpen,
+    sub: "The practice",
+    body: "Independent IT consulting and software practice. Commercial judgment and technical delivery, one person, full accountability. Leonardo Voss.",
   },
 ];
 function searchEntries(query: string) {
@@ -166,7 +164,9 @@ function searchEntries(query: string) {
   if (!words.length) return [];
   return SEARCH_ENTRIES.filter((item) =>
     words.every((word) =>
-      `${item.title} ${item.body}`.toLocaleLowerCase().includes(word),
+      `${item.title} ${item.sub} ${item.href} ${item.body}`
+        .toLocaleLowerCase()
+        .includes(word),
     ),
   );
 }
@@ -381,6 +381,25 @@ type ProjectFile = {
   boundary?: string;
   proof?: string[][];
 };
+function ProjectShips({ ships }: { ships: { date: string; title: string }[] }) {
+  return (
+    <div className="project-ships">
+      <p className="document-label">Ship log</p>
+      {ships.length === 0 ? (
+        <p className="project-ships-empty">Coming soon.</p>
+      ) : (
+        <ul className="project-ships-list">
+          {ships.map((entry) => (
+            <li key={`${entry.date}-${entry.title}`}>
+              <span className="project-ships-date">{entry.date}</span>
+              <span className="project-ships-title">{entry.title}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 function ProjectFiles({ files }: { files: ProjectFile[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   if (openIndex !== null) {
@@ -471,7 +490,7 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
             <ChevronLeft size={19} aria-hidden="true" />
             Selected work
           </Link>
-          <p className="document-label">Project overview</p>
+          <p className="document-label project-overview-label">Project overview</p>
           <FolderImage slug={SLUGS[selected]} />
           {filesLayout ? (
             <h1 id="project-title">{project.name}</h1>
@@ -489,12 +508,14 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
             ))}
           </dl>
           <ProjectFiles files={project.files} />
+          <ProjectShips ships={project.ships} />
           {project.screenshot && (
             <ScreenshotLightbox
               src={project.screenshot}
               alt={`${project.name} landing page`}
               label={`${project.name} screenshot`}
               layoutId={SLUGS[selected]}
+              inline={!filesLayout}
             />
           )}
           {project.href ? (
@@ -556,7 +577,7 @@ function Services() {
         One engineer embeds with your team and owns delivery from the first
         technical assessment through deployment and documentation.
       </p>
-      <Link className="external-link" to="/explore/approach">
+      <Link className="internal-link" to="/explore/approach">
         See the approach <ArrowRight size={18} aria-hidden="true" />
       </Link>
       <ContactLink />
@@ -586,33 +607,66 @@ function Approach() {
       ? [...listRef.current.querySelectorAll<HTMLLIElement>("li")]
       : [];
     if (!items.length) return;
-    const ratios = new Map<string, number>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          const step = entry.target.getAttribute("data-step");
-          if (step) ratios.set(step, entry.intersectionRatio);
+    // Desktop scrolls inside .explorer-main, not the viewport, so the observer
+    // has to use that element as its root or every step keeps the same
+    // intersection and the focus sticks on one item.
+    let root: Element | null = null;
+    for (
+      let node = listRef.current?.parentElement ?? null;
+      node;
+      node = node.parentElement
+    ) {
+      const overflowY = getComputedStyle(node).overflowY;
+      if (overflowY === "auto" || overflowY === "scroll") {
+        root = node;
+        break;
+      }
+    }
+    // A reading line rather than an intersection band: the step that most
+    // recently crossed it takes focus, so 01 through 04 each get their turn,
+    // and the last step wins once the pane is scrolled to the bottom.
+    const scroller: Element | Window = root ?? window;
+    let frame = 0;
+    const compute = () => {
+      frame = 0;
+      const viewTop = root ? root.getBoundingClientRect().top : 0;
+      const viewHeight = root ? root.clientHeight : window.innerHeight;
+      const scrolled = root ?? document.scrollingElement;
+      // The line drifts down the pane as the scroll runs out, otherwise the
+      // last steps never get their turn on a page that stops scrolling
+      // before they reach the middle.
+      const range = scrolled
+        ? scrolled.scrollHeight - scrolled.clientHeight
+        : 0;
+      const progress = range > 0 ? Math.min(1, scrolled!.scrollTop / range) : 0;
+      const line = viewTop + viewHeight * (0.42 + 0.5 * progress);
+      let next: string | null = null;
+      for (const item of items) {
+        const box = item.getBoundingClientRect();
+        if (box.top <= line && box.bottom > viewTop) {
+          next = item.getAttribute("data-step");
         }
-        let best: string | null = null;
-        let bestRatio = 0.1;
-        for (const [step, ratio] of ratios) {
-          if (ratio > bestRatio) {
-            bestRatio = ratio;
-            best = step;
-          }
-        }
-        setFocusedStep(best);
-      },
-      { threshold: [0, 0.25, 0.5, 0.75, 1], rootMargin: "-35% 0px -35% 0px" },
-    );
-    items.forEach((item) => observer.observe(item));
-    return () => observer.disconnect();
+      }
+      setFocusedStep(next);
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(compute);
+    };
+    compute();
+    scroller.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      scroller.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   return (
     <DocumentPage
       title="Own the delivery."
-      intro="I work inside your team across the whole system, not just the code: workflow, integration, and the handoffs between them. I own delivery from the first technical assessment through deployment and documentation."
+      intro="I work inside your team across the whole system, not just the code: workflow, integration, compliance, and the handoffs between them. I own delivery from the first technical assessment through deployment and documentation."
     >
       <p>
         Hosting, access controls, and data handling are agreed before
@@ -641,7 +695,7 @@ function Approach() {
           </motion.li>
         ))}
       </motion.ol>
-      <Link className="external-link" to="/explore/engagement">
+      <Link className="internal-link" to="/explore/engagement">
         How an engagement works <ArrowRight size={18} aria-hidden="true" />
       </Link>
     </DocumentPage>
@@ -659,20 +713,41 @@ function Engagement() {
         className="segmented-control"
         role="tablist"
         aria-label="Engagement stage"
+        onKeyDown={(event) => {
+          const step =
+            event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+          if (!step) return;
+          event.preventDefault();
+          const index = ENGAGEMENT.findIndex((item) => item.id === mode);
+          const next =
+            ENGAGEMENT[(index + step + ENGAGEMENT.length) % ENGAGEMENT.length];
+          setMode(next.id);
+          event.currentTarget
+            .querySelector<HTMLButtonElement>(`#engagement-tab-${next.id}`)
+            ?.focus();
+        }}
       >
         {ENGAGEMENT.map((item) => (
           <button
             key={item.id}
             type="button"
             role="tab"
+            id={`engagement-tab-${item.id}`}
+            aria-controls={`engagement-panel-${item.id}`}
             aria-selected={mode === item.id}
+            tabIndex={mode === item.id ? 0 : -1}
             onClick={() => setMode(item.id)}
           >
             {item.title}
           </button>
         ))}
       </div>
-      <div className="engagement-panel" role="tabpanel">
+      <div
+        className="engagement-panel"
+        role="tabpanel"
+        id={`engagement-panel-${active.id}`}
+        aria-labelledby={`engagement-tab-${active.id}`}
+      >
         <div className="engagement-columns">
           <div>
             <h3>What's in</h3>
@@ -693,11 +768,13 @@ function Engagement() {
         </div>
         <p className="engagement-next">{active.next}</p>
       </div>
-      <Link className="external-link" to="/explore/constraints">
-        Hosting, access, and compliance boundaries{" "}
-        <ArrowRight size={18} aria-hidden="true" />
-      </Link>
-      <ContactLink />
+      <div className="page-cta">
+        <Link className="internal-link" to="/explore/constraints">
+          Hosting, access, and compliance boundaries{" "}
+          <ArrowRight size={18} aria-hidden="true" />
+        </Link>
+        <ContactLink />
+      </div>
     </DocumentPage>
   );
 }
@@ -726,9 +803,9 @@ function Constraints() {
           </ul>
         </section>
       </div>
-      <Link className="external-link" to="/projects/recruitment-crm">
-        <ExternalLink size={18} aria-hidden="true" />
+      <Link className="internal-link" to="/projects/recruitment-crm">
         See it in the Recruitment CRM
+        <ArrowRight size={18} aria-hidden="true" />
       </Link>
     </DocumentPage>
   );
@@ -750,8 +827,10 @@ function Questions() {
           </details>
         ))}
       </div>
-      <p>Something else on your mind?</p>
-      <ContactLink />
+      <div className="page-cta">
+        <p>Something else on your mind?</p>
+        <ContactLink />
+      </div>
     </DocumentPage>
   );
 }
@@ -762,9 +841,33 @@ function About() {
       intro="Anviq is an independent IT consulting and software practice. Commercial judgment and technical delivery, one person, full accountability."
     >
       <p>
-        Built for European enterprises. Hosting and access controls agreed
-        upfront. Documented decisions, clear responsibilities.
+        Hosting region, access controls and data handling follow your
+        requirements. Documented decisions, clear responsibilities.
       </p>
+      <div className="identity-strip">
+        <img
+          className="identity-photo"
+          src="/images/founder.png"
+          alt="Leonardo Voss"
+        />
+        <div className="identity-text">
+          <strong>Leonardo Voss</strong>
+          <a className="identity-email" href="mailto:lvoss@anviq.net">
+            lvoss@anviq.net
+          </a>
+          <span className="identity-line">{FOUNDER_LINE}</span>
+        </div>
+        <a
+          className="identity-linkedin"
+          href="https://www.linkedin.com/in/v-leonardo/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <ExternalLink size={16} aria-hidden="true" />
+          LinkedIn
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+      </div>
       <h2>One letter away from "anvil."</h2>
       <p>
         The metaphor is construction, testing and accountability, not spectacle.
@@ -778,38 +881,10 @@ function About() {
           </section>
         ))}
       </div>
-      <Link className="external-link" to="/explore/founder">
-        <UserRound size={18} aria-hidden="true" />
-        Meet the founder
-      </Link>
-      <Link className="external-link" to="/explore/constraints">
-        <ShieldCheck size={18} aria-hidden="true" />
+      <Link className="internal-link" to="/explore/constraints">
         Hosting, access, and compliance boundaries
+        <ArrowRight size={18} aria-hidden="true" />
       </Link>
-    </DocumentPage>
-  );
-}
-function Founder() {
-  return (
-    <DocumentPage title="Founder.">
-      <div className="founder-card">
-        <div className="founder-profile">
-          <img
-            className="founder-photo"
-            src="/images/founder.png"
-            alt="Leonardo Voss"
-          />
-          <h2>Leonardo Voss</h2>
-          <a className="founder-email" href="mailto:lvoss@anviq.net">
-            lvoss@anviq.net
-          </a>
-        </div>
-        <div className="founder-bio">
-          {FOUNDER_BIO.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </div>
-      </div>
     </DocumentPage>
   );
 }
@@ -819,7 +894,7 @@ function MissingPage() {
       title="This page isn't here."
       intro="The link may have changed. You can browse Anviq's services and projects from the overview."
     >
-      <Link className="external-link" to="/">
+      <Link className="internal-link" to="/">
         <ArrowLeft size={18} aria-hidden="true" />
         Back to overview
       </Link>
@@ -872,11 +947,11 @@ function SuggestionGroups({
                   onClick={() => goTo(item.href)}
                 >
                   <span className="suggestion-icon">
-                    <FileText size={17} aria-hidden="true" />
+                    <item.icon size={17} aria-hidden="true" />
                   </span>
                   <span className="suggestion-text">
                     <strong>{item.title}</strong>
-                    <small>{item.body}</small>
+                    <small>{item.sub}</small>
                   </span>
                 </button>
               );
@@ -965,6 +1040,9 @@ function InlineSearch() {
           placeholder="Search Anviq..."
           aria-label="Search Anviq"
           autoComplete="off"
+          spellCheck={false}
+          autoCorrect="off"
+          autoCapitalize="off"
           role="combobox"
           aria-expanded={showSuggestions}
           aria-controls="search-suggestions"
@@ -1149,6 +1227,9 @@ function CommandPalette() {
                   placeholder="Make magic happen..."
                   aria-label="Search Anviq"
                   autoComplete="off"
+                  spellCheck={false}
+                  autoCorrect="off"
+                  autoCapitalize="off"
                   role="combobox"
                   aria-expanded={suggestions.length > 0}
                   aria-controls="search-suggestions"
@@ -1208,6 +1289,7 @@ export function Home() {
     getServerMobile,
   );
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [reactionFailed, setReactionFailed] = useState(false);
   const reducedMotion = useReducedMotion();
   const aboutPillTransition = reducedMotion ? { duration: 0 } : NAV_PILL_SPRING;
   const filesLayout = useSyncExternalStore(subscribeFiles, getFilesLayout, getServerMobile);
@@ -1225,7 +1307,6 @@ export function Home() {
   const specialLabels: Record<string, string> = {
     browse: "Browse",
     about: "About Anviq",
-    founder: "Founder",
     privacy: "Privacy Policy",
     cookies: "Cookie Policy",
     terms: "Terms & Disclaimer",
@@ -1308,41 +1389,11 @@ export function Home() {
             View Leovoss on GitHub
             <span className="sr-only"> (opens in a new tab)</span>
           </a>
-          <Link className="external-link" to="/explore/ship-log">
-            Ship log <ArrowRight size={18} aria-hidden="true" />
-          </Link>
-        </DocumentPage>
-      );
-      break;
-    case "ship-log":
-      content = (
-        <DocumentPage
-          title="Ship log."
-          intro="What went out, month by month. Some entries are redacted for client discretion."
-        >
-          {SHIP_LOG.length === 0 ? (
-            <p className="ship-log-empty">Nothing shipped this month yet.</p>
-          ) : (
-            <ul className="ship-log-list">
-              {SHIP_LOG.map((entry, index) => (
-                <li key={index}>
-                  <span className="ship-log-date">{entry.date}</span>
-                  <span className="ship-log-title">{entry.title}</span>
-                  {entry.note && (
-                    <span className="ship-log-note">{entry.note}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
         </DocumentPage>
       );
       break;
     case "about":
       content = <About />;
-      break;
-    case "founder":
-      content = <Founder />;
       break;
     case "privacy":
       content = <Privacy />;
@@ -1357,9 +1408,9 @@ export function Home() {
       content = filesLayout ? <FilesBrowse /> : (
         <DocumentPage title="Browse Anviq">
           <Navigation active="browse" />
-          <Link className="external-link" to="/explore/about">
-            <BookOpen size={18} aria-hidden="true" />
+          <Link className="internal-link" to="/explore/about">
             About Anviq
+            <ArrowRight size={18} aria-hidden="true" />
           </Link>
         </DocumentPage>
       );
@@ -1367,6 +1418,13 @@ export function Home() {
     default:
       content = <MissingPage />;
   }
+  // Sections that no longer exist, guarded here as well as in the router so
+  // the redirect holds however the route was matched.
+  const retired: Record<string, string> = {
+    founder: "/explore/about",
+    "ship-log": "/explore/projects",
+  };
+  if (retired[active]) return <Navigate to={retired[active]} replace />;
   const legacy: Record<string, string> = {
     "#work": "/explore/services",
     "#work-selected": "/explore/projects",
@@ -1375,6 +1433,8 @@ export function Home() {
     "#faq": "/explore/questions",
     "#activity": "/explore/activity",
     "#contact": "/explore/engagement",
+    "#founder": "/explore/about",
+    "#ship-log": "/explore/projects",
   };
   if (location.pathname === "/" && legacy[location.hash])
     return <Navigate to={legacy[location.hash]} replace />;
@@ -1417,23 +1477,6 @@ export function Home() {
             <span className="nav-link-content">
               <BookOpen size={17} aria-hidden="true" />
               About Anviq
-            </span>
-          </Link>
-          <Link
-            className={`about-link founder-link ${active === "founder" ? "is-selected" : ""}`}
-            aria-current={active === "founder" ? "page" : undefined}
-            to="/explore/founder"
-          >
-            {active === "founder" && (
-              <motion.span
-                layoutId="explorer-nav-active"
-                className="nav-pill"
-                transition={aboutPillTransition}
-              />
-            )}
-            <span className="nav-link-content">
-              <UserRound size={17} aria-hidden="true" />
-              Founder
             </span>
           </Link>
         </aside>
@@ -1529,7 +1572,18 @@ export function Home() {
             >
               <XLogo />
             </a>
-            <EmojiReaction onReact={sendReaction} size="sm" />
+            <EmojiReaction
+              onReact={(name) => {
+                setReactionFailed(false);
+                sendReaction(name).catch(() => setReactionFailed(true));
+              }}
+              size="sm"
+            />
+            {reactionFailed && (
+              <span className="reaction-failed" role="status">
+                Not counted
+              </span>
+            )}
           </nav>
           <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
         </div>

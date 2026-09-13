@@ -32,7 +32,7 @@ export const PROCESS = [
   {
     n: "02",
     title: "Build",
-    body: "Build and integrate the agent against your real systems, not a demo environment.",
+    body: "Build and integrate against your real systems and real workflow, not a demo environment.",
   },
   {
     n: "03",
@@ -54,12 +54,13 @@ export const WORK_SELECTED = [
     body: "A read-only behavioural retention layer for MT4/MT5 brokers: pattern detection on live trading accounts, white-label trader alerts, no execution access.",
     domain: "steadyward.com",
     screenshot: "/images/steadyward-shot.png",
+    ships: [] as { date: string; title: string }[],
     files: [
       {
         name: "README.md",
         body: [
-          "Behavioural retention layer for MT4/MT5 brokers. Watches live trading accounts for churn patterns and surfaces white-label alerts to the broker's retention team.",
-          "Read-only against the trading platform: it observes account activity, it never places or modifies a trade.",
+          "Read-only retention layer over a broker's MT4/MT5 stack.",
+          "Two surfaces: an alert queue the broker's own retention tooling consumes, and white-label alerts shown to the trader.",
         ],
       },
       {
@@ -96,12 +97,27 @@ export const WORK_SELECTED = [
     body: "Construction bill-of-quantities matching for multiple tenants, with a chat-and-grid interface, EU-hosted auth, and data handling built for GDPR from the schema up.",
     domain: null,
     screenshot: null,
+    ships: [] as { date: string; title: string }[],
     files: [
       {
         name: "README.md",
         body: [
-          "Bill-of-quantities matching for construction estimators, multi-tenant from the schema up. A chat interface sits next to the grid for quick corrections.",
-          "EU-hosted authentication; tenant data is isolated at the database level, not just filtered in application code.",
+          "Multi-tenant matching service for construction bills of quantities.",
+          "Two surfaces over the same data: a grid for line-item review, and a chat panel beside it for corrections.",
+        ],
+      },
+      {
+        name: "architecture.md",
+        body: [
+          "Tenants are isolated per schema rather than by a tenant_id column, so a query cannot cross tenants by omission.",
+          "Authentication is EU-hosted and sits outside the matching service.",
+        ],
+      },
+      {
+        name: "constraints.md",
+        body: [
+          "Match confidence is surfaced per line item and never applied silently: an estimator accepts or rejects each one.",
+          "Every accepted match is written to an audit log with who accepted it and when.",
         ],
       },
       {
@@ -124,12 +140,27 @@ export const WORK_SELECTED = [
     body: "Cold-outreach product for a German market: automated sending infrastructure with deliverability and compliance built into the pipeline, not bolted on after.",
     domain: "addreach.addvert.de",
     screenshot: "/images/addreach-shot.png",
+    ships: [] as { date: string; title: string }[],
     files: [
       {
         name: "README.md",
         body: [
-          "Cold-outreach sending infrastructure built for the German market, where outreach compliance isn't optional.",
-          "Deliverability tooling and legal sequencing sit inside the send pipeline, not as a separate checklist someone can skip.",
+          "Sending infrastructure for cold outreach into the German market.",
+          "Three parts: campaign configuration, an eligibility gate, and a send pipeline with deliverability monitoring.",
+        ],
+      },
+      {
+        name: "architecture.md",
+        body: [
+          "Recipients pass an eligibility check, opt-out state and sequencing window, before anything is queued for sending.",
+          "The pipeline tracks domain and sender reputation per campaign rather than per account.",
+        ],
+      },
+      {
+        name: "constraints.md",
+        body: [
+          "A send blocks automatically when the legal window has not passed; there is no override in the interface.",
+          "Compliance runs inside the pipeline, not as a checklist a user could skip.",
         ],
       },
       {
@@ -152,12 +183,13 @@ export const WORK_SELECTED = [
     body: "Runs the full loop from ad-sourced CV intake to legally-sequenced outreach to placement, for a German recruitment operation. Matching is deterministic code, not AI, by design: the EU AI Act was the reason, not a missing feature.",
     domain: null,
     screenshot: null,
+    ships: [] as { date: string; title: string }[],
     files: [
       {
         name: "README.md",
         body: [
-          "Runs the full recruitment loop: ad-sourced CV intake, legally-sequenced candidate outreach, placement tracking, for a German recruitment operation.",
-          "Matching is deterministic code, not a model. That was a legal decision, not a technical shortcut.",
+          "Recruitment pipeline service for a German operation.",
+          "Three stages: CV intake from job-board ad responses, a deterministic matching engine, and a sequencing gate in front of outreach.",
         ],
       },
       {
@@ -192,7 +224,7 @@ export const WORK_SELECTED = [
 export const CONSTRAINTS = [
   {
     title: "Hosting",
-    body: "EU hosting by default. Region and provider are agreed with you before implementation starts, not decided after the fact.",
+    body: "Region and provider follow your requirements and where you operate. Agreed before implementation starts, not decided after the fact.",
   },
   {
     title: "Access",
@@ -218,10 +250,9 @@ export const DACH = [
     note: "Outreach ordered to the statutory sequencing window, not convenience.",
   },
   {
-    label: "AML / KYC",
-    note: "Source-of-Wealth and KYC discipline carried over from financial services work.",
+    label: "Data residency",
+    note: "Hosted where your requirements say, EU regions included.",
   },
-  { label: "EU hosting", note: "Data stays in-region unless you choose otherwise." },
   {
     label: "AI Act",
     note: "Deterministic code where a decision would have legal effect on a person, not a model.",
@@ -268,27 +299,6 @@ export const ENGAGEMENT = [
     ],
     out: ["Not a retainer for unrelated new features", "No fixed minimum hours"],
     next: "Month to month, cancel anytime.",
-  },
-];
-
-export const SHIP_LOG = [
-  {
-    date: "September 2026",
-    title: "Quick Look-style screenshot previews, project file packs",
-    note: "Selected work now browses like files, each with a proof note.",
-  },
-  {
-    date: "September 2026",
-    title: "Liquid Glass CTAs, Spotlight-style search",
-  },
-  {
-    date: "August 2026",
-    title: "Anonymous emoji reactions",
-    note: "Click counts only, no identifying data stored.",
-  },
-  {
-    date: "August 2026",
-    title: "Founder page, operating constraints section",
   },
 ];
 
