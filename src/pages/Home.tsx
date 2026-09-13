@@ -515,7 +515,7 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
               alt={`${project.name} landing page`}
               label={`${project.name} screenshot`}
               layoutId={SLUGS[selected]}
-              inline={!filesLayout}
+              inline
             />
           )}
           {project.href ? (

@@ -330,7 +330,7 @@ svg {
   display: flex;
   flex-direction: column;
   border-radius: 18px;
-  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  background: transparent;
   box-shadow: 0 30px 70px -18px rgb(24 32 44 / 38%);
   overflow: hidden;
 }
