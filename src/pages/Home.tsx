@@ -515,7 +515,7 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
               alt={`${project.name} landing page`}
               label={`${project.name} screenshot`}
               layoutId={SLUGS[selected]}
-              inline
+              inline={!filesLayout}
             />
           )}
           {project.href ? (
@@ -768,11 +768,13 @@ function Engagement() {
         </div>
         <p className="engagement-next">{active.next}</p>
       </div>
-      <Link className="internal-link" to="/explore/constraints">
-        Hosting, access, and compliance boundaries{" "}
-        <ArrowRight size={18} aria-hidden="true" />
-      </Link>
-      <ContactLink />
+      <div className="page-cta">
+        <Link className="internal-link" to="/explore/constraints">
+          Hosting, access, and compliance boundaries{" "}
+          <ArrowRight size={18} aria-hidden="true" />
+        </Link>
+        <ContactLink />
+      </div>
     </DocumentPage>
   );
 }

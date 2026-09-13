@@ -1304,7 +1304,8 @@ svg {
 .page-cta > p {
   margin-top: 0 !important;
 }
-.page-cta .primary-button {
+.page-cta .primary-button,
+.page-cta > .internal-link {
   margin-top: 0;
 }
 .document-sections {
@@ -1371,7 +1372,6 @@ svg {
   max-width: none !important;
   margin-top: 24px !important;
   padding-top: 20px;
-  border-top: 1px solid var(--line);
   color: var(--muted);
 }
 .project-ships {
