@@ -219,6 +219,49 @@ export const WORK_SELECTED = [
       },
     ],
   },
+  {
+    href: null,
+    tag: "Sovereign AI teammates",
+    name: "Anviq Agents",
+    body: "Persistent AI teammates that do real work inside a business, with memory, routines, and tools, and run any risky code in its own isolated machine on hardware the business controls.",
+    domain: null,
+    screenshot: null,
+    ships: [] as { date: string; title: string }[],
+    files: [
+      {
+        name: "README.md",
+        body: [
+          "Persistent AI teammates for a business: they carry memory, run routines, and use tools to do real work, not just answer questions.",
+          "Two layers that fit together: the teammates, and a microVM engine that hands them a private, isolated machine whenever they need to run real code.",
+        ],
+      },
+      {
+        name: "architecture.md",
+        body: [
+          "The two layers meet at one HTTP seam: a teammate asks for a computer, and the engine starts, runs, and then destroys a private Firecracker microVM for that job. Either side can be swapped without touching the other.",
+          "Each job runs in its own microVM on KVM, with its own kernel and TAP networking, so one job's code cannot reach another's or the host it runs on.",
+        ],
+      },
+      {
+        name: "constraints.md",
+        body: [
+          "A person approves first go-live and anything that reaches production. The teammates do not ship to production on their own.",
+          "Sovereign tier, codename Rostock: runs on hardware the client owns or controls, bare metal or on-prem, air-gapped where needed, with bring-your-own-key, SSO, and audit logging. Anviq can stand up and operate that hardware, not only hand it over.",
+        ],
+      },
+      {
+        name: "proof.md",
+        body: [],
+        boundary:
+          "What broke: AI pilots either touched production directly, which no one in a regulated business could sign off on, or stayed a chat window that could not actually do the work.",
+        proof: [
+          ["Isolation", "Each job runs in its own Firecracker microVM on KVM, not a shared process"],
+          ["Where it runs", "On hardware the client owns or controls, air-gapped where required"],
+          ["Human gate", "A person approves first go-live and anything reaching production"],
+        ],
+      },
+    ],
+  },
 ];
 
 export const CONSTRAINTS = [
