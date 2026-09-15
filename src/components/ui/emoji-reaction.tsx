@@ -385,8 +385,11 @@ export function EmojiReaction({
   // press the trigger and drag along the bar, releasing over an emoji picks it
   const onTriggerPointerDown = useCallback(() => {
     if (open) return;
-    setOpen(true);
     justOpened.current = true;
+    // Opening synchronously swaps the trigger's own icon (the node under the
+    // pointer) mid-press, which makes the browser drop the click entirely -
+    // deferring one tick clears the current dispatch first.
+    window.setTimeout(() => setOpen(true), 0);
 
     const up = (event: globalThis.PointerEvent) => {
       document.removeEventListener("pointerup", up);
@@ -519,7 +522,7 @@ export function EmojiReaction({
                       event.detail === 0 &&
                       react(name, event.currentTarget.getBoundingClientRect())
                     }
-                    className="relative z-10 rounded-full p-1 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="relative z-10 rounded-full p-1 outline-none transition-colors active:bg-[var(--hover)] focus-visible:ring-2 focus-visible:ring-ring"
                     initial={reduced ? false : { scale: 0.4, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{
@@ -529,7 +532,7 @@ export function EmojiReaction({
                       delay: reduced ? 0 : 0.04 + i * 0.035,
                     }}
                     whileHover={reduced ? undefined : { scale: 1.28, y: -4 }}
-                    whileTap={{ scale: 0.92 }}
+                    whileTap={reduced ? undefined : { scale: 0.92 }}
                   >
                     <Emoji
                       name={name}
@@ -587,7 +590,7 @@ export function EmojiReaction({
             asChild
               ? undefined
               : cn(
-                  "relative z-10 grid place-items-center rounded-full text-foreground/60 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  "relative z-10 grid place-items-center rounded-full text-foreground/60 transition-colors hover:text-foreground active:bg-[var(--hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   SURFACE,
                   s.trigger,
                 )

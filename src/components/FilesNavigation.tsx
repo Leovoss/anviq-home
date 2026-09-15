@@ -4,14 +4,11 @@ import { motion, useReducedMotion } from "motion/react";
 import { Activity, ArrowRight, BookOpen, ChevronLeft, ChevronRight, CircleHelp, Compass, FileText, Folder, House, Layers, LayoutGrid, List, Mail, PanelLeft, Server, ShieldCheck, Workflow } from "lucide-react";
 import { WORK, WORK_SELECTED } from "@/data/content";
 import { Logo } from "@/components/Logo";
+import { recordBookingClick } from "@/lib/guide";
+import { motionOr, SPRING_MORPH as FOLDER_LAYOUT_TRANSITION } from "@/lib/motion";
 
-const projectSlugs = ["steadyward", "lv-matching", "addreach", "recruitment-crm"];
+const projectSlugs = ["agents", "steadyward", "lv-matching", "addreach", "recruitment-crm"];
 const serviceIcons = [Workflow, Layers, Server];
-// Matches FOLDER_LAYOUT_TRANSITION in src/pages/Home.tsx - both FolderImage
-// and FilesArtwork share layoutId={`project-folder-${slug}`}, so opening a
-// project morphs the same folder art into the preview, whichever grid it
-// was opened from.
-const FOLDER_LAYOUT_TRANSITION = { type: "spring", bounce: 0.1, duration: 0.42 } as const;
 
 export function FilesArtwork({ document = false, slug }: { document?: boolean; slug?: string }) {
   const reducedMotion = useReducedMotion();
@@ -26,7 +23,7 @@ export function FilesArtwork({ document = false, slug }: { document?: boolean; s
       height="112"
       alt=""
       draggable="false"
-      transition={reducedMotion ? { duration: 0 } : FOLDER_LAYOUT_TRANSITION}
+      transition={motionOr(reducedMotion, FOLDER_LAYOUT_TRANSITION)}
     />
   );
 }
@@ -43,7 +40,7 @@ export function FilesToolbar({ title, phone, sidebarOpen, onToggleSidebar, back,
     <div className="files-toolbar-row">
       {phone ? <Link to={back.href} className="files-back"><ChevronLeft size={24} aria-hidden="true" /><span>{back.label}</span></Link> : <div className="files-toolbar-leading"><button className="icon-button" aria-label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} aria-expanded={sidebarOpen} aria-controls="desktop-sidebar" onClick={onToggleSidebar}><PanelLeft size={23} aria-hidden="true" /></button>{back.href !== "/explore/browse" && <Link to={back.href} className="files-back"><ChevronLeft size={22} aria-hidden="true" /><span>{back.label}</span></Link>}</div>}
       <span className="files-toolbar-title">{title}</span>
-      <a href="https://calendly.com/lvoss-anviq/30min?month=2026-09" target="_blank" rel="noopener noreferrer" className="files-contact" aria-label="Contact Anviq"><Mail size={22} strokeWidth={1.75} aria-hidden="true" /><span>Contact</span></a>
+      <a href="https://calendly.com/lvoss-anviq/30min?month=2026-09" target="_blank" rel="noopener noreferrer" onClick={() => recordBookingClick()} className="files-contact" aria-label="Contact Anviq"><Mail size={22} strokeWidth={1.75} aria-hidden="true" /><span>Contact</span></a>
     </div>
     <div className="files-search-row">{children}</div>
   </header>;
@@ -62,7 +59,7 @@ export function FilesOverview() {
     <section className="files-welcome-document" aria-labelledby="files-welcome-title">
       <div className="files-document-heading"><FilesArtwork document /><div><span>Read me</span><h2 id="files-welcome-title">Systems built to hold.</h2></div></div>
       <p>Workflow, integration, and infrastructure, AI where it earns its place. One engineer, end-to-end accountability.</p>
-      <a href="https://calendly.com/lvoss-anviq/30min?month=2026-09" target="_blank" rel="noopener noreferrer">Start a conversation <ArrowRight size={17} aria-hidden="true" /></a>
+      <a href="https://calendly.com/lvoss-anviq/30min?month=2026-09" target="_blank" rel="noopener noreferrer" onClick={() => recordBookingClick()}>Start a conversation <ArrowRight size={17} aria-hidden="true" /></a>
     </section>
     <section className="files-overview-work" aria-labelledby="files-work-title"><div className="files-section-heading"><h2 id="files-work-title">Selected work</h2><Link to="/explore/projects">See all<ChevronRight size={16} aria-hidden="true" /></Link></div>
       <div className="files-grid">{WORK_SELECTED.map((project, index) => <Link className="files-item" key={project.name} to={`/projects/${projectSlugs[index]}`}><FilesArtwork slug={projectSlugs[index]} /><span className="files-item-name">{project.name}</span><span className="files-item-kind">Project</span></Link>)}</div>

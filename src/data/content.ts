@@ -1,7 +1,7 @@
 export const WORK = [
   {
     title: "Software & automation",
-    body: "Custom software and automation built for a workflow you already have, using AI where it earns its place, not by default.",
+    body: "Custom software and automation for a workflow you already have: increasingly the software does the work itself, not just a tool your team operates, using AI where it earns its place.",
   },
   {
     title: "Integration",
@@ -47,6 +47,50 @@ export const PROCESS = [
 ];
 
 export const WORK_SELECTED = [
+  {
+    href: null,
+    tag: "Sovereign AI teammates",
+    name: "Anviq Agents",
+    body: "Persistent AI teammates that do real work inside a business, with memory, routines, and tools, and run any risky code in its own isolated machine on hardware the business controls.",
+    domain: null,
+    screenshot: "/images/anviq-agents-shot.png",
+    ships: [] as { date: string; title: string }[],
+    files: [
+      {
+        name: "README.md",
+        body: [
+          "Persistent AI teammates for a business: they carry memory, run routines, and use tools to do real work, not just answer questions.",
+          "It inverts the usual software-as-a-service: not a tool your team operates, but the service itself, delivered as software you own and run.",
+          "Two layers that fit together: the teammates, and a microVM engine that hands them a private, isolated machine whenever they need to run real code.",
+        ],
+      },
+      {
+        name: "architecture.md",
+        body: [
+          "The two layers meet at one HTTP seam: a teammate asks for a computer, and the engine starts, runs, and then destroys a private Firecracker microVM for that job. Either side can be swapped without touching the other.",
+          "Each job runs in its own microVM on KVM, with its own kernel and TAP networking, so one job's code cannot reach another's or the host it runs on.",
+        ],
+      },
+      {
+        name: "constraints.md",
+        body: [
+          "A person approves first go-live and anything that reaches production. The teammates do not ship to production on their own.",
+          "Sovereign tier, codename Rostock: runs on hardware the client owns or controls, bare metal or on-prem, air-gapped where needed, with bring-your-own-key, SSO, and audit logging. Anviq can stand up and operate that hardware, not only hand it over.",
+        ],
+      },
+      {
+        name: "proof.md",
+        body: [],
+        boundary:
+          "What broke: AI pilots either touched production directly, which no one in a regulated business could sign off on, or stayed a chat window that could not actually do the work.",
+        proof: [
+          ["Isolation", "Each job runs in its own Firecracker microVM on KVM, not a shared process"],
+          ["Where it runs", "On hardware the client owns or controls, air-gapped where required"],
+          ["Human gate", "A person approves first go-live and anything reaching production"],
+        ],
+      },
+    ],
+  },
   {
     href: "https://steadyward.com",
     tag: "Retention infrastructure",
@@ -182,7 +226,7 @@ export const WORK_SELECTED = [
     name: "Automated Recruitment CRM",
     body: "Runs the full loop from ad-sourced CV intake to legally-sequenced outreach to placement, for a German recruitment operation. Matching is deterministic code, not AI, by design: the EU AI Act was the reason, not a missing feature.",
     domain: null,
-    screenshot: null,
+    screenshot: "/images/recruitment-crm-shot.png",
     ships: [] as { date: string; title: string }[],
     files: [
       {
@@ -223,20 +267,16 @@ export const WORK_SELECTED = [
 
 export const CONSTRAINTS = [
   {
-    title: "Hosting",
-    body: "Region and provider follow your requirements and where you operate. Agreed before implementation starts, not decided after the fact.",
+    title: "Ownership",
+    body: "Code, configuration, and documentation are handed over as part of delivery, per the agreed scope.",
   },
   {
-    title: "Access",
-    body: "Access controls are scoped per project: who can see what, set and logged from day one.",
+    title: "Access and data",
+    body: "Hosting, access controls, and data handling are agreed before implementation starts.",
   },
   {
-    title: "GDPR",
-    body: "Retention, deletion, and processing basis are built into the schema up front, not added on after a request.",
-  },
-  {
-    title: "AI Act boundary",
-    body: "No automated decision with legal or similarly significant effect on a person. Where that boundary applies, the logic is deterministic code, not a model.",
+    title: "Decision boundaries",
+    body: "No automated decision with legal or similarly significant effect on a person.",
   },
   {
     title: "Discretion",
@@ -244,7 +284,11 @@ export const CONSTRAINTS = [
   },
 ];
 
-export const DACH = [
+// One real engagement's constraints in practice - not a market specialty
+// claim. DACH is one market this practice can deliver in among others,
+// commonly regarded as one of the harder ones to serve well; it's used
+// here as the proof case, not the positioning.
+export const DELIVERY_PROOF = [
   {
     label: "UWG §7",
     note: "Outreach ordered to the statutory sequencing window, not convenience.",
@@ -257,28 +301,27 @@ export const DACH = [
     label: "AI Act",
     note: "Deterministic code where a decision would have legal effect on a person, not a model.",
   },
-  {
-    label: "German-native delivery",
-    note: "Native German speaker with deep DACH market experience.",
-  },
 ];
 
 export const ENGAGEMENT = [
   {
     id: "assessment",
     title: "Assessment",
-    body: "A paid, fixed-scope review of the workflow and systems involved, ending in a written plan: what to build, what it connects to, what it costs to run.",
+    price: "Free",
+    body: "A fixed-scope review of the workflow and systems involved, ending in a written plan: what to build, what it connects to, what it costs to run.",
     in: [
       "Workflow and systems mapped end to end",
       "Written plan: what to build, what it connects to",
-      "Fixed scope, fixed price",
+      "Fixed scope, no charge",
     ],
     out: ["No code changes", "No infrastructure changes"],
     next: "You get the plan and decide whether to move to Build.",
+    note: "Free for the large majority of engagements. If a scope turns out to be unusually research-heavy, that gets flagged and priced upfront before any work starts, not after.",
   },
   {
     id: "build",
     title: "Build",
+    price: "Fixed price",
     body: "Fixed-scope delivery against the plan, deployed into the agreed environment, with documentation handed over at the end.",
     in: [
       "Delivery against the agreed plan",
@@ -287,10 +330,12 @@ export const ENGAGEMENT = [
     ],
     out: ["No maintenance included", "No scope beyond the assessment plan"],
     next: "System goes live in your environment, documented and handed over.",
+    note: undefined as string | undefined,
   },
   {
     id: "retain",
     title: "Retain",
+    price: "Month to month",
     body: "A retainer for teams who want the same engineer on call as the system evolves and the systems around it change.",
     in: [
       "Same engineer on call as the system evolves",
@@ -299,6 +344,7 @@ export const ENGAGEMENT = [
     ],
     out: ["Not a retainer for unrelated new features", "No fixed minimum hours"],
     next: "Month to month, cancel anytime.",
+    note: undefined as string | undefined,
   },
 ];
 
