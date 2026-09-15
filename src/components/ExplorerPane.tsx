@@ -1,16 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect } from "react";
 import type { ReactNode } from "react";
-
-// Same spring shape as the GitHub activity widget's SPRING constant, so
-// motion feels consistent site-wide. No bounce: content swaps should settle
-// decisively, not oscillate.
-const ENTER = { type: "spring", bounce: 0, duration: 0.32 } as const;
-// Old content disappears essentially instantly rather than lingering through
-// a visible fade - the toolbar/breadcrumb switches to the new section
-// immediately, so a slower exit left stale content on screen under a label
-// that no longer matched it.
-const EXIT = { duration: 0.05, ease: "linear" } as const;
+import { BOARD_ENTER, BOARD_EXIT, motionOr } from "@/lib/motion";
 
 // Runs once per pane mount, after the new content is actually in the DOM -
 // used to fire scroll/focus handling at the right time regardless of how
@@ -42,12 +33,12 @@ export function ExplorerPane({
         animate={{
           opacity: 1,
           y: 0,
-          transition: reducedMotion ? { duration: 0 } : ENTER,
+          transition: motionOr(reducedMotion, BOARD_ENTER),
         }}
         exit={{
           opacity: reducedMotion ? 1 : 0,
           y: reducedMotion ? 0 : -6,
-          transition: reducedMotion ? { duration: 0 } : EXIT,
+          transition: motionOr(reducedMotion, BOARD_EXIT),
         }}
       >
         <PaneMountEffect onMount={onEnter} />
