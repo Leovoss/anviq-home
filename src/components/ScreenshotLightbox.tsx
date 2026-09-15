@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { X } from "lucide-react";
-
-const BACKDROP_TRANSITION = { duration: 0.18 } as const;
-const QUICK_LOOK_SPRING = { type: "spring", bounce: 0.1, duration: 0.42 } as const;
+import { recordLightboxPeek } from "@/lib/guide";
+import { FADE as BACKDROP_TRANSITION, motionOr, SPRING_MORPH as QUICK_LOOK_SPRING } from "@/lib/motion";
 
 type PreviewProps = {
   src: string;
@@ -22,7 +21,7 @@ type PreviewProps = {
 function InlinePreview({ src, alt, label }: Omit<PreviewProps, "layoutId">) {
   const [open, setOpen] = useState(false);
   const reducedMotion = useReducedMotion();
-  const transition = reducedMotion ? { duration: 0 } : QUICK_LOOK_SPRING;
+  const transition = motionOr(reducedMotion, QUICK_LOOK_SPRING);
   return (
     <motion.figure
       layout
@@ -69,18 +68,51 @@ function InlinePreview({ src, alt, label }: Omit<PreviewProps, "layoutId">) {
   );
 }
 
+const LONG_PRESS_MS = 350;
+
+// iOS-style Peek: holding the thumbnail zooms it in, letting go dismisses it.
+// A plain tap or keyboard activation still opens the pinned overlay with an
+// explicit close button, so the gesture is additive rather than a replacement.
 function OverlayQuickLook({ src, alt, label, layoutId }: PreviewProps) {
-  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"closed" | "peek" | "pinned">("closed");
+  const open = mode !== "closed";
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const pressTimer = useRef<number | null>(null);
+  const longPressed = useRef(false);
   const reducedMotion = useReducedMotion();
 
+  const clearPressTimer = () => {
+    if (pressTimer.current !== null) {
+      window.clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+    }
+  };
+  useEffect(() => clearPressTimer, []);
+
+  const startPress = (event: PointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType !== "touch") return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    clearPressTimer();
+    pressTimer.current = window.setTimeout(() => {
+      pressTimer.current = null;
+      longPressed.current = true;
+      setMode("peek");
+      recordLightboxPeek();
+    }, LONG_PRESS_MS);
+  };
+
+  const endPress = () => {
+    clearPressTimer();
+    setMode((current) => (current === "peek" ? "closed" : current));
+  };
+
   useEffect(() => {
-    if (!open) return;
+    if (mode !== "pinned") return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" || event.key === " ") {
         event.preventDefault();
-        setOpen(false);
+        setMode("closed");
       }
     };
     document.addEventListener("keydown", onKeyDown);
@@ -88,11 +120,22 @@ function OverlayQuickLook({ src, alt, label, layoutId }: PreviewProps) {
       document.removeEventListener("keydown", onKeyDown);
       triggerRef.current?.focus();
     };
-  }, [open]);
+  }, [mode]);
 
   useEffect(() => {
-    if (open) dialogRef.current?.focus();
-  }, [open]);
+    if (mode === "pinned") dialogRef.current?.focus();
+  }, [mode]);
+
+  // HIG 3.2: the navigator (terminal/chat) and this lightbox never stack -
+  // whichever opens second closes the other instead of layering two
+  // full-screen overlays.
+  useEffect(() => {
+    if (mode === "closed") return;
+    window.dispatchEvent(new Event("anviq:lightbox-open"));
+    const onNavigatorOpen = () => setMode("closed");
+    window.addEventListener("anviq:navigator-open", onNavigatorOpen);
+    return () => window.removeEventListener("anviq:navigator-open", onNavigatorOpen);
+  }, [mode]);
 
   return (
     <>
@@ -100,7 +143,16 @@ function OverlayQuickLook({ src, alt, label, layoutId }: PreviewProps) {
         type="button"
         ref={triggerRef}
         className="project-screenshot-trigger"
-        onClick={() => setOpen(true)}
+        onPointerDown={startPress}
+        onPointerUp={endPress}
+        onPointerCancel={endPress}
+        onClick={() => {
+          if (longPressed.current) {
+            longPressed.current = false;
+            return;
+          }
+          setMode("pinned");
+        }}
         aria-haspopup="dialog"
       >
         <motion.img
@@ -110,7 +162,7 @@ function OverlayQuickLook({ src, alt, label, layoutId }: PreviewProps) {
           src={src}
           alt={alt}
           loading="lazy"
-          transition={reducedMotion ? { duration: 0 } : QUICK_LOOK_SPRING}
+          transition={motionOr(reducedMotion, QUICK_LOOK_SPRING)}
         />
       </button>
       {createPortal(
@@ -118,20 +170,22 @@ function OverlayQuickLook({ src, alt, label, layoutId }: PreviewProps) {
           {open && (
             <motion.div
               className="quicklook-backdrop"
-              onClick={() => setOpen(false)}
+              onClick={() => setMode("closed")}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={reducedMotion ? { duration: 0 } : BACKDROP_TRANSITION}
+              transition={motionOr(reducedMotion, BACKDROP_TRANSITION)}
             >
-              <button
-                type="button"
-                className="quicklook-close"
-                onClick={() => setOpen(false)}
-                aria-label="Close preview"
-              >
-                <X size={18} aria-hidden="true" />
-              </button>
+              {mode === "pinned" && (
+                <button
+                  type="button"
+                  className="quicklook-close"
+                  onClick={() => setMode("closed")}
+                  aria-label="Close preview"
+                >
+                  <X size={18} aria-hidden="true" />
+                </button>
+              )}
               <div
                 ref={dialogRef}
                 role="dialog"
@@ -145,7 +199,7 @@ function OverlayQuickLook({ src, alt, label, layoutId }: PreviewProps) {
                   layoutId={`screenshot-${layoutId}`}
                   src={src}
                   alt={alt}
-                  transition={reducedMotion ? { duration: 0 } : QUICK_LOOK_SPRING}
+                  transition={motionOr(reducedMotion, QUICK_LOOK_SPRING)}
                 />
               </div>
             </motion.div>
