@@ -8,6 +8,7 @@ import {
   useReducedMotion,
   type Transition,
 } from "motion/react";
+import { recordGithubClick } from "@/lib/guide";
 import { cn } from "@/lib/utils";
 
 export type ContributionLevel = 0 | 1 | 2 | 3 | 4;
@@ -458,7 +459,13 @@ const RepoRow = ({
   );
 
   return repo.href ? (
-    <a href={repo.href} target="_blank" rel="noreferrer" className={className}>
+    <a
+      href={repo.href}
+      target="_blank"
+      rel="noreferrer"
+      className={className}
+      onClick={() => recordGithubClick()}
+    >
       {content}
     </a>
   ) : (

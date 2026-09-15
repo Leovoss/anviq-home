@@ -13,17 +13,23 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpen,
+  Check,
   ChevronLeft,
   ChevronRight,
   CircleHelp,
   Compass,
+  EyeOff,
   ExternalLink,
+  FileCheck2,
   FileText,
   Folder,
   House,
   Layers,
+  Lock,
   Mail,
+  Minus,
   PanelLeft,
+  Scale,
   Search,
   Server,
   ShieldCheck,
@@ -37,7 +43,6 @@ import {
   PROCESS,
   ENGAGEMENT,
   CONSTRAINTS,
-  DACH,
   FAQ,
   IDEA,
 } from "@/data/content";
@@ -48,18 +53,18 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { Variants } from "motion/react";
 import { GitHubActivity } from "@/components/ui/github-activity";
 import { EmojiReaction } from "@/components/ui/emoji-reaction";
-import { sendReaction } from "@/lib/reactions";
 import { DocumentPage } from "@/components/DocumentPage";
 import { Privacy } from "@/pages/Privacy";
 import { Cookies } from "@/pages/Cookies";
 import { Terms } from "@/pages/Terms";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
+import { SiteNavigator } from "@/components/SiteNavigator";
+import { recordBookingClick, recordEmailCopy, recordSearchZeroResults } from "@/lib/guide";
+import { ZERO_RESULTS_HINT } from "@/lib/tone";
+import { queryWordsMatch } from "@/lib/suggest";
+import { isNavigatorSurfaceOpen } from "@/lib/navigatorSurface";
+import { BOARD_ENTER as NAV_PILL_SPRING, SPRING_MORPH as FOLDER_LAYOUT_TRANSITION } from "@/lib/motion";
 
-const NAV_PILL_SPRING = { type: "spring", bounce: 0, duration: 0.32 } as const;
-// Shared across FolderImage (Home.tsx) and FilesArtwork (FilesNavigation.tsx) -
-// both use layoutId={`project-folder-${slug}`}, so opening a project from
-// either grid morphs into the same preview image.
-const FOLDER_LAYOUT_TRANSITION = { type: "spring", bounce: 0.1, duration: 0.42 } as const;
 const NAV = [
   { id: "overview", label: "Overview", icon: House, href: "/" },
   {
@@ -105,7 +110,7 @@ const NAV = [
     href: "/explore/activity",
   },
 ];
-const SLUGS = ["steadyward", "lv-matching", "addreach", "recruitment-crm"];
+const SLUGS = ["agents", "steadyward", "lv-matching", "addreach", "recruitment-crm"];
 // One credibility line, not an autobiography - LinkedIn holds the story.
 const FOUNDER_LINE =
   "Four years in regulated commercial operations (brokerage, fintech, iGaming) before going technical. Native German speaker, DACH market.";
@@ -135,9 +140,7 @@ const SEARCH_ENTRIES = [
           : item.id === "engagement"
             ? ENGAGEMENT.map((s) => s.body).join(" ")
             : item.id === "constraints"
-              ? CONSTRAINTS.map((s) => s.body).join(" ") +
-                " " +
-                DACH.map((s) => `${s.label} ${s.note}`).join(" ")
+              ? CONSTRAINTS.map((s) => s.body).join(" ")
               : item.id === "questions"
                 ? FAQ.map((s) => s.q + " " + s.a).join(" ")
                 : item.label,
@@ -160,18 +163,17 @@ const SEARCH_ENTRIES = [
   },
 ];
 function searchEntries(query: string) {
-  const words = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
-  if (!words.length) return [];
   return SEARCH_ENTRIES.filter((item) =>
-    words.every((word) =>
-      `${item.title} ${item.sub} ${item.href} ${item.body}`
-        .toLocaleLowerCase()
-        .includes(word),
-    ),
+    queryWordsMatch(query, [item.title, item.sub, item.href, item.body]),
   );
 }
 const SERVICE_ICONS = [Workflow, Layers, Server];
 const PROJECT_DETAILS = [
+  [
+    ["Focus", "Persistent AI teammates with memory, routines, and tools"],
+    ["Isolation", "Each job runs in its own Firecracker microVM"],
+    ["Sovereignty", "Runs on hardware the client owns or controls"],
+  ],
   [
     ["Focus", "Pattern detection on live trading accounts"],
     ["Delivery", "White-label trader alerts"],
@@ -267,6 +269,9 @@ function ContactLink({
       href={href}
       target={href.startsWith("mailto:") ? undefined : "_blank"}
       rel={href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+      onClick={() => {
+        if (href.includes("calendly.com")) recordBookingClick();
+      }}
     >
       <span className="primary-button-content">
         {children}
@@ -382,21 +387,22 @@ type ProjectFile = {
   proof?: string[][];
 };
 function ProjectShips({ ships }: { ships: { date: string; title: string }[] }) {
+  // ponytail: Ship log hidden while every project's `ships` is empty - a
+  // "Coming soon." on all five read as unfinished. Populate `ships` in
+  // content.ts to bring it back (see MEMORY: project_ship_log_todo); it
+  // renders automatically as soon as any entry exists. TODO soon.
+  if (ships.length === 0) return null;
   return (
     <div className="project-ships">
       <p className="document-label">Ship log</p>
-      {ships.length === 0 ? (
-        <p className="project-ships-empty">Coming soon.</p>
-      ) : (
-        <ul className="project-ships-list">
-          {ships.map((entry) => (
-            <li key={`${entry.date}-${entry.title}`}>
-              <span className="project-ships-date">{entry.date}</span>
-              <span className="project-ships-title">{entry.title}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul className="project-ships-list">
+        {ships.map((entry) => (
+          <li key={`${entry.date}-${entry.title}`}>
+            <span className="project-ships-date">{entry.date}</span>
+            <span className="project-ships-title">{entry.title}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -507,17 +513,17 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
               </div>
             ))}
           </dl>
-          <ProjectFiles files={project.files} />
-          <ProjectShips ships={project.ships} />
           {project.screenshot && (
             <ScreenshotLightbox
               src={project.screenshot}
               alt={`${project.name} landing page`}
               label={`${project.name} screenshot`}
               layoutId={SLUGS[selected]}
-              inline={!filesLayout}
+              inline={false}
             />
           )}
+          <ProjectFiles files={project.files} />
+          <ProjectShips ships={project.ships} />
           {project.href ? (
             <a
               href={project.href}
@@ -577,10 +583,12 @@ function Services() {
         One engineer embeds with your team and owns delivery from the first
         technical assessment through deployment and documentation.
       </p>
-      <Link className="internal-link" to="/explore/approach">
-        See the approach <ArrowRight size={18} aria-hidden="true" />
-      </Link>
-      <ContactLink />
+      <div className="page-cta">
+        <Link className="internal-link" to="/explore/approach">
+          See the approach <ArrowRight size={18} aria-hidden="true" />
+        </Link>
+        <ContactLink />
+      </div>
     </DocumentPage>
   );
 }
@@ -588,6 +596,18 @@ const PROCESS_LIST_VARIANTS = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.09 } },
 } satisfies Variants;
+// Moves focus to the next/previous button inside a roving-focus group
+// (segmented control, picker list, timeline). Returns the new index so the
+// caller can also update selection, or null if focus wasn't inside the group.
+function focusSiblingButton(container: HTMLElement | null, direction: 1 | -1) {
+  if (!container) return null;
+  const items = Array.from(container.querySelectorAll<HTMLButtonElement>(":scope > button, :scope > * > button"));
+  const currentIndex = items.findIndex((el) => el === document.activeElement);
+  if (currentIndex === -1) return null;
+  const nextIndex = (currentIndex + direction + items.length) % items.length;
+  items[nextIndex].focus();
+  return nextIndex;
+}
 const PROCESS_ITEM_VARIANTS = {
   hidden: { opacity: 0, y: 14 },
   visible: {
@@ -598,70 +618,9 @@ const PROCESS_ITEM_VARIANTS = {
 } satisfies Variants;
 
 function Approach() {
-  const listRef = useRef<HTMLOListElement>(null);
-  const [focusedStep, setFocusedStep] = useState<string | null>(null);
+  const [activeStep, setActiveStep] = useState(PROCESS[0].n);
   const reducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    const items = listRef.current
-      ? [...listRef.current.querySelectorAll<HTMLLIElement>("li")]
-      : [];
-    if (!items.length) return;
-    // Desktop scrolls inside .explorer-main, not the viewport, so the observer
-    // has to use that element as its root or every step keeps the same
-    // intersection and the focus sticks on one item.
-    let root: Element | null = null;
-    for (
-      let node = listRef.current?.parentElement ?? null;
-      node;
-      node = node.parentElement
-    ) {
-      const overflowY = getComputedStyle(node).overflowY;
-      if (overflowY === "auto" || overflowY === "scroll") {
-        root = node;
-        break;
-      }
-    }
-    // A reading line rather than an intersection band: the step that most
-    // recently crossed it takes focus, so 01 through 04 each get their turn,
-    // and the last step wins once the pane is scrolled to the bottom.
-    const scroller: Element | Window = root ?? window;
-    let frame = 0;
-    const compute = () => {
-      frame = 0;
-      const viewTop = root ? root.getBoundingClientRect().top : 0;
-      const viewHeight = root ? root.clientHeight : window.innerHeight;
-      const scrolled = root ?? document.scrollingElement;
-      // The line drifts down the pane as the scroll runs out, otherwise the
-      // last steps never get their turn on a page that stops scrolling
-      // before they reach the middle.
-      const range = scrolled
-        ? scrolled.scrollHeight - scrolled.clientHeight
-        : 0;
-      const progress = range > 0 ? Math.min(1, scrolled!.scrollTop / range) : 0;
-      const line = viewTop + viewHeight * (0.42 + 0.5 * progress);
-      let next: string | null = null;
-      for (const item of items) {
-        const box = item.getBoundingClientRect();
-        if (box.top <= line && box.bottom > viewTop) {
-          next = item.getAttribute("data-step");
-        }
-      }
-      setFocusedStep(next);
-    };
-    const onScroll = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(compute);
-    };
-    compute();
-    scroller.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      if (frame) cancelAnimationFrame(frame);
-      scroller.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
+  const timelineRef = useRef<HTMLOListElement>(null);
 
   return (
     <DocumentPage
@@ -673,27 +632,54 @@ function Approach() {
         implementation.
       </p>
       <motion.ol
-        ref={listRef}
-        className={`process-list ${focusedStep ? "has-focus" : ""}`}
+        ref={timelineRef}
+        className="process-timeline"
         initial={reducedMotion ? undefined : "hidden"}
         whileInView={reducedMotion ? undefined : "visible"}
         viewport={{ once: true, amount: 0.3 }}
         variants={reducedMotion ? undefined : PROCESS_LIST_VARIANTS}
+        onKeyDown={(event) => {
+          if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+          event.preventDefault();
+          const nextIndex = focusSiblingButton(timelineRef.current, event.key === "ArrowDown" ? 1 : -1);
+          if (nextIndex !== null) setActiveStep(PROCESS[nextIndex].n);
+        }}
       >
-        {PROCESS.map((step) => (
-          <motion.li
-            key={step.n}
-            data-step={step.n}
-            className={focusedStep === step.n ? "is-focused" : ""}
-            variants={reducedMotion ? undefined : PROCESS_ITEM_VARIANTS}
-          >
-            <span className="step-number">{step.n}</span>
-            <div>
-              <h2>{step.title}</h2>
-              <p>{step.body}</p>
-            </div>
-          </motion.li>
-        ))}
+        {PROCESS.map((step) => {
+          const isActive = activeStep === step.n;
+          return (
+            <motion.li
+              key={step.n}
+              className={isActive ? "is-active" : ""}
+              variants={reducedMotion ? undefined : PROCESS_ITEM_VARIANTS}
+            >
+              <button
+                type="button"
+                className="process-step"
+                aria-expanded={isActive}
+                aria-controls={`process-body-${step.n}`}
+                onClick={() => setActiveStep(isActive ? "" : step.n)}
+              >
+                <span className="step-bead">{Number(step.n)}</span>
+                <h2>{step.title}</h2>
+              </button>
+              <AnimatePresence initial={false}>
+                {isActive && (
+                  <motion.div
+                    id={`process-body-${step.n}`}
+                    className="process-step-copy"
+                    initial={reducedMotion ? undefined : { height: 0, opacity: 0 }}
+                    animate={reducedMotion ? undefined : { height: "auto", opacity: 1 }}
+                    exit={reducedMotion ? undefined : { height: 0, opacity: 0 }}
+                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <p>{step.body}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.li>
+          );
+        })}
       </motion.ol>
       <Link className="internal-link" to="/explore/engagement">
         How an engagement works <ArrowRight size={18} aria-hidden="true" />
@@ -702,106 +688,151 @@ function Approach() {
   );
 }
 function Engagement() {
-  const [mode, setMode] = useState(ENGAGEMENT[0].id);
-  const active = ENGAGEMENT.find((item) => item.id === mode) ?? ENGAGEMENT[0];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const active = ENGAGEMENT[activeIndex];
+  const reducedMotion = useReducedMotion();
+  const switchRef = useRef<HTMLDivElement>(null);
   return (
     <DocumentPage
       title="Working together."
-      intro="Every engagement starts with a scoped technical assessment before any commitment to build. Pick a stage to see what's in it."
+      intro="Every engagement starts with a scoped technical assessment before any commitment to build."
     >
       <div
-        className="segmented-control"
+        ref={switchRef}
+        className="engagement-switch"
         role="tablist"
-        aria-label="Engagement stage"
+        aria-label="Engagement stages"
         onKeyDown={(event) => {
-          const step =
-            event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
-          if (!step) return;
+          if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
           event.preventDefault();
-          const index = ENGAGEMENT.findIndex((item) => item.id === mode);
-          const next =
-            ENGAGEMENT[(index + step + ENGAGEMENT.length) % ENGAGEMENT.length];
-          setMode(next.id);
-          event.currentTarget
-            .querySelector<HTMLButtonElement>(`#engagement-tab-${next.id}`)
-            ?.focus();
+          const nextIndex = focusSiblingButton(switchRef.current, event.key === "ArrowRight" ? 1 : -1);
+          if (nextIndex !== null) setActiveIndex(nextIndex);
         }}
       >
-        {ENGAGEMENT.map((item) => (
+        {ENGAGEMENT.map((item, index) => (
           <button
             key={item.id}
             type="button"
             role="tab"
-            id={`engagement-tab-${item.id}`}
-            aria-controls={`engagement-panel-${item.id}`}
-            aria-selected={mode === item.id}
-            tabIndex={mode === item.id ? 0 : -1}
-            onClick={() => setMode(item.id)}
+            aria-selected={activeIndex === index}
+            className={activeIndex === index ? "is-selected" : ""}
+            onClick={() => setActiveIndex(index)}
           >
             {item.title}
           </button>
         ))}
       </div>
-      <div
-        className="engagement-panel"
+      <motion.section
+        key={active.id}
+        className="engagement-spec"
         role="tabpanel"
-        id={`engagement-panel-${active.id}`}
-        aria-labelledby={`engagement-tab-${active.id}`}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={reducedMotion ? { duration: 0 } : { duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="engagement-columns">
+        <p className="document-label">{active.price}</p>
+        <h2 className="engagement-spec-title">{active.title}</h2>
+        <p>{active.body}</p>
+        <div className="engagement-terms">
           <div>
-            <h3>What's in</h3>
+            <p className="document-label">Included</p>
             <ul>
               {active.in.map((line) => (
-                <li key={line}>{line}</li>
+                <li key={line}>
+                  <Check size={16} aria-hidden="true" />
+                  {line}
+                </li>
               ))}
             </ul>
           </div>
           <div>
-            <h3>What's out</h3>
+            <p className="document-label">Not included</p>
             <ul>
               {active.out.map((line) => (
-                <li key={line}>{line}</li>
+                <li key={line}>
+                  <Minus size={16} aria-hidden="true" />
+                  {line}
+                </li>
               ))}
             </ul>
           </div>
         </div>
-        <p className="engagement-next">{active.next}</p>
-      </div>
+        <p className="document-label engagement-outcome-label">Outcome</p>
+        <p className="engagement-outcome">{active.next}</p>
+        {active.note && <p className="engagement-note">{active.note}</p>}
+      </motion.section>
       <div className="page-cta">
-        <Link className="internal-link" to="/explore/constraints">
-          Hosting, access, and compliance boundaries{" "}
-          <ArrowRight size={18} aria-hidden="true" />
-        </Link>
         <ContactLink />
       </div>
     </DocumentPage>
   );
 }
+const CONSTRAINT_ICON: Record<string, typeof Lock> = {
+  Ownership: FileCheck2,
+  "Access and data": Lock,
+  "Decision boundaries": Scale,
+  Discretion: EyeOff,
+};
+
 function Constraints() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const active = CONSTRAINTS[activeIndex];
+  const ActiveIcon = CONSTRAINT_ICON[active.title] ?? ShieldCheck;
+  const reducedMotion = useReducedMotion();
+  const pickerRef = useRef<HTMLDivElement>(null);
   return (
     <DocumentPage
       title="How this is operated."
       intro="The boundaries every engagement runs inside, agreed up front, not discovered later."
     >
-      <div className="document-sections">
-        {CONSTRAINTS.map((item) => (
-          <section key={item.title}>
-            <h2>{item.title}</h2>
-            <p>{item.body}</p>
-          </section>
-        ))}
-        <section>
-          <h2>DACH</h2>
-          <ul className="dach-list">
-            {DACH.map((item) => (
-              <li key={item.label}>
-                <span className="dach-label">{item.label}</span>
-                <span className="dach-note">{item.note}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
+      <div className="constraint-inspector">
+        <div
+          ref={pickerRef}
+          className="constraint-picker"
+          role="group"
+          aria-label="Operating boundary"
+          onKeyDown={(event) => {
+            const forward = event.key === "ArrowDown" || event.key === "ArrowRight";
+            const backward = event.key === "ArrowUp" || event.key === "ArrowLeft";
+            if (!forward && !backward) return;
+            event.preventDefault();
+            const nextIndex = focusSiblingButton(pickerRef.current, forward ? 1 : -1);
+            if (nextIndex !== null) setActiveIndex(nextIndex);
+          }}
+        >
+          {CONSTRAINTS.map((item, index) => {
+            const Icon = CONSTRAINT_ICON[item.title] ?? ShieldCheck;
+            return (
+              <button
+                key={item.title}
+                type="button"
+                className={activeIndex === index ? "is-active" : ""}
+                aria-pressed={activeIndex === index}
+                onClick={() => setActiveIndex(index)}
+              >
+                <span className="constraint-icon">
+                  <Icon size={17} aria-hidden="true" />
+                </span>
+                {item.title}
+              </button>
+            );
+          })}
+        </div>
+        <motion.section
+          key={active.title}
+          className="constraint-detail"
+          initial={{ opacity: 0, x: 8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={reducedMotion ? { duration: 0 } : { duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          aria-live="polite"
+        >
+          <span className="constraint-detail-icon">
+            <ActiveIcon size={22} aria-hidden="true" />
+          </span>
+          <p className="constraint-detail-label">Operating boundary</p>
+          <h2>{active.title}</h2>
+          <p>{active.body}</p>
+        </motion.section>
       </div>
       <Link className="internal-link" to="/projects/recruitment-crm">
         See it in the Recruitment CRM
@@ -811,21 +842,53 @@ function Constraints() {
   );
 }
 function Questions() {
+  const [openQuestion, setOpenQuestion] = useState<number | null>(0);
+  const reducedMotion = useReducedMotion();
+  const listRef = useRef<HTMLDivElement>(null);
   return (
     <DocumentPage
       title="Common questions."
       intro="A few things to know before we get started."
     >
-      <div className="faq-list">
-        {FAQ.map((item) => (
-          <details key={item.q}>
-            <summary>
-              {item.q}
-              <ChevronRight size={18} aria-hidden="true" />
-            </summary>
-            <p>{item.a}</p>
-          </details>
-        ))}
+      <div
+        ref={listRef}
+        className="faq-list"
+        onKeyDown={(event) => {
+          if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+          event.preventDefault();
+          focusSiblingButton(listRef.current, event.key === "ArrowDown" ? 1 : -1);
+        }}
+      >
+        {FAQ.map((item, index) => {
+          const isOpen = openQuestion === index;
+          return (
+            <section key={item.q} className={isOpen ? "is-open" : ""}>
+              <button
+                type="button"
+                aria-expanded={isOpen}
+                aria-controls={`faq-answer-${index}`}
+                onClick={() => setOpenQuestion(isOpen ? null : index)}
+              >
+                <span>{item.q}</span>
+                <ChevronRight size={18} aria-hidden="true" />
+              </button>
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    id={`faq-answer-${index}`}
+                    className="faq-answer"
+                    initial={reducedMotion ? undefined : { height: 0, opacity: 0 }}
+                    animate={reducedMotion ? undefined : { height: "auto", opacity: 1 }}
+                    exit={reducedMotion ? undefined : { height: 0, opacity: 0 }}
+                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <p>{item.a}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </section>
+          );
+        })}
       </div>
       <div className="page-cta">
         <p>Something else on your mind?</p>
@@ -844,6 +907,7 @@ function About() {
         Hosting region, access controls and data handling follow your
         requirements. Documented decisions, clear responsibilities.
       </p>
+      <h2>Founder</h2>
       <div className="identity-strip">
         <img
           className="identity-photo"
@@ -975,6 +1039,8 @@ function InlineSearch() {
   const [search, setSearch] = useState("");
   const [focused, setFocused] = useState(false);
   const [highlighted, setHighlighted] = useState(0);
+  const [rescue, setRescue] = useState<string | null>(null);
+  const [rescueSpent, setRescueSpent] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -985,6 +1051,19 @@ function InlineSearch() {
 
   useEffect(() => {
     setHighlighted(0);
+  }, [search]);
+
+  useEffect(() => {
+    if (search.trim() && suggestions.length === 0) {
+      recordSearchZeroResults();
+      if (!rescueSpent) {
+        setRescue(ZERO_RESULTS_HINT);
+        setRescueSpent(true);
+      }
+    } else if (suggestions.length > 0) {
+      setRescue(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
   useEffect(() => {
@@ -1037,7 +1116,7 @@ function InlineSearch() {
           onChange={(event) => setSearch(event.target.value)}
           onFocus={() => setFocused(true)}
           onKeyDown={onKeyDown}
-          placeholder="Search Anviq..."
+          placeholder="Search"
           aria-label="Search Anviq"
           autoComplete="off"
           spellCheck={false}
@@ -1074,6 +1153,11 @@ function InlineSearch() {
           />
         </ul>
       )}
+      {search.trim() && suggestions.length === 0 && rescue && (
+        <p className="search-rescue" role="status">
+          {rescue}
+        </p>
+      )}
     </div>
   );
 }
@@ -1095,6 +1179,11 @@ function CommandPalette() {
     setHighlighted(0);
   }, [search]);
 
+  useEffect(() => {
+    if (search.trim() && suggestions.length === 0) recordSearchZeroResults();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
   // Global Cmd/Ctrl+K opens the palette from anywhere. Ctrl+K is reserved by
   // Chrome/Edge on Windows for the omnibox and never reaches page JS there,
   // so "/" (used by GitHub, Slack, Notion) is a reliable fallback - guarded
@@ -1114,6 +1203,11 @@ function CommandPalette() {
             target.tagName === "TEXTAREA" ||
             target.isContentEditable);
         if (isTyping) return;
+        if (isNavigatorSurfaceOpen()) {
+          event.preventDefault();
+          window.dispatchEvent(new Event("anviq:focus-navigator-input"));
+          return;
+        }
         event.preventDefault();
         setOpen(true);
       }
@@ -1289,7 +1383,6 @@ export function Home() {
     getServerMobile,
   );
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [reactionFailed, setReactionFailed] = useState(false);
   const reducedMotion = useReducedMotion();
   const aboutPillTransition = reducedMotion ? { duration: 0 } : NAV_PILL_SPRING;
   const filesLayout = useSyncExternalStore(subscribeFiles, getFilesLayout, getServerMobile);
@@ -1572,23 +1665,18 @@ export function Home() {
             >
               <XLogo />
             </a>
-            <EmojiReaction
-              onReact={(name) => {
-                setReactionFailed(false);
-                sendReaction(name).catch(() => setReactionFailed(true));
-              }}
-              size="sm"
-            />
-            {reactionFailed && (
-              <span className="reaction-failed" role="status">
-                Not counted
-              </span>
-            )}
+            <EmojiReaction size="sm" />
           </nav>
-          <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
+          <a
+            href="mailto:lvoss@anviq.net"
+            onCopy={() => recordEmailCopy()}
+          >
+            lvoss@anviq.net
+          </a>
         </div>
       </footer>
       {mobile && <FilesTabBar active={active} />}
+      <SiteNavigator />
     </div>
   );
 }
