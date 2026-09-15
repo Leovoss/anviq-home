@@ -105,7 +105,7 @@ const NAV = [
     href: "/explore/activity",
   },
 ];
-const SLUGS = ["steadyward", "lv-matching", "addreach", "recruitment-crm"];
+const SLUGS = ["steadyward", "lv-matching", "addreach", "recruitment-crm", "agents"];
 // One credibility line, not an autobiography - LinkedIn holds the story.
 const FOUNDER_LINE =
   "Four years in regulated commercial operations (brokerage, fintech, iGaming) before going technical. Native German speaker, DACH market.";
@@ -194,6 +194,11 @@ const PROJECT_DETAILS = [
     ["Focus", "Intake, matching, and legally-sequenced outreach"],
     ["Compliance", "Outreach ordered to UWG §7 Abs. 2, not convenience"],
     ["Data isolation", "Candidate and company data separated at the database role level"],
+  ],
+  [
+    ["Focus", "Persistent AI teammates with memory, routines, and tools"],
+    ["Isolation", "Each job runs in its own Firecracker microVM"],
+    ["Sovereignty", "Runs on hardware the client owns or controls"],
   ],
 ];
 const subscribeMobile = (callback: () => void) => {

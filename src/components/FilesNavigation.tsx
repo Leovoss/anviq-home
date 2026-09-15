@@ -5,7 +5,7 @@ import { Activity, ArrowRight, BookOpen, ChevronLeft, ChevronRight, CircleHelp, 
 import { WORK, WORK_SELECTED } from "@/data/content";
 import { Logo } from "@/components/Logo";
 
-const projectSlugs = ["steadyward", "lv-matching", "addreach", "recruitment-crm"];
+const projectSlugs = ["steadyward", "lv-matching", "addreach", "recruitment-crm", "agents"];
 const serviceIcons = [Workflow, Layers, Server];
 // Matches FOLDER_LAYOUT_TRANSITION in src/pages/Home.tsx - both FolderImage
 // and FilesArtwork share layoutId={`project-folder-${slug}`}, so opening a
