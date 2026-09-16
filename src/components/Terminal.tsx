@@ -1,13 +1,16 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { createPortal } from "react-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { SquareTerminal, X } from "lucide-react";
 import { runCommand } from "@/lib/terminalCommands";
+import { answerForIntent, findLocalSherlockIntent, intentById, shouldUseSemanticSherlockMatch } from "@/lib/sherlockCorpus";
+import { findNode, flattenRoutes, type SiteNode } from "@/lib/siteTree";
+import { matchNavigationIntent } from "@/lib/chatIntents";
+import { contextQuestion, pageGuide } from "@/lib/sherlockGuide";
 import {
   EXAMPLE_HINT,
-  getBadgeGreeting,
   hasOnce,
   isEvergreenHint,
   markMetSherlock,
@@ -16,7 +19,7 @@ import {
   tryPersona,
   useGuide,
 } from "@/lib/guide";
-import { COMMAND_COMMENTARY, GREETING_LINES, GREETING_REPLY, NODE_OPENER_LINES } from "@/lib/tone";
+import { COMMAND_COMMENTARY, GREETING_REPLY, NODE_OPENER_LINES } from "@/lib/tone";
 import { FADE, motionOr } from "@/lib/motion";
 import {
   bestGhost,
@@ -30,11 +33,13 @@ import { SherlockBadge } from "@/components/SherlockBadge";
 import { TypedPersonaLine } from "@/components/TypedPersonaLine";
 
 type HistoryEntry = {
+  id?: number;
   cwd: string;
   prompt: string;
   lines: string[];
   sherlock?: string;
   personaLines?: string[];
+  pending?: boolean;
 };
 
 function appendSherlock(entry: HistoryEntry, line: string | undefined): HistoryEntry {
@@ -44,6 +49,22 @@ function appendSherlock(entry: HistoryEntry, line: string | undefined): HistoryE
 
 function personaFor(id: string, text: string): string | undefined {
   return tryPersona(id) ? text : undefined;
+}
+
+function nodeForRoute(pathname: string): SiteNode {
+  return flattenRoutes().find((node) => node.route === pathname) ?? findNode("/")!;
+}
+function contextLines(node: SiteNode, visited: ReadonlySet<string>, journey: readonly string[], visitorMode: ReturnType<typeof useGuide>["visitorMode"]): string[] {
+  const guide = pageGuide(node.path, visited, journey, visitorMode);
+  const from = guide.previous ? `  from: ${guide.previous.name}` : "";
+  return [
+    `case: ${guide.node.name}${from}`,
+    `brief: ${guide.summary}`,
+    `next:  open ${guide.next.path}  # ${guide.reason}`,
+  ];
+}
+function isNavigationRequest(value: string): boolean {
+  return /\b(open|show|take|go|browse|navigate|read|visit|book|schedule|meet|call|öffne|zeige|geh)\b/i.test(value);
 }
 
 // Opens/navigates the real site from a terminal-shaped affordance. Not a
@@ -64,14 +85,18 @@ export function Terminal() {
   const unmatchedCount = useRef(0);
   const injectedHint = useRef<string | null>(null);
   const cycleList = useRef<ReturnType<typeof suggest>>([]);
+  const questionRequest = useRef(0);
   const reducedMotion = useReducedMotion();
   const navigate = useNavigate();
+  const location = useLocation();
   const guide = useGuide(open);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const outputRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const inputId = `${titleId}-input`;
+  const currentNode = nodeForRoute(location.pathname);
+  const lastContextPath = useRef<string | null>(null);
 
   const slashMode = input.startsWith("/") && !input.includes(" ");
   const slashItems = slashMode ? slashVerbs(input) : [];
@@ -97,20 +122,12 @@ export function Terminal() {
   const openTerminal = () => {
     window.dispatchEvent(new Event("anviq:navigator-open"));
     setNavigatorSurfaceOpen(true);
-    const fromBadge = guide.badge.count > 0 && !hasOnce("badge-greeting");
     markMetSherlock();
+    markOnce("sherlock-invite-seen");
     setOpen(true);
-    const opening: HistoryEntry[] = [];
-    if (fromBadge) {
-      const line = personaFor("badge-greeting", getBadgeGreeting());
-      if (line) opening.push({ cwd, prompt: "", lines: [], sherlock: line });
-    }
-    if (!hasOnce("greeting")) {
-      opening.push({ cwd, prompt: "", lines: [], personaLines: [...GREETING_LINES] });
-      markOnce("greeting");
-    } else {
-      opening.push({ cwd, prompt: "", lines: [guide.status] });
-    }
+    const context = contextLines(currentNode, guide.visited, guide.journey, guide.visitorMode);
+    const opening: HistoryEntry[] = [{ cwd, prompt: "", lines: context }];
+    lastContextPath.current = currentNode.path;
     setHistory(opening);
   };
   const closeTerminal = () => {
@@ -120,7 +137,6 @@ export function Terminal() {
     setInput("");
     triggerRef.current?.focus();
   };
-
   useEffect(() => {
     if (!open) return;
     inputRef.current?.focus();
@@ -139,6 +155,14 @@ export function Terminal() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  // Keep the terminal's mental model in step with navigation from anywhere
+  // on the site, not only navigation initiated in the terminal itself.
+  useEffect(() => {
+    if (!open || lastContextPath.current === currentNode.path) return;
+    lastContextPath.current = currentNode.path;
+    setHistory((prev) => [...prev, { cwd, prompt: "", lines: contextLines(currentNode, guide.visited, guide.journey, guide.visitorMode) }]);
+  }, [open, currentNode, cwd, guide.visited, guide.journey, guide.visitorMode]);
 
   useEffect(() => {
     outputRef.current?.scrollTo({ top: outputRef.current.scrollHeight });
@@ -230,7 +254,7 @@ export function Terminal() {
     }
   };
 
-  const submit = (event: FormEvent) => {
+  const submit = async (event: FormEvent) => {
     event.preventDefault();
     const stripped = input.startsWith("/") ? input.slice(1) : input;
     const command =
@@ -253,6 +277,79 @@ export function Terminal() {
     setSlashIndex(0);
     cycleList.current = [];
     setCmdHistory(pushCommandHistory(command));
+    if (!slashMode) guide.noteSherlockQuestion(command);
+
+    if (!slashMode && contextQuestion(command)) {
+      setHistory((prev) => [
+        ...prev,
+        { cwd, prompt: command, lines: contextLines(currentNode, guide.visited, guide.journey, guide.visitorMode) },
+      ]);
+      return;
+    }
+
+    // Natural language navigation shares the real site tree with the mobile
+    // navigator. It is deliberately handled before Q&A so "show services"
+    // acts, instead of merely describing Services.
+    const requestedNode = !slashMode && isNavigationRequest(command) ? matchNavigationIntent(command) : undefined;
+    if (requestedNode) {
+      setHistory((prev) => [
+        ...prev,
+        { cwd, prompt: command, lines: [`Opening ${requestedNode.name}.`] },
+      ]);
+      if (requestedNode.route) {
+        navigate(requestedNode.route);
+      } else if (requestedNode.href) {
+        if (requestedNode.href.includes("calendly.com")) recordBookingClick();
+        window.open(requestedNode.href, "_blank", "noopener,noreferrer");
+      }
+      return;
+    }
+
+    // Shell verbs keep their terminal behaviour. Ordinary questions use the
+    // same authored corpus and semantic fallback as the mobile Sherlock.
+    const localIntent = !slashMode ? findLocalSherlockIntent(command) : undefined;
+    if (localIntent) {
+      unmatchedCount.current = 0;
+      setHistory((prev) => [
+        ...prev,
+        { cwd, prompt: command, lines: [], sherlock: answerForIntent(localIntent, command) },
+      ]);
+      return;
+    }
+    const naturalQuestion = !slashMode && (/\s/.test(command) || command.includes("?"));
+    if (naturalQuestion && shouldUseSemanticSherlockMatch(command)) {
+      const request = ++questionRequest.current;
+      setHistory((prev) => [...prev, { id: request, cwd, prompt: command, lines: [], pending: true }]);
+      try {
+        const response = await fetch("/api/sherlock", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: command }),
+        });
+        const result = (await response.json()) as { intent?: string };
+        const intent = result.intent ? intentById(result.intent) : undefined;
+        if (request === questionRequest.current) {
+          const resolved = intent ?? intentById("fallback")!;
+          setHistory((prev) => prev.map((entry) => entry.id === request
+            ? { ...entry, pending: false, sherlock: answerForIntent(resolved, command) }
+            : entry));
+        }
+      } catch {
+        if (request === questionRequest.current) {
+          setHistory((prev) => prev.map((entry) => entry.id === request
+            ? { ...entry, pending: false, sherlock: answerForIntent(intentById("fallback")!, command) }
+            : entry));
+        }
+      }
+      return;
+    }
+    if (naturalQuestion) {
+      setHistory((prev) => [
+        ...prev,
+        { cwd, prompt: command, lines: [], sherlock: answerForIntent(intentById("fallback")!, command) },
+      ]);
+      return;
+    }
 
     const result = runCommand(cwd, command);
     setCwd(result.cwd);
@@ -317,6 +414,7 @@ export function Terminal() {
         onClick={openTerminal}
       >
         <SquareTerminal size={19} aria-hidden="true" />
+        {!hasOnce("sherlock-invite-seen") && <span className="sherlock-invite" aria-hidden="true">Need a guide?</span>}
         <SherlockBadge badge={guide.badge} open={open} />
       </button>
       {createPortal(
@@ -340,20 +438,14 @@ export function Terminal() {
                 transition={motionOr(reducedMotion, FADE)}
               >
                 <div className="terminal-titlebar hairline-b">
-                  <div className="terminal-titlebar-copy">
-                    <span id={titleId}>Terminal — {cwd}</span>
-                    <span className="terminal-status" data-guide-status>
-                      {guide.status}
-                    </span>
+                  <div className="terminal-window-controls">
+                    <button type="button" className="terminal-close" aria-label="Close terminal" onClick={closeTerminal}>
+                      <X size={10} aria-hidden="true" />
+                    </button>
+                    <span className="terminal-control-yellow" aria-hidden="true" />
+                    <span className="terminal-control-green" aria-hidden="true" />
                   </div>
-                  <button
-                    type="button"
-                    className="icon-button"
-                    aria-label="Close terminal"
-                    onClick={closeTerminal}
-                  >
-                    <X size={16} aria-hidden="true" />
-                  </button>
+                  <div className="terminal-titlebar-copy"><span id={titleId}>Sherlock — Anviq</span></div>
                 </div>
                 <div
                   className="terminal-output"
@@ -384,17 +476,14 @@ export function Terminal() {
                           <span aria-hidden="true">›</span> <TypedPersonaLine text={entry.sherlock} reducedMotion={reducedMotion} />
                         </p>
                       )}
+                      {entry.pending && (
+                        <p className="terminal-line terminal-thinking" aria-label="Sherlock is consulting the case file">
+                          <span aria-hidden="true">Sherlock is consulting the case file</span><span className="terminal-thinking-dots" aria-hidden="true" />
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
-                {guide.hint && isEvergreenHint(guide.hint) && (
-                  <div className="terminal-hint">
-                    <p>{guide.hint}</p>
-                    <button type="button" aria-label="Dismiss hint" onClick={guide.dismiss}>
-                      <X size={14} aria-hidden="true" />
-                    </button>
-                  </div>
-                )}
                 {slashMode && slashItems.length > 0 && (
                   <ul className="terminal-slash" role="listbox" aria-label="Commands">
                     {slashItems.map((item, index) => (
