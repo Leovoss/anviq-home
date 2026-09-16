@@ -1685,6 +1685,10 @@ svg {
   margin-left: auto;
   color: var(--muted);
 }
+.document-label {
+  color: var(--muted);
+  font-size: 14px;
+}
 .project-preview {
   padding: 32px 36px 45px;
   min-width: 0;
@@ -2045,6 +2049,88 @@ svg {
 .finder-row.is-selected > span > span { color: var(--selected-text); }
 .finder-row > svg:last-child { margin-left: auto; color: var(--muted); flex-shrink: 0; }
 .finder-row.is-selected > svg:last-child { color: var(--selected-text); }
+.engagement-switch {
+  position: relative;
+  display: inline-flex;
+  gap: 2px;
+  margin-top: 30px;
+  padding: 3px;
+  background: var(--sidebar);
+  border-radius: 12px;
+}
+.engagement-switch button {
+  position: relative;
+  z-index: 1;
+  min-height: 40px;
+  padding: 8px 18px;
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 550;
+  transition: color 150ms ease-out;
+}
+.engagement-switch button.is-selected {
+  color: var(--text);
+}
+.engagement-switch-pill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 9px;
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
+}
+.engagement-switch-label {
+  position: relative;
+  z-index: 1;
+}
+.engagement-spec {
+  margin-top: 26px;
+}
+.engagement-spec-title {
+  margin-top: 4px;
+}
+.engagement-spec > p { max-width: 68ch; }
+.engagement-terms {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 28px;
+}
+.engagement-terms ul {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.engagement-terms li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 7px 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.engagement-terms li svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.engagement-terms div:first-child li svg { color: var(--accent); }
+.engagement-terms div:last-child li svg { color: var(--muted); }
+.engagement-outcome-label {
+  margin-top: 28px !important;
+}
+.engagement-outcome {
+  margin-top: 4px !important;
+  color: var(--text) !important;
+  font-size: 16px !important;
+  font-weight: 550;
+}
+.engagement-note {
+  margin-top: 12px !important;
+  font-size: 13px !important;
+  font-style: italic;
+}
 .constraint-inspector {
   display: grid;
   grid-template-columns: minmax(210px, 0.85fr) minmax(0, 1.35fr);
@@ -2084,14 +2170,6 @@ svg {
 .constraint-picker button.is-active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgb(0 0 0 / 10%); }
 .constraint-picker button.is-active .constraint-icon { background: var(--selected); color: var(--selected-text); }
 .constraint-picker button.is-active .approach-stage-icon { background: color-mix(in srgb, var(--cat, var(--accent)) 16%, var(--surface)); color: var(--cat, var(--accent)); }
-.constraint-picker button > span {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-.constraint-picker-sub { color: var(--muted); font-size: 12px; font-weight: 500; }
-.constraint-detail .project-details { margin: 18px 0 0; padding: 18px 0 0; border: none; border-top: 1px solid var(--line); }
 .constraint-detail {
   min-height: 210px;
   padding: 32px 36px;
@@ -2735,6 +2813,18 @@ svg {
   }
   .document-sections > section {
     scroll-margin-top: 135px;
+  }
+  .engagement-switch {
+    display: flex;
+    width: 100%;
+  }
+  .engagement-switch button {
+    flex: 1;
+    padding-inline: 8px;
+  }
+  .engagement-terms {
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
   .constraint-inspector {
     grid-template-columns: 1fr;

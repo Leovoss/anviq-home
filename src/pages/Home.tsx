@@ -13,6 +13,7 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpen,
+  Check,
   ChevronLeft,
   ChevronRight,
   CircleHelp,
@@ -22,15 +23,18 @@ import {
   FileCheck2,
   FileText,
   Folder,
+  Hammer,
   House,
   Layers,
   Lock,
   Mail,
+  Minus,
   PanelLeft,
   Scale,
   Search,
   Server,
   ShieldCheck,
+  UploadCloud,
   Workflow,
   X,
 } from "lucide-react";
@@ -604,7 +608,7 @@ function focusSiblingButton(container: HTMLElement | null, direction: 1 | -1) {
   return nextIndex;
 }
 
-const APPROACH_ICONS = [Search, Layers, Server, FileCheck2];
+const APPROACH_ICONS = [Search, Hammer, UploadCloud, FileCheck2];
 // Closed racetrack loop: two straight sides plus two semicircle caps, walked
 // clockwise Assess -> Build -> Deploy -> Handover -> (back to Assess).
 // viewBox 0 0 640 200; nodes sit at the four corners where straight meets cap.
@@ -711,90 +715,87 @@ function Approach() {
     </DocumentPage>
   );
 }
-const ENGAGEMENT_ICONS = [FileText, Layers, Activity];
-
 function Engagement() {
   const [activeIndex, setActiveIndex] = useState(0);
   const active = ENGAGEMENT[activeIndex];
   const reducedMotion = useReducedMotion();
-  const pickerRef = useRef<HTMLDivElement>(null);
+  const switchRef = useRef<HTMLDivElement>(null);
+  const pillTransition = reducedMotion ? { duration: 0 } : { type: "spring" as const, bounce: 0, duration: 0.3 };
   return (
     <DocumentPage
       title="Working together."
       intro="Every engagement starts with a scoped technical assessment before any commitment to build."
     >
-      <div className="constraint-inspector">
-        <div
-          ref={pickerRef}
-          className="constraint-picker"
-          role="tablist"
-          aria-label="Engagement stages"
-          onKeyDown={(event) => {
-            const forward = event.key === "ArrowDown" || event.key === "ArrowRight";
-            const backward = event.key === "ArrowUp" || event.key === "ArrowLeft";
-            if (!forward && !backward) return;
-            event.preventDefault();
-            const nextIndex = focusSiblingButton(pickerRef.current, forward ? 1 : -1);
-            if (nextIndex !== null) setActiveIndex(nextIndex);
-          }}
-        >
-          {ENGAGEMENT.map((item, index) => {
-            const Icon = ENGAGEMENT_ICONS[index];
-            const isActive = activeIndex === index;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                className={isActive ? "is-active" : ""}
-                onClick={() => setActiveIndex(index)}
-              >
-                <span className="constraint-icon">
-                  <Icon size={17} aria-hidden="true" />
-                </span>
-                <span>
-                  <strong>{item.title}</strong>
-                  <span className="constraint-picker-sub">{item.price}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-        <div className="constraint-detail">
-          <motion.div
-            key={active.id}
-            role="tabpanel"
-            initial={reducedMotion ? undefined : { opacity: 0, y: 6 }}
-            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={reducedMotion ? { duration: 0 } : { duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <p className="constraint-detail-label">{active.price}</p>
-            <h2>{active.title}</h2>
-            <p>{active.body}</p>
-            <dl className="project-details">
-              <div>
-                <dt>Includes</dt>
-                <dd>{active.in.join(". ")}.</dd>
-              </div>
-              <div>
-                <dt>Excludes</dt>
-                <dd>{active.out.join(". ")}.</dd>
-              </div>
-              <div>
-                <dt>Then</dt>
-                <dd>{active.next}</dd>
-              </div>
-              {active.note && (
-                <div>
-                  <dt>Note</dt>
-                  <dd>{active.note}</dd>
-                </div>
+      <div
+        ref={switchRef}
+        className="engagement-switch"
+        role="tablist"
+        aria-label="Engagement stages"
+        onKeyDown={(event) => {
+          if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+          event.preventDefault();
+          const nextIndex = focusSiblingButton(switchRef.current, event.key === "ArrowRight" ? 1 : -1);
+          if (nextIndex !== null) setActiveIndex(nextIndex);
+        }}
+      >
+        {ENGAGEMENT.map((item, index) => {
+          const isActive = activeIndex === index;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              className={isActive ? "is-selected" : ""}
+              onClick={() => setActiveIndex(index)}
+            >
+              {isActive && (
+                <motion.span layoutId="engagement-switch-pill" className="engagement-switch-pill" transition={pillTransition} />
               )}
-            </dl>
-          </motion.div>
-        </div>
+              <span className="engagement-switch-label">{item.title}</span>
+            </button>
+          );
+        })}
       </div>
+      <motion.section
+        key={active.id}
+        className="engagement-spec"
+        role="tabpanel"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={reducedMotion ? { duration: 0 } : { duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <p className="document-label">{active.price}</p>
+        <h2 className="engagement-spec-title">{active.title}</h2>
+        <p>{active.body}</p>
+        <div className="engagement-terms">
+          <div>
+            <p className="document-label">Included</p>
+            <ul>
+              {active.in.map((line) => (
+                <li key={line}>
+                  <Check size={16} aria-hidden="true" />
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="document-label">Not included</p>
+            <ul>
+              {active.out.map((line) => (
+                <li key={line}>
+                  <Minus size={16} aria-hidden="true" />
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <p className="document-label engagement-outcome-label">Outcome</p>
+        <p className="engagement-outcome">{active.next}</p>
+        {active.note && <p className="engagement-note">{active.note}</p>}
+      </motion.section>
       <div className="page-cta">
         <ContactLink />
       </div>
