@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import type { FormEvent, ReactNode } from "react";
+import type { CSSProperties, FormEvent, ReactNode } from "react";
 import {
   Link,
   Navigate,
@@ -23,6 +23,7 @@ import {
   FileCheck2,
   FileText,
   Folder,
+  Hammer,
   House,
   Layers,
   Lock,
@@ -33,6 +34,7 @@ import {
   Search,
   Server,
   ShieldCheck,
+  UploadCloud,
   Workflow,
   X,
 } from "lucide-react";
@@ -44,13 +46,11 @@ import {
   ENGAGEMENT,
   CONSTRAINTS,
   FAQ,
-  IDEA,
 } from "@/data/content";
 import { PublicActivity } from "@/components/PublicActivity";
 import { ExplorerPane } from "@/components/ExplorerPane";
 import { ScreenshotLightbox } from "@/components/ScreenshotLightbox";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import type { Variants } from "motion/react";
 import { GitHubActivity } from "@/components/ui/github-activity";
 import { EmojiReaction } from "@/components/ui/emoji-reaction";
 import { DocumentPage } from "@/components/DocumentPage";
@@ -113,7 +113,7 @@ const NAV = [
 const SLUGS = ["agents", "steadyward", "lv-matching", "addreach", "recruitment-crm"];
 // One credibility line, not an autobiography - LinkedIn holds the story.
 const FOUNDER_LINE =
-  "Four years in regulated commercial operations (brokerage, fintech, iGaming) before going technical. Native German speaker, DACH market.";
+  "Independent engineer with four years in regulated commercial operations across brokerage, fintech, and iGaming.";
 // Short subheaders for search rows, the same shape as a Selected work row
 // (name + tag). The body below is match text only, never displayed.
 const SEARCH_SUBS: Record<string, string> = {
@@ -394,8 +394,7 @@ function ProjectShips({ ships }: { ships: { date: string; title: string }[] }) {
   if (ships.length === 0) return null;
   return (
     <div className="project-ships">
-      <p className="document-label">Ship log</p>
-      <ul className="project-ships-list">
+        <ul className="project-ships-list">
         {ships.map((entry) => (
           <li key={`${entry.date}-${entry.title}`}>
             <span className="project-ships-date">{entry.date}</span>
@@ -440,8 +439,7 @@ function ProjectFiles({ files }: { files: ProjectFile[] }) {
   }
   return (
     <div className="project-files">
-      <p className="document-label">Files</p>
-      <ul className="project-file-list">
+        <ul className="project-file-list">
         {files.map((file, index) => (
           <li key={file.name}>
             <button type="button" onClick={() => setOpenIndex(index)}>
@@ -496,7 +494,6 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
             <ChevronLeft size={19} aria-hidden="true" />
             Selected work
           </Link>
-          <p className="document-label project-overview-label">Project overview</p>
           <FolderImage slug={SLUGS[selected]} />
           {filesLayout ? (
             <h1 id="project-title">{project.name}</h1>
@@ -550,6 +547,12 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
             as products with their own landing page, where more detail is
             shared.
           </p>
+          {slug === "recruitment-crm" && (
+            <Link className="internal-link" to="/projects/agents">
+              See the agent layer behind the workflow
+              <ArrowRight size={18} aria-hidden="true" />
+            </Link>
+          )}
         </article>
       )}
     </div>
@@ -592,10 +595,6 @@ function Services() {
     </DocumentPage>
   );
 }
-const PROCESS_LIST_VARIANTS = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.09 } },
-} satisfies Variants;
 // Moves focus to the next/previous button inside a roving-focus group
 // (segmented control, picker list, timeline). Returns the new index so the
 // caller can also update selection, or null if focus wasn't inside the group.
@@ -608,79 +607,108 @@ function focusSiblingButton(container: HTMLElement | null, direction: 1 | -1) {
   items[nextIndex].focus();
   return nextIndex;
 }
-const PROCESS_ITEM_VARIANTS = {
-  hidden: { opacity: 0, y: 14 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.32, ease: [0.16, 1, 0.3, 1] as const },
-  },
-} satisfies Variants;
+
+const APPROACH_ICONS = [Search, Hammer, UploadCloud, FileCheck2];
+// Closed racetrack loop: two straight sides plus two semicircle caps, walked
+// clockwise Assess -> Build -> Deploy -> Handover -> (back to Assess).
+// viewBox 0 0 640 200; nodes sit at the four corners where straight meets cap.
+const APPROACH_NODE_POS = [
+  { x: 15.625, y: 0 },
+  { x: 84.375, y: 0 },
+  { x: 84.375, y: 100 },
+  { x: 15.625, y: 100 },
+];
+const APPROACH_SEGMENTS = [
+  "M100,0 L540,0",
+  "M540,0 A100,100 0 0 1 540,200",
+  "M540,200 L100,200",
+  "M100,200 A100,100 0 0 1 100,0",
+];
 
 function Approach() {
   const [activeStep, setActiveStep] = useState(PROCESS[0].n);
   const reducedMotion = useReducedMotion();
-  const timelineRef = useRef<HTMLOListElement>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
+  const activeIndex = PROCESS.findIndex((step) => step.n === activeStep);
+  const active = PROCESS[activeIndex] ?? PROCESS[0];
 
   return (
     <DocumentPage
-      title="Own the delivery."
-      intro="I work inside your team across the whole system, not just the code: workflow, integration, compliance, and the handoffs between them. I own delivery from the first technical assessment through deployment and documentation."
+      title="The shape of the work"
+      intro="Some engagements become service as software. Others are forward-deployed custom systems or infrastructure. The process starts with the operation, not the category."
     >
-      <p>
-        Hosting, access controls, and data handling are agreed before
-        implementation.
-      </p>
-      <motion.ol
-        ref={timelineRef}
-        className="process-timeline"
-        initial={reducedMotion ? undefined : "hidden"}
-        whileInView={reducedMotion ? undefined : "visible"}
-        viewport={{ once: true, amount: 0.3 }}
-        variants={reducedMotion ? undefined : PROCESS_LIST_VARIANTS}
-        onKeyDown={(event) => {
-          if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-          event.preventDefault();
-          const nextIndex = focusSiblingButton(timelineRef.current, event.key === "ArrowDown" ? 1 : -1);
-          if (nextIndex !== null) setActiveStep(PROCESS[nextIndex].n);
-        }}
-      >
-        {PROCESS.map((step) => {
-          const isActive = activeStep === step.n;
-          return (
-            <motion.li
-              key={step.n}
-              className={isActive ? "is-active" : ""}
-              variants={reducedMotion ? undefined : PROCESS_ITEM_VARIANTS}
-            >
+      <div className="constraint-inspector">
+        <div
+          ref={pickerRef}
+          className="constraint-picker"
+          role="tablist"
+          aria-label="Delivery lifecycle"
+          onKeyDown={(event) => {
+            const forward = event.key === "ArrowDown" || event.key === "ArrowRight";
+            const backward = event.key === "ArrowUp" || event.key === "ArrowLeft";
+            if (!forward && !backward) return;
+            event.preventDefault();
+            const nextIndex = focusSiblingButton(pickerRef.current, forward ? 1 : -1);
+            if (nextIndex !== null) setActiveStep(PROCESS[nextIndex].n);
+          }}
+        >
+          {PROCESS.map((step, index) => {
+            const Icon = APPROACH_ICONS[index];
+            const isActive = activeStep === step.n;
+            return (
               <button
+                key={step.n}
                 type="button"
-                className="process-step"
-                aria-expanded={isActive}
-                aria-controls={`process-body-${step.n}`}
-                onClick={() => setActiveStep(isActive ? "" : step.n)}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`approach-panel-${step.n}`}
+                className={isActive ? "is-active" : ""}
+                style={{ "--cat": `var(--cat-${index + 1})` } as CSSProperties}
+                onClick={() => setActiveStep(step.n)}
               >
-                <span className="step-bead">{Number(step.n)}</span>
-                <h2>{step.title}</h2>
+                <span className="constraint-icon approach-stage-icon">
+                  <Icon size={17} aria-hidden="true" />
+                </span>
+                {step.title}
               </button>
-              <AnimatePresence initial={false}>
-                {isActive && (
-                  <motion.div
-                    id={`process-body-${step.n}`}
-                    className="process-step-copy"
-                    initial={reducedMotion ? undefined : { height: 0, opacity: 0 }}
-                    animate={reducedMotion ? undefined : { height: "auto", opacity: 1 }}
-                    exit={reducedMotion ? undefined : { height: 0, opacity: 0 }}
-                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <p>{step.body}</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.li>
-          );
-        })}
-      </motion.ol>
+            );
+          })}
+        </div>
+        <div className="constraint-detail approach-detail">
+          <div className="approach-loop" aria-hidden="true">
+            <svg className="approach-loop-svg" viewBox="0 0 640 200">
+              {APPROACH_SEGMENTS.map((d, index) => (
+                <path key={d} d={d} className={`approach-loop-segment ${index < activeIndex ? "is-traveled" : ""}`} />
+              ))}
+            </svg>
+            {PROCESS.map((step, index) => {
+              const Icon = APPROACH_ICONS[index];
+              const pos = APPROACH_NODE_POS[index];
+              return (
+                <span
+                  key={step.n}
+                  className={`approach-loop-node ${activeStep === step.n ? "is-active" : ""}`}
+                  style={{ left: `${pos.x}%`, top: `${pos.y}%`, "--cat": `var(--cat-${index + 1})` } as CSSProperties}
+                >
+                  <Icon size={15} aria-hidden="true" />
+                </span>
+              );
+            })}
+          </div>
+          <motion.div
+            key={active.n}
+            id={`approach-panel-${active.n}`}
+            role="tabpanel"
+            initial={reducedMotion ? undefined : { opacity: 0, y: 6 }}
+            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+            transition={reducedMotion ? { duration: 0 } : { duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <p className="constraint-detail-label">Stage {activeIndex + 1} of {PROCESS.length}</p>
+            <h2>{active.title}</h2>
+            <p>{active.body}</p>
+          </motion.div>
+        </div>
+      </div>
       <Link className="internal-link" to="/explore/engagement">
         How an engagement works <ArrowRight size={18} aria-hidden="true" />
       </Link>
@@ -692,6 +720,7 @@ function Engagement() {
   const active = ENGAGEMENT[activeIndex];
   const reducedMotion = useReducedMotion();
   const switchRef = useRef<HTMLDivElement>(null);
+  const pillTransition = reducedMotion ? { duration: 0 } : { type: "spring" as const, bounce: 0, duration: 0.3 };
   return (
     <DocumentPage
       title="Working together."
@@ -709,18 +738,24 @@ function Engagement() {
           if (nextIndex !== null) setActiveIndex(nextIndex);
         }}
       >
-        {ENGAGEMENT.map((item, index) => (
-          <button
-            key={item.id}
-            type="button"
-            role="tab"
-            aria-selected={activeIndex === index}
-            className={activeIndex === index ? "is-selected" : ""}
-            onClick={() => setActiveIndex(index)}
-          >
-            {item.title}
-          </button>
-        ))}
+        {ENGAGEMENT.map((item, index) => {
+          const isActive = activeIndex === index;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              className={isActive ? "is-selected" : ""}
+              onClick={() => setActiveIndex(index)}
+            >
+              {isActive && (
+                <motion.span layoutId="engagement-switch-pill" className="engagement-switch-pill" transition={pillTransition} />
+              )}
+              <span className="engagement-switch-label">{item.title}</span>
+            </button>
+          );
+        })}
       </div>
       <motion.section
         key={active.id}
@@ -782,8 +817,8 @@ function Constraints() {
   const pickerRef = useRef<HTMLDivElement>(null);
   return (
     <DocumentPage
-      title="How this is operated."
-      intro="The boundaries every engagement runs inside, agreed up front, not discovered later."
+      title="How this is operated"
+      intro="Boundaries agreed before implementation: access, data, decisions, and ownership"
     >
       <div className="constraint-inspector">
         <div
@@ -834,8 +869,8 @@ function Constraints() {
           <p>{active.body}</p>
         </motion.section>
       </div>
-      <Link className="internal-link" to="/projects/recruitment-crm">
-        See it in the Recruitment CRM
+      <Link className="internal-link" to="/projects/agents">
+        See the safeguards in Anviq Agents
         <ArrowRight size={18} aria-hidden="true" />
       </Link>
     </DocumentPage>
@@ -897,16 +932,18 @@ function Questions() {
     </DocumentPage>
   );
 }
+const ABOUT_MODES = [
+  { title: "Service as software", icon: Workflow, body: "A repeatable operation becomes a product people can use, with the work carried by the software itself.", link: "See Anviq Agents", href: "/projects/agents" },
+  { title: "Forward-deployed engineering", icon: Layers, body: "A unique workflow gets custom software built around the people and systems already in place.", link: "See selected work", href: "/explore/projects" },
+  { title: "Infrastructure", icon: Server, body: "The operating environment is the work: hardware, isolation, access, and the system underneath it all.", link: "See the safeguards", href: "/explore/constraints" },
+] as const;
+
 function About() {
   return (
     <DocumentPage
-      title="About Anviq."
-      intro="Anviq is an independent IT consulting and software practice. Commercial judgment and technical delivery, one person, full accountability."
+      title="About Anviq"
+      intro="Independent IT consulting and software. One person, accountable from first conversation to handover."
     >
-      <p>
-        Hosting region, access controls and data handling follow your
-        requirements. Documented decisions, clear responsibilities.
-      </p>
       <h2>Founder</h2>
       <div className="identity-strip">
         <img
@@ -932,17 +969,20 @@ function About() {
           <span className="sr-only"> (opens in a new tab)</span>
         </a>
       </div>
-      <h2>One letter away from "anvil."</h2>
       <p>
-        The metaphor is construction, testing and accountability, not spectacle.
-        What gets built is meant to be inspected, not marveled at.
+        Most systems fail because they depend on the person who built them, or on luck holding steady. Anviq is built against that: systems that hold on their own, and someone who stays accountable for them either way.
       </p>
-      <div className="document-sections">
-        {IDEA.map((item) => (
-          <section key={item.title}>
-            <h2>{item.title}</h2>
-            <p>{item.body}</p>
-          </section>
+      <h2>One person, three ways of shipping</h2>
+      <div className="finder-row-list">
+        {ABOUT_MODES.map((item) => (
+          <Link key={item.title} to={item.href} className="finder-row">
+            <item.icon size={22} strokeWidth={1.75} aria-hidden="true" />
+            <span>
+              <strong>{item.title}</strong>
+              <span>{item.body}</span>
+            </span>
+            <ChevronRight size={17} aria-hidden="true" />
+          </Link>
         ))}
       </div>
       <Link className="internal-link" to="/explore/constraints">
