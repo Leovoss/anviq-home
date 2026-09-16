@@ -149,7 +149,7 @@ export function MobileChat() {
   return createPortal(<>
     <AnimatePresence>{open && <motion.div key="edge-tint" className="chat-edge-tint" aria-hidden="true" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={motionOr(reducedMotion, FADE)} />}</AnimatePresence>
     <div className={`chat-bar-anchor${open ? " is-open" : " is-closed"}`}>
-      <AnimatePresence>{panel && <motion.div key={answer ? (answer.query ?? answer.text ?? "answer") : "evergreen"} className="chat-answer" role="status" aria-live="polite" initial={reducedMotion ? undefined : { opacity: 0, y: 10, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={reducedMotion ? undefined : { opacity: 0, y: 6, scale: 0.98 }} transition={motionOr(reducedMotion, SPRING_MORPH)}>
+      <AnimatePresence>{panel && <motion.div key={answer ? (answer.query ?? answer.text ?? "answer") : "evergreen"} className="chat-answer" role="status" aria-live="polite" ref={(el) => { if (el) el.scrollTop = 0; }} initial={reducedMotion ? undefined : { opacity: 0, y: 10, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={reducedMotion ? undefined : { opacity: 0, y: 6, scale: 0.98 }} transition={motionOr(reducedMotion, SPRING_MORPH)}>
         <button type="button" className="icon-button chat-answer-dismiss" aria-label="Close Sherlock" onClick={dismiss}><X size={16} aria-hidden="true" /></button>
         {answer?.query && <p className="chat-answer-query">{answer.query}</p>}
         {panel.text && <p>{panel.text}</p>}

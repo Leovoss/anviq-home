@@ -154,7 +154,7 @@ export function pageGuide(path: string, visited: ReadonlySet<string>, journey?: 
   const next = findNode(step.path)!;
   const choices = guidance.next
     .map(({ path }) => findNode(path))
-    .filter((choice): choice is SiteNode => Boolean(choice));
+    .filter((choice): choice is SiteNode => Boolean(choice) && choice?.path !== next.path);
   const previous = priorPage(node.path, visited, journey);
   const cameFrom = previous ? ` You came here from ${previous.name}.` : "";
   return {
