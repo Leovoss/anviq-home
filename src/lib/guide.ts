@@ -43,6 +43,7 @@ import {
   TAB_RETURN_HINT,
   ZERO_RESULTS_HINT,
 } from "@/lib/tone";
+import { inferVisitorMode, type VisitorMode } from "@/lib/sherlockJourney";
 
 // Ship the email-copy reaction wired but silent until the owner reviews it
 // (spec: "OWNER SIGN-OFF REQUIRED pre-merge"). Flip to true only on that
@@ -55,6 +56,8 @@ const RETIRED_EMOJI_KEYS = ["anviq-guide-emoji-count", "anviq-guide-emojis-v2"];
 const LAST_VISIT_KEY = "anviq-guide-last-visit-ms";
 const BADGE_SHOWN_KEY = "anviq-guide-badge-first-shown-ms";
 const MET_KEY = "met-sherlock";
+const JOURNEY_KEY = "anviq-guide-journey";
+const VISITOR_MODE_KEY = "anviq-guide-visitor-mode";
 const IDLE_MS = 20000;
 const MULTI_DAY_MS = 24 * 60 * 60 * 1000;
 const CALENDLY_RETURN_WINDOW_MS = 5 * 60 * 1000;
@@ -308,6 +311,13 @@ export interface BadgeState {
 
 export interface GuideApi {
   visited: Set<string>;
+  /** Recent real pages, in order. Unlike `visited`, this preserves where the
+   * visitor came from when they return to a page. */
+  journey: string[];
+  visitorMode: VisitorMode;
+  /** Records an explicit visitor clue so the next recommendation follows
+   * their buying journey rather than a fixed site tour. */
+  noteSherlockQuestion: (query: string) => void;
   hint: string | null;
   status: string;
   badge: BadgeState;
@@ -328,6 +338,23 @@ export function useGuide(isOpen: boolean): GuideApi {
   // tree) changes.
   useSyncExternalStore(subscribeBus, getSnapshot, getSnapshot);
   const [visited, setVisited] = useState<Set<string>>(() => loadSet(VISITED_KEY));
+  const [journey, setJourney] = useState<string[]>(() => {
+    try {
+      const raw = sessionStorage.getItem(JOURNEY_KEY);
+      const stored = raw ? JSON.parse(raw) : [];
+      return Array.isArray(stored) ? stored.filter((path): path is string => typeof path === "string").slice(-8) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [visitorMode, setVisitorMode] = useState<VisitorMode>(() => {
+    try {
+      const stored = sessionStorage.getItem(VISITOR_MODE_KEY);
+      return stored === "problem" || stored === "proof" || stored === "trust" || stored === "ready" ? stored : "exploring";
+    } catch {
+      return "exploring";
+    }
+  });
   const [idleHintReady, setIdleHintReady] = useState(false);
   const [pendingCommentary, setPendingCommentary] = useState<string | null>(null);
   // The evergreen progression line isn't a "once" rule (it's the fallback,
@@ -347,7 +374,17 @@ export function useGuide(isOpen: boolean): GuideApi {
   // functions made that flaky in practice (a real bug found by testing).
   useEffect(() => {
     const node = nodeForRoute(location.pathname);
-    if (!node || node.path === "/" || visited.has(node.path)) return;
+    if (!node) return;
+    if (journey[journey.length - 1] !== node.path) {
+      const nextJourney = [...journey, node.path].slice(-8);
+      try {
+        sessionStorage.setItem(JOURNEY_KEY, JSON.stringify(nextJourney));
+      } catch {
+        // Private browsing may deny session storage; the in-memory trail still works.
+      }
+      setJourney(nextJourney);
+    }
+    if (node.path === "/" || visited.has(node.path)) return;
     const next = new Set(visited).add(node.path);
     saveSet(VISITED_KEY, next);
     setVisited(next);
@@ -360,8 +397,7 @@ export function useGuide(isOpen: boolean): GuideApi {
     if (SECTIONS.every((section) => next.has(section.path))) {
       queueEvent("deduction-all-sections", DEDUCTION_ALL_SECTIONS);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
+  }, [location.pathname, journey, visited]);
 
   // Rule d: one idle hint per session, only while a surface is open.
   useEffect(() => {
@@ -373,6 +409,16 @@ export function useGuide(isOpen: boolean): GuideApi {
 
   const recordAction: GuideApi["recordAction"] = () => {
     // Unmatched rescue is anchored in the surface transcript, not the banner.
+  };
+  const noteSherlockQuestion: GuideApi["noteSherlockQuestion"] = (query) => {
+    const next = inferVisitorMode(query, visitorMode);
+    if (next === visitorMode) return;
+    try {
+      sessionStorage.setItem(VISITOR_MODE_KEY, next);
+    } catch {
+      // Keep the current visit useful even when storage is unavailable.
+    }
+    setVisitorMode(next);
   };
 
   // Priority order, highest first. Direct, timely reactions to something
@@ -475,11 +521,14 @@ export function useGuide(isOpen: boolean): GuideApi {
 
   return {
     visited,
+    journey,
+    visitorMode,
     hint,
     status,
     badge,
     dismiss: commitCurrentHint,
     close: commitCurrentHint,
     recordAction,
+    noteSherlockQuestion,
   };
 }

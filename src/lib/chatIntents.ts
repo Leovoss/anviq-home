@@ -51,3 +51,19 @@ export function matchIntent(query: string): SiteNode | undefined {
   }
   return undefined;
 }
+
+/**
+ * Prefer an explicitly named page ("Anviq Agents", "selected work") over a
+ * generic word within it ("Anviq", "work"). The terminal and mobile surface
+ * use this for an action request, keeping their navigation behaviour aligned.
+ */
+export function matchNavigationIntent(query: string): SiteNode | undefined {
+  const compact = query.toLowerCase().replace(/[^a-z0-9]+/g, "");
+  const explicit = flattenRoutes()
+    .filter((node) => node.path !== "/" && (node.route || node.href))
+    .flatMap((node) => [node.name, ...(node.aliases ?? [])].map((name) => ({ node, name })))
+    .map(({ node, name }) => ({ node, compactName: name.toLowerCase().replace(/[^a-z0-9]+/g, "") }))
+    .filter(({ compactName }) => compactName.length > 2 && compact.includes(compactName))
+    .sort((a, b) => b.compactName.length - a.compactName.length)[0]?.node;
+  return explicit ?? matchIntent(query);
+}
