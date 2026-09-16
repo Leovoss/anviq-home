@@ -939,6 +939,10 @@ const ABOUT_MODES = [
 ] as const;
 
 function About() {
+  const [activeMode, setActiveMode] = useState(0);
+  const reducedMotion = useReducedMotion();
+  const pickerRef = useRef<HTMLDivElement>(null);
+  const mode = ABOUT_MODES[activeMode]!;
   return (
     <DocumentPage
       title="About Anviq"
@@ -973,17 +977,50 @@ function About() {
         Most systems fail because they depend on the person who built them, or on luck holding steady. Anviq is built against that: systems that hold on their own, and someone who stays accountable for them either way.
       </p>
       <h2>One person, three ways of shipping</h2>
-      <div className="finder-row-list">
-        {ABOUT_MODES.map((item) => (
-          <Link key={item.title} to={item.href} className="finder-row">
-            <item.icon size={22} strokeWidth={1.75} aria-hidden="true" />
-            <span>
-              <strong>{item.title}</strong>
-              <span>{item.body}</span>
-            </span>
-            <ChevronRight size={17} aria-hidden="true" />
-          </Link>
-        ))}
+      <div className="constraint-inspector">
+        <div
+          ref={pickerRef}
+          className="constraint-picker"
+          role="tablist"
+          aria-label="Delivery modes"
+          onKeyDown={(event) => {
+            const forward = event.key === "ArrowDown" || event.key === "ArrowRight";
+            const backward = event.key === "ArrowUp" || event.key === "ArrowLeft";
+            if (!forward && !backward) return;
+            event.preventDefault();
+            const nextIndex = focusSiblingButton(pickerRef.current, forward ? 1 : -1);
+            if (nextIndex !== null) setActiveMode(nextIndex);
+          }}
+        >
+          {ABOUT_MODES.map((item, index) => (
+            <button
+              key={item.title}
+              type="button"
+              role="tab"
+              aria-selected={activeMode === index}
+              className={activeMode === index ? "is-active" : ""}
+              onClick={() => setActiveMode(index)}
+            >
+              <span className="constraint-icon">
+                <item.icon size={17} aria-hidden="true" />
+              </span>
+              {item.title}
+            </button>
+          ))}
+        </div>
+        <div className="constraint-detail">
+          <motion.div
+            key={mode.title}
+            role="tabpanel"
+            initial={reducedMotion ? undefined : { opacity: 0, y: 6 }}
+            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+            transition={reducedMotion ? { duration: 0 } : { duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <h2>{mode.title}</h2>
+            <p>{mode.body}</p>
+            <Link className="internal-link" to={mode.href}>{mode.link}<ArrowRight size={18} aria-hidden="true" /></Link>
+          </motion.div>
+        </div>
       </div>
       <Link className="internal-link" to="/explore/constraints">
         Hosting, access, and compliance boundaries
