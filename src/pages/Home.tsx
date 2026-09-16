@@ -973,9 +973,9 @@ function About() {
           <span className="sr-only"> (opens in a new tab)</span>
         </a>
       </div>
-      <p>
+      <blockquote className="about-statement">
         Most systems fail because they depend on the person who built them, or on luck holding steady. Anviq is built against that: systems that hold on their own, and someone who stays accountable for them either way.
-      </p>
+      </blockquote>
       <h2>One person, three ways of shipping</h2>
       <div className="constraint-inspector">
         <div
