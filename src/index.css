@@ -2020,35 +2020,6 @@ svg {
 .document-sections {
   margin-block: 34px;
 }
-.finder-row-list {
-  margin-top: 28px;
-}
-.finder-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 12px 10px;
-  margin: 2px 0;
-  border-radius: var(--radius-control);
-  color: var(--text);
-  text-align: left;
-}
-.finder-row:hover { background: var(--hover); }
-.finder-row.is-selected { background: var(--selected); }
-.finder-row > svg:first-child { color: var(--muted); flex-shrink: 0; }
-.finder-row.is-selected > svg:first-child { color: var(--selected-text); }
-.finder-row > span {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-.finder-row strong { font-size: 15px; font-weight: 600; }
-.finder-row > span > span { color: var(--muted); font-size: 13px; line-height: 1.45; }
-.finder-row.is-selected > span > span { color: var(--selected-text); }
-.finder-row > svg:last-child { margin-left: auto; color: var(--muted); flex-shrink: 0; }
-.finder-row.is-selected > svg:last-child { color: var(--selected-text); }
 .engagement-switch {
   position: relative;
   display: inline-flex;
