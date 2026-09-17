@@ -3,4 +3,17 @@
   <url>
     <loc>https://anviq.net/</loc>
   </url>
+  <url><loc>https://anviq.net/explore/about</loc></url>
+  <url><loc>https://anviq.net/explore/services</loc></url>
+  <url><loc>https://anviq.net/explore/projects</loc></url>
+  <url><loc>https://anviq.net/explore/approach</loc></url>
+  <url><loc>https://anviq.net/explore/engagement</loc></url>
+  <url><loc>https://anviq.net/explore/constraints</loc></url>
+  <url><loc>https://anviq.net/explore/questions</loc></url>
+  <url><loc>https://anviq.net/explore/activity</loc></url>
+  <url><loc>https://anviq.net/projects/agents</loc></url>
+  <url><loc>https://anviq.net/projects/steadyward</loc></url>
+  <url><loc>https://anviq.net/projects/lv-matching</loc></url>
+  <url><loc>https://anviq.net/projects/addreach</loc></url>
+  <url><loc>https://anviq.net/projects/recruitment-crm</loc></url>
 </urlset>
