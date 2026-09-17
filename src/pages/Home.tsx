@@ -244,11 +244,9 @@ const subscribeMobile = (callback: () => void) => {
 };
 const getMobile = () => window.matchMedia("(max-width: 760px)").matches;
 const getServerMobile = () => false;
-// Layout follows available CSS width, not pointer type. A large touchscreen
-// laptop can report a coarse primary pointer while still needing the desktop
-// explorer; using pointer: coarse here incorrectly squeezed 4K screens into
-// the tablet composition.
-const filesQuery = "(max-width: 1180px)";
+// The compact Files surface is intentionally mobile-only. Tablet and laptop
+// widths use the desktop explorer so there is no awkward middle composition.
+const filesQuery = "(max-width: 760px)";
 const subscribeFiles = (callback: () => void) => {
   const media = window.matchMedia(filesQuery);
   media.addEventListener("change", callback);
@@ -1806,6 +1804,7 @@ export function Home() {
               : "Independent practice"}
           </span>
         </footer>
+        <SiteNavigator />
       </div>
       <footer className="site-footer">
         <span>© 2026 Anviq</span>
@@ -1843,7 +1842,6 @@ export function Home() {
         </div>
       </footer>
       {mobile && <FilesTabBar active={active} />}
-      <SiteNavigator />
     </div>
   );
 }
