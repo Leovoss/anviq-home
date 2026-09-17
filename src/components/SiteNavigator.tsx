@@ -2,7 +2,10 @@ import { useSyncExternalStore } from "react";
 import { Terminal } from "@/components/Terminal";
 import { MobileChat } from "@/components/MobileChat";
 
-const QUERY = "(min-width: 1024px)";
+// Keep the terminal for true desktop workspaces. A 1024px iPad viewport is
+// tablet-sized even when it has a pointer, so it should receive Sherlock's
+// compact chat surface instead of the full terminal window.
+const QUERY = "(min-width: 1200px)";
 const subscribe = (callback: () => void) => {
   const media = window.matchMedia(QUERY);
   media.addEventListener("change", callback);
