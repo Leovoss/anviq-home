@@ -111,6 +111,45 @@ const NAV = [
   },
 ];
 const SLUGS = ["agents", "steadyward", "lv-matching", "addreach", "recruitment-crm"];
+const SITE_ORIGIN = "https://anviq.net";
+const SECTION_META: Record<string, { title: string; description: string }> = {
+  overview: {
+    title: "Anviq — IT consulting and software, end to end",
+    description: "An independent IT consulting and software practice for custom systems, automation, integration, and infrastructure.",
+  },
+  services: {
+    title: "Services — Anviq",
+    description: "Custom software, automation, integration, and infrastructure for workflows that need to work in the real world.",
+  },
+  projects: {
+    title: "Selected work — Anviq",
+    description: "Selected Anviq work across AI teammates, retention infrastructure, construction matching, outbound automation, and recruitment systems.",
+  },
+  approach: {
+    title: "Approach — Anviq",
+    description: "Anviq works from the operation outward: assess, build, deploy, and hand over systems with clear ownership.",
+  },
+  engagement: {
+    title: "Engagement — Anviq",
+    description: "Start with a scoped technical assessment, then choose fixed-scope build work or ongoing continuity.",
+  },
+  constraints: {
+    title: "Constraints — Anviq",
+    description: "Hosting, access, data handling, and ownership boundaries are agreed before implementation begins.",
+  },
+  questions: {
+    title: "Questions — Anviq",
+    description: "Answers about Anviq, the work, delivery boundaries, and how to start a conversation.",
+  },
+  activity: {
+    title: "Activity — Anviq",
+    description: "Public engineering activity and recent work from Anviq.",
+  },
+  about: {
+    title: "About Anviq",
+    description: "An independent IT consulting and software practice. One person, accountable from first conversation to handover.",
+  },
+};
 // One credibility line, not an autobiography - LinkedIn holds the story.
 const FOUNDER_LINE =
   "Independent engineer with four years in regulated commercial operations across brokerage, fintech, and iGaming.";
@@ -205,7 +244,11 @@ const subscribeMobile = (callback: () => void) => {
 };
 const getMobile = () => window.matchMedia("(max-width: 760px)").matches;
 const getServerMobile = () => false;
-const filesQuery = "(max-width: 1180px), (pointer: coarse)";
+// Layout follows available CSS width, not pointer type. A large touchscreen
+// laptop can report a coarse primary pointer while still needing the desktop
+// explorer; using pointer: coarse here incorrectly squeezed 4K screens into
+// the tablet composition.
+const filesQuery = "(max-width: 1180px)";
 const subscribeFiles = (callback: () => void) => {
   const media = window.matchMedia(filesQuery);
   media.addEventListener("change", callback);
@@ -1500,7 +1543,54 @@ export function Home() {
     window.scrollTo({ top: 0, behavior: "instant" });
   };
   useEffect(() => {
-    document.title = `${currentProject?.name ?? label} - Anviq`;
+    const page = currentProject
+      ? {
+          title: `${currentProject.name} — Anviq selected work`,
+          description: currentProject.body,
+        }
+      : (SECTION_META[active] ?? SECTION_META.overview);
+    const canonical = `${SITE_ORIGIN}${location.pathname}`;
+    document.title = page.title;
+    const setMeta = (selector: string, attributes: Record<string, string>, content: string) => {
+      let element = document.head.querySelector<HTMLMetaElement>(selector);
+      if (!element) {
+        element = document.createElement("meta");
+        Object.entries(attributes).forEach(([key, value]) => element!.setAttribute(key, value));
+        document.head.appendChild(element);
+      }
+      element.setAttribute("content", content);
+    };
+    setMeta('meta[name="description"]', { name: "description" }, page.description);
+    setMeta('meta[property="og:title"]', { property: "og:title" }, page.title);
+    setMeta('meta[property="og:description"]', { property: "og:description" }, page.description);
+    setMeta('meta[property="og:url"]', { property: "og:url" }, canonical);
+    setMeta('meta[property="og:type"]', { property: "og:type" }, currentProject ? "article" : "website");
+    setMeta('meta[name="twitter:card"]', { name: "twitter:card" }, "summary");
+    setMeta('meta[name="twitter:title"]', { name: "twitter:title" }, page.title);
+    setMeta('meta[name="twitter:description"]', { name: "twitter:description" }, page.description);
+    let canonicalLink = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement("link");
+      canonicalLink.rel = "canonical";
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.href = canonical;
+    let schema = document.head.querySelector<HTMLScriptElement>('script[data-anviq-schema="page"]');
+    if (!schema) {
+      schema = document.createElement("script");
+      schema.type = "application/ld+json";
+      schema.dataset.anviqSchema = "page";
+      document.head.appendChild(schema);
+    }
+    schema.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": currentProject ? "CreativeWork" : "WebPage",
+      name: page.title,
+      description: page.description,
+      url: canonical,
+      isPartOf: { "@type": "WebSite", name: "Anviq", url: SITE_ORIGIN },
+      about: { "@type": "Organization", name: "Anviq", url: SITE_ORIGIN },
+    });
     if (lastLocation.current !== location.key) {
       lastLocation.current = location.key;
       // Handles same-pane hash jumps (e.g. switching #service-N anchors)
