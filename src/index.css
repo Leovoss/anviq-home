@@ -2845,8 +2845,15 @@ svg {
    the explorer navigation. Let the shell occupy the viewport instead of
    inheriting the desktop 900px cap and leaving the chat floating over empty
    page space. */
-@media (min-width: 761px) and (max-width: 1200px) {
+@media (min-width: 761px) {
+  /* MobileChat is also the navigator for wide touch tablets such as iPad Pro
+     in landscape. Keep its overlay anchored inside the explorer shell at
+     every tablet width, rather than reverting to fixed phone coordinates. */
   .desktop-layout .explorer-window { position: relative; }
+  .desktop-layout .chat-bar-anchor { position: absolute; right: 20px; bottom: 54px; left: 20px; width: auto; }
+  .desktop-layout .chat-bar-anchor.is-closed { left: auto; width: 52px; }
+}
+@media (min-width: 761px) and (max-width: 1200px) {
   .desktop-layout .explorer-window {
     grid-template-columns: 220px minmax(0, 1fr);
     width: calc(100% - 40px);
@@ -2868,8 +2875,8 @@ svg {
   .desktop-layout .document-page { padding-inline: 30px; }
   .desktop-layout .welcome-section .primary-button { min-height: 48px; }
   .desktop-layout .site-footer { width: calc(100% - 40px); }
-  .desktop-layout .chat-bar-anchor { position: absolute; right: 20px; bottom: 54px; left: auto; width: min(420px, calc(100% - 40px)); }
-  .desktop-layout .chat-bar-anchor.is-closed { width: 52px; }
+  /* Tablet uses the same full-width MobileChat overlay geometry as phone.
+     Only the closed trigger remains a compact floating circle. */
 }
 /* Intermediate desktop widths (for example 4K laptops at 250% Windows
    scaling) still have a desktop pointer/interaction model, but need a fluid

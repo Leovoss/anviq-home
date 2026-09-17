@@ -2,10 +2,11 @@ import { useSyncExternalStore } from "react";
 import { Terminal } from "@/components/Terminal";
 import { MobileChat } from "@/components/MobileChat";
 
-// Keep the terminal for true desktop workspaces. A 1024px iPad viewport is
-// tablet-sized even when it has a pointer, so it should receive Sherlock's
-// compact chat surface instead of the full terminal window.
-const QUERY = "(min-width: 1200px)";
+// Keep the terminal for true desktop workspaces. iPadOS can report a wide
+// desktop-sized viewport in landscape, so width alone is not enough: the
+// primary pointer must also be fine and hover-capable. Touch-first tablets
+// therefore keep Sherlock's compact MobileChat surface at every orientation.
+const QUERY = "(min-width: 1200px) and (hover: hover) and (pointer: fine)";
 const subscribe = (callback: () => void) => {
   const media = window.matchMedia(QUERY);
   media.addEventListener("change", callback);
