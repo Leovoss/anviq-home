@@ -193,6 +193,13 @@ export const SITE_TREE: SiteNode = {
         'These terms apply to your use of this website (the "Site") at anviq.net.',
     },
     {
+      path: "/licenses",
+      name: "Licenses",
+      kind: "file",
+      route: "/explore/licenses",
+      summary: "Open-source licenses and attributions for Anviq-maintained forks.",
+    },
+    {
       // Synthetic grouping node, not a real route (no `route` field, and it
       // is deliberately excluded from scripts/audit-site-tree.mjs's
       // route-parity check for that reason) - it exists only to hold the
