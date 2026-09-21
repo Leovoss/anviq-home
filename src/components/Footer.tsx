@@ -15,6 +15,9 @@ export function Footer() {
           <Link to="/terms" className="transition hover:text-iron">
             Terms &amp; Disclaimer
           </Link>
+          <Link to="/licenses" className="transition hover:text-iron">
+            Licenses
+          </Link>
         </nav>
         <span>&copy; 2026 Anviq. Independent practice.</span>
       </div>

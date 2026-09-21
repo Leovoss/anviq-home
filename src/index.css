@@ -2456,6 +2456,19 @@ svg {
 .legal-copy strong {
   color: var(--text);
 }
+.legal-license-text {
+  margin: 24px 0 0;
+  padding: 20px;
+  max-height: 58vh;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--chrome);
+  color: var(--text);
+  font: 12px/1.55 var(--font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 @media (min-width: 1100px) and (min-height: 740px) {
   /* The sidebar is a grid item in a fixed-height window that scrolls
      internally, so it stretches to its rows. A sticky sidebar with a
