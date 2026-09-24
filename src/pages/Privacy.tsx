@@ -19,7 +19,7 @@ export function Privacy() {
       <p>The controller responsible for your personal data in relation to the Site is:</p>
       <ul>
         <li>
-          <strong>Enrique Voss</strong>, operating as Anviq
+          <strong>Anviq LLC</strong>
         </li>
         <li>
           Email: <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
