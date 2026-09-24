@@ -8,7 +8,7 @@ export function Terms() {
       <p>
         These terms apply to your use of this website (the "Site") at anviq.net. By using the Site you
         agree to them. If you do not agree, please do not use the Site. The Site is operated by{' '}
-        <strong>Enrique Voss</strong> ("Anviq", "we", "us").
+        <strong>Anviq LLC</strong> ("Anviq", "we", "us").
       </p>
 
       <h2>1. What this Site is</h2>
