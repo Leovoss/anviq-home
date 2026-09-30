@@ -1,9 +1,11 @@
 # Anviq site
 
-Marketing site for Anviq, an independent IT consulting and software practice. React + TypeScript + Vite, styled with Tailwind CSS.
+Source for [anviq.net](https://anviq.net), the site of Anviq LLC, an independent IT consulting and software practice. React + TypeScript + Vite, styled with Tailwind CSS.
 
 - `src/` - app source (pages, components, content data)
-- `public/` - static assets (favicon, robots.txt, sitemap.xml)
+- `public/` - static assets (favicon, robots.txt, sitemap.xml, llms.txt)
+- `worker/` - Cloudflare Worker that serves the built site
+- `scripts/` - dev checks for the site navigator (`npm run audit:site-tree`, `npm run verify:navigation`)
 
 ## Development
 
@@ -18,12 +20,10 @@ npm run dev
 npm run build
 ```
 
-## Hosting
+## Deploy
 
-Deploy on Cloudflare Pages: connect this repo, build command `npm run build`, output directory `dist`.
+Runs as a Cloudflare Worker serving `dist/` as static assets, configured in `wrangler.jsonc`.
 
-## Before public launch
-
-- Confirm `lvoss@anviq.net` receives mail
-- Point the `anviq.net` DNS at Cloudflare Pages once the project is created
-- Swap or drop the Selected Work links (Steadyward, LV Matching, Addreach) if any shouldn't be public
+```
+npx wrangler deploy
+```

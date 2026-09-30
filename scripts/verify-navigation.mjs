@@ -1,15 +1,8 @@
-// Task 5 navigation-correctness table: every siteTree node, resolved
-// through BOTH navigator surfaces' real dispatch logic (not a mock) -
-// src/lib/terminalCommands.ts's `open` and src/lib/chatIntents.ts's
-// matchIntent - and checked against the node's real route/href.
+// Resolves every siteTree node through the terminal's `open` and the chat's
+// matchIntent and checks it lands on the node's route or href. Headless, so
+// it doesn't cover real browser navigation.
 //
-// This verifies resolution correctness (does the right command/keyword
-// reach the right real destination) headlessly. It does NOT replace a
-// real-browser check of actual client-side navigation (no reload, back
-// button, JS-disabled deep links) - see the browser spot-checks already
-// run this session and noted in the summary.
-//
-// Run: node scripts/verify-navigation.mjs
+// Run: npm run verify:navigation
 
 import { createServer } from "vite";
 import path from "node:path";
@@ -46,7 +39,7 @@ for (const node of flattenRoutes()) {
   let terminalOk = viaPath.ok && (viaPath.dest === node.route || viaPath.dest === node.href);
   let terminalDest = viaPath.dest;
 
-  // Name-based open from root (what `ls` prints), Prompt 7 A-0.
+  // Open by display name from root, as printed by `ls`.
   const byName = actionDest(runCommand("/", `open ${node.name}`));
   const nameOk = byName.ok && (byName.dest === node.route || byName.dest === node.href);
   if (!nameOk) {
