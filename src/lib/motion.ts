@@ -1,30 +1,13 @@
-// Single source of truth for navigator + board transition timing. Every
-// duration/easing used by the terminal, the mobile chat sheet, the
-// screenshot lightbox, the board's pane transitions, and the folder-morph
-// animations comes from here - no scattered literals in those files.
+// Transition timing for the terminal, chat sheet, lightbox, board panes and
+// folder morphs. The command palette keeps its own PALETTE_FADE in Home.tsx.
 //
-// Explicitly NOT in scope (per the A1b scope guard): the desktop
-// CommandPalette's own PALETTE_FADE in src/pages/Home.tsx. That's existing
-// desktop search chrome and stays exactly as it is - untouched, not even
-// repointed at these tokens.
+//   FADE          opacity only (backdrops, dialogs)
+//   SPRING_MORPH  slight bounce, same for open and dismiss (folder morph,
+//                 quicklook, chat sheet)
+//   BOARD_ENTER   pane swaps and the About nav pill, no bounce
 //
-// Three families, chosen to cover what's actually on screen rather than
-// invented for their own sake:
-//   FADE          - simple opacity transitions (backdrops, dialogs)
-//   SPRING_MORPH  - playful, slightly bouncy settle (folder art morphing
-//                   into a preview, the quicklook image, the chat sheet
-//                   sliding up) - the same shape whether opening or
-//                   dismissing, per A1's "spring config consistent across
-//                   open/dismiss"
-//   BOARD_ENTER   - content-pane swaps and the About nav pill: settles
-//                   decisively, no bounce, distinct from SPRING_MORPH
-//                   because these are structural swaps, not playful ones
-//
-// BOARD_EXIT is a deliberate exception to the 180-400ms band: the old
-// pane needs to clear near-instantly so the toolbar/breadcrumb (which
-// switches immediately) never shows a label next to stale content from
-// the section that just left. A slower exit here is a real regression,
-// not a style nit - see ExplorerPane.tsx's own note.
+// BOARD_EXIT is faster than the rest so the breadcrumb, which switches
+// immediately, never sits next to the previous section's content.
 
 export const FADE = { duration: 0.18 } as const;
 

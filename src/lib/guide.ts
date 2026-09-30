@@ -1,26 +1,11 @@
-// Deterministic guidance layer - NO AI, no scoring model, no invented copy.
-// Everything the guide says is either a real node name/summary from
-// siteTree.ts or one of the fixed tone-map strings the owner reviews
-// directly in src/lib/tone.ts. Both navigator surfaces (Terminal,
-// MobileChat) call the same useGuide() - a forked copy in either surface
-// is a bug.
+// Deterministic hint engine shared by Terminal and MobileChat. Text comes
+// only from siteTree.ts node data or the fixed lines in tone.ts.
 //
-// A hint's one-time flag is committed only when the surface actually
-// closes (see `close()`) or the user explicitly dismisses it - never as a
-// side effect of merely computing/rendering it. An earlier version
-// committed inside a render-reactive effect and a real bug turned up in
-// testing: opening the panel and computing the hint happen in the same
-// batch, so the commit effect fired in the same tick and cleared the hint
-// before a human could ever see it painted. Committing only on a genuine,
-// separate user action (close/dismiss) removes that race entirely.
+// A hint is marked as seen on close() or dismiss(), not during render.
+// Marking it in an effect cleared it in the same batch that opened the
+// panel, so it never painted.
 //
-// Deliberately NOT implemented (flagged, not faked): the exact
-// "carry unshown jokes to a later visit" queuing implied by the
-// two-joke-per-visit cap - the cap itself IS enforced (JOKE_CAP_PER_VISIT),
-// an over-cap event is just marked seen and dropped rather than queued.
-// R-e's "unprompted legal read" is intentionally not wired separately from
-// R-s, which already reacts to the same first visit to /privacy, /cookies,
-// /terms - firing both would be two reactions to one click.
+// Over-cap jokes (JOKE_CAP_PER_VISIT) are dropped, not carried to a later visit.
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useLocation } from "react-router-dom";
@@ -45,13 +30,11 @@ import {
 } from "@/lib/tone";
 import { inferVisitorMode, type VisitorMode } from "@/lib/sherlockJourney";
 
-// Ship the email-copy reaction wired but silent until the owner reviews it
-// (spec: "OWNER SIGN-OFF REQUIRED pre-merge"). Flip to true only on that
-// explicit go-ahead.
+// Email-copy reaction is wired but off until the copy is approved.
 const EMAIL_COPY_ENABLED = false;
 
 const VISITED_KEY = "anviq-guide-visited";
-const ONCE_KEY = "anviq-guide-once"; // rule ids that have fired, ever, for this visitor
+const ONCE_KEY = "anviq-guide-once"; // hint ids already shown to this visitor
 const RETIRED_EMOJI_KEYS = ["anviq-guide-emoji-count", "anviq-guide-emojis-v2"];
 const LAST_VISIT_KEY = "anviq-guide-last-visit-ms";
 const BADGE_SHOWN_KEY = "anviq-guide-badge-first-shown-ms";
@@ -144,9 +127,7 @@ function getSnapshot() {
 
 if (typeof window !== "undefined") retireEmojiCounter();
 
-/** Exported for the two surfaces' own one-time tone-map lines (R-n node
- *  openers), which print inline in a transcript rather than through the
- *  shared hint banner. */
+/** For one-time lines the surfaces print inline (project openers). */
 export function markOnce(id: string): boolean {
   if (hasOnce(id)) return false;
   if (isSessionFlag(id)) {
@@ -204,10 +185,7 @@ export function isEvergreenHint(hint: string | null): boolean {
   return !!hint && hint.startsWith("Not yet seen:");
 }
 
-/** Queue a single global event-reaction line (R-d/R-e). One slot: a
- *  second event queued before the first is read is dropped rather than
- *  stacked - acceptable given the two-joke-per-visit cap makes stacking
- *  moot anyway. */
+/** Single slot: a second event queued before the first is read is dropped. */
 function queueEvent(id: string, text: string) {
   if (hasOnce(id) || state.pendingEvent) return;
   bump({ pendingEvent: { id, text } });
@@ -357,21 +335,14 @@ export function useGuide(isOpen: boolean): GuideApi {
   });
   const [idleHintReady, setIdleHintReady] = useState(false);
   const [pendingCommentary, setPendingCommentary] = useState<string | null>(null);
-  // The evergreen progression line isn't a "once" rule (it's the fallback,
-  // always live), so dismissing it can't permanently mark it done - it
-  // just hides this specific suggestion until the target changes (i.e.
-  // until the user actually visits it, or something higher-priority
-  // pushes it aside in the meantime).
+  // The fallback suggestion can't be marked done, so dismissing it only hides
+  // it until the suggested target changes.
   const [dismissedTarget, setDismissedTarget] = useState<string | null>(null);
 
-  // Track visited real pages via the router (passive browsing counts,
-  // whether or not a navigator surface is open); queue R-s commentary,
-  // the "second case" and "all sections" deductions, and the "4th case"
-  // reaction off the same real navigation signal.
-  // Deliberately reads `visited` from the closure rather than a functional
-  // updater - queuing state as a side effect inside a setState updater is
-  // impure, and StrictMode's dev-mode double-invocation of updater
-  // functions made that flaky in practice (a real bug found by testing).
+  // Track visited pages from the router, including normal browsing, and
+  // queue section commentary and deductions. Reads `visited` from the
+  // closure instead of a functional updater: side effects inside an updater
+  // double-fire under StrictMode.
   useEffect(() => {
     const node = nodeForRoute(location.pathname);
     if (!node) return;
@@ -399,7 +370,7 @@ export function useGuide(isOpen: boolean): GuideApi {
     }
   }, [location.pathname, journey, visited]);
 
-  // Rule d: one idle hint per session, only while a surface is open.
+  // One idle hint per session, only while a surface is open.
   useEffect(() => {
     if (!isOpen) return;
     setIdleHintReady(false);
@@ -421,12 +392,8 @@ export function useGuide(isOpen: boolean): GuideApi {
     setVisitorMode(next);
   };
 
-  // Priority order, highest first. Direct, timely reactions to something
-  // the user/system just did (R-s, the deductions, R-e events) outrank
-  // the ambient idle nudge; booking/social are one-time visit-level
-  // nudges below all of those; the evergreen progression is the fallback.
-  // Unmatched-input rescue is owned by the surfaces (anchored to the
-  // unknown command / chat line), not the banner.
+  // Priority: section commentary and events, then idle, then booking/social,
+  // then the fallback suggestion. Unmatched input is handled by the surfaces.
   function currentHint(): string | null {
     if (pendingCommentary && SECTION_COMMENTARY[pendingCommentary] && !hasOnce(`commentary:${pendingCommentary}`)) {
       return SECTION_COMMENTARY[pendingCommentary];
