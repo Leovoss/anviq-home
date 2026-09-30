@@ -46,7 +46,7 @@ const MULTI_DAY_MS = 24 * 60 * 60 * 1000;
 const CALENDLY_RETURN_WINDOW_MS = 5 * 60 * 1000;
 const JOKE_CAP_PER_VISIT = 2;
 
-export const EXAMPLE_HINT = "Not sure what that means — try: steadyward";
+export const EXAMPLE_HINT = "Not sure what that means. Try: steadyward";
 export const IDLE_HINT = "Still here? Try a topic, or ls.";
 
 const CASE_ORDER = [
