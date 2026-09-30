@@ -1,18 +1,9 @@
-// Single source of truth for the site's navigable filesystem.
+// The site's navigable filesystem. Every node maps to a real route in
+// src/App.tsx; `npm run audit:site-tree` checks it against the `active`
+// switch in src/pages/Home.tsx.
 //
-// Every node here mirrors a route that actually exists in src/App.tsx's
-// router and is actually reachable through the `active` switch in
-// src/pages/Home.tsx - see scripts/audit-site-tree.mjs, which loads this
-// module and cross-checks it against that switch statement so a page added
-// or removed later without updating this file fails loudly instead of
-// drifting quietly.
-//
-// `/explore/browse` is included even though it falls outside the owner's
-// 16-route inventory (2026-09-13): it is a real, distinctly-rendered route
-// (the touch-layout equivalent of the desktop sidebar, see FilesBrowse in
-// src/components/FilesNavigation.tsx), matched by the live `/explore/:section`
-// route, not a redirect and not a 404. Flagged per the grounding rule rather
-// than silently added or dropped.
+// `/explore/browse` is the touch-layout version of the desktop sidebar
+// (FilesBrowse in src/components/FilesNavigation.tsx).
 
 export type NodeKind = "folder" | "file" | "link";
 
@@ -200,12 +191,8 @@ export const SITE_TREE: SiteNode = {
       summary: "Open-source licenses and attributions for Anviq-maintained forks.",
     },
     {
-      // Synthetic grouping node, not a real route (no `route` field, and it
-      // is deliberately excluded from scripts/audit-site-tree.mjs's
-      // route-parity check for that reason) - it exists only to hold the
-      // real external contact links as tree nodes so the navigators can
-      // point at them the same way they point at pages. Flagged, not
-      // hidden, per the grounding rule.
+      // Grouping node for the external contact links. No route, so the
+      // audit script skips it.
       path: "/contact",
       name: "Contact",
       kind: "folder",
@@ -252,8 +239,7 @@ export const SITE_TREE: SiteNode = {
       name: "Browse",
       kind: "file",
       route: "/explore/browse",
-      // Not in the owner's 16-route inventory - see the module note above.
-      // FilesBrowse's own group headings, src/components/FilesNavigation.tsx.
+      // Group headings from FilesBrowse, src/components/FilesNavigation.tsx.
       summary: "Locations, Favorites, Information.",
     },
   ],

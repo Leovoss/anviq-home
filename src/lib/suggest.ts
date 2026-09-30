@@ -1,11 +1,7 @@
-// Shared completion / live-filter matcher. Terminal ghost text, the
-// mobile chat chip strip, the mobile search capsule, and the desktop
-// palette all consume this module - a second copy of the same ranking
-// in any of those files is a bug.
+// Completion and live filtering for the terminal, chat chips, mobile search
+// and the desktop palette.
 //
-// Priority: command names (including aliases) -> siteTree paths/names ->
-// persisted command history. No invented destinations: every path
-// suggestion is a real node from siteTree.ts.
+// Order: command names and aliases, then siteTree paths/names, then history.
 
 import {
   flattenRoutes,
@@ -108,7 +104,7 @@ function nodesForCommand(cmd: string, cwd: string): SiteNode[] {
     seen.add(node.path);
     out.push(node);
   };
-  // Projects first so `op` ghosts `open steadyward` (Prompt 7 A-1 script).
+  // Projects first so `op` completes to `open steadyward`.
   for (const path of PROJECT_ORDER) {
     const node = all.find((item) => item.path === path);
     if (node) take(node);
