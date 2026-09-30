@@ -15,11 +15,8 @@ const subscribe = (callback: () => void) => {
 const getSnapshot = () => window.matchMedia(QUERY).matches;
 const getServerSnapshot = () => false;
 
-// One dispatcher, one breakpoint check: desktop gets the terminal, mobile
-// gets the chat, never both. This used to be two independent conditions
-// spread across Home.tsx (a real bug once - see git history); a single
-// ternary on one boolean makes "both" or "neither" structurally
-// impossible rather than something to remember to keep in sync.
+// Desktop gets the terminal, mobile gets the chat. One boolean, so it can
+// never render both or neither.
 export function SiteNavigator() {
   const desktop = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   return desktop ? <Terminal /> : <MobileChat />;

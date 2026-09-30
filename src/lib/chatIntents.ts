@@ -1,11 +1,6 @@
-// Keyword resolution for the mobile chat navigator. Same job as the
-// desktop terminal's command dispatch (src/lib/terminalCommands.ts), same
-// data (src/lib/siteTree.ts) - just matched by loose keywords instead of a
-// typed path, since a phone keyboard is the wrong tool for `cd projects`.
-//
-// No NLP, no scoring model, no second content list: every keyword is
-// derived straight from the tree (path segments, aliases, name words), so
-// there is nothing to keep in sync by hand.
+// Keyword matching for the mobile chat, the phone equivalent of the
+// terminal's `open`. Keywords are derived from siteTree.ts (path segments,
+// aliases, name words), so there's no separate list to maintain.
 
 import { flattenRoutes, type SiteNode } from "@/lib/siteTree";
 

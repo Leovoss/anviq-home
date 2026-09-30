@@ -1,16 +1,7 @@
-// Dev-time audit for src/lib/siteTree.ts.
+// Prints siteTree.ts and diffs its routes against the `switch (active)`
+// cases and SLUGS in src/pages/Home.tsx. Exits non-zero on any mismatch.
 //
-// 1. Prints the tree (path -> route -> name) so a human can eyeball it
-//    against the known route inventory.
-// 2. Reconstructs the *actually registered* routes straight from
-//    src/pages/Home.tsx's `switch (active)` (the real control flow that
-//    decides what renders, not just the sidebar nav list, so it also
-//    catches routes like /explore/browse that never appear in NAV) and
-//    from SLUGS, then diffs that set against siteTree's flattenRoutes().
-//    Any drift - a case added or removed without updating siteTree.ts -
-//    fails the process loudly.
-//
-// Run: node scripts/audit-site-tree.mjs
+// Run: npm run audit:site-tree
 
 import { createServer } from "vite";
 import { readFileSync } from "node:fs";
@@ -58,9 +49,8 @@ const registered = new Set([
   ...slugs.map((slug) => `/projects/${slug}`),
 ]);
 
-// Link nodes (external URLs) and the synthetic /contact grouping folder
-// have no internal route by design - they are excluded from the router
-// parity check, not silently, but by construction (no `route` field).
+// Link nodes and the /contact grouping folder have no route, so they're
+// skipped here.
 const allNodes = flattenRoutes();
 const shapeErrors = allNodes.filter(
   (n) => n.kind === "link" ? !n.href : n.path !== "/contact" && !n.route,
@@ -79,14 +69,6 @@ const missingFromTree = [...registered].filter((r) => !treeRoutes.has(r));
 const extraInTree = [...treeRoutes].filter((r) => !registered.has(r));
 
 console.log(`\n${registered.size} routes registered in Home.tsx, ${treeRoutes.size} routes in siteTree.ts.`);
-
-const KNOWN_INVENTORY_SIZE = 16;
-if (treeRoutes.size !== KNOWN_INVENTORY_SIZE) {
-  console.log(
-    `Note: tree has ${treeRoutes.size} routes, not the owner-verified ${KNOWN_INVENTORY_SIZE} - ` +
-      `/explore/browse is included and flagged (see siteTree.ts header comment) as a real route outside that inventory.`,
-  );
-}
 
 if (missingFromTree.length || extraInTree.length) {
   console.error("\nSITE TREE OUT OF SYNC WITH Home.tsx:");

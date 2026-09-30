@@ -176,9 +176,8 @@ export function Terminal() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Persona hints that fire while the surface is open (R-s, idle, events)
-  // land in the transcript next to their trigger, never as a free-floating
-  // trivia line. Evergreen "Not yet seen" stays in the banner.
+  // Hints that fire while open go into the transcript next to their trigger.
+  // The "Not yet seen" suggestion stays in the banner.
   useEffect(() => {
     if (!open || !guide.hint || isEvergreenHint(guide.hint)) return;
     if (injectedHint.current === guide.hint) return;
