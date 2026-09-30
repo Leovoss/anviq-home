@@ -115,35 +115,35 @@ const SLUGS = ["agents", "steadyward", "lv-matching", "addreach", "recruitment-c
 const SITE_ORIGIN = "https://anviq.net";
 const SECTION_META: Record<string, { title: string; description: string }> = {
   overview: {
-    title: "Anviq — IT consulting and software, end to end",
+    title: "Anviq - IT consulting and software, end to end",
     description: "An independent IT consulting and software practice for custom systems, automation, integration, and infrastructure.",
   },
   services: {
-    title: "Services — Anviq",
+    title: "Services | Anviq",
     description: "Custom software, automation, integration, and infrastructure for workflows that need to work in the real world.",
   },
   projects: {
-    title: "Selected work — Anviq",
+    title: "Selected work | Anviq",
     description: "Selected Anviq work across AI teammates, retention infrastructure, construction matching, outbound automation, and recruitment systems.",
   },
   approach: {
-    title: "Approach — Anviq",
+    title: "Approach | Anviq",
     description: "Anviq works from the operation outward: assess, build, deploy, and hand over systems with clear ownership.",
   },
   engagement: {
-    title: "Engagement — Anviq",
+    title: "Engagement | Anviq",
     description: "Start with a scoped technical assessment, then choose fixed-scope build work or ongoing continuity.",
   },
   constraints: {
-    title: "Constraints — Anviq",
+    title: "Constraints | Anviq",
     description: "Hosting, access, data handling, and ownership boundaries are agreed before implementation begins.",
   },
   questions: {
-    title: "Questions — Anviq",
+    title: "Questions | Anviq",
     description: "Answers about Anviq, the work, delivery boundaries, and how to start a conversation.",
   },
   activity: {
-    title: "Activity — Anviq",
+    title: "Activity | Anviq",
     description: "Public engineering activity and recent work from Anviq.",
   },
   about: {
@@ -151,7 +151,7 @@ const SECTION_META: Record<string, { title: string; description: string }> = {
     description: "An independent IT consulting and software practice. One person, accountable from first conversation to handover.",
   },
   licenses: {
-    title: "Open Source Licenses & Attributions — Anviq",
+    title: "Open Source Licenses & Attributions | Anviq",
     description: "Open-source licenses and attributions for Anviq-maintained forks and modifications.",
   },
 };
@@ -1549,7 +1549,7 @@ export function Home() {
   useEffect(() => {
     const page = currentProject
       ? {
-          title: `${currentProject.name} — Anviq selected work`,
+          title: `${currentProject.name} | Anviq selected work`,
           description: currentProject.body,
         }
       : (SECTION_META[active] ?? SECTION_META.overview);

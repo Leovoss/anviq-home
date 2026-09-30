@@ -3,7 +3,7 @@
 
 // First open of either surface, once per visitor.
 export const GREETING_LINES = [
-  "Sherlock, finder of things. I deduce you've come to see the work — you are, after all, on the work website.",
+  "Sherlock, finder of things. I deduce you've come to see the work. You are, after all, on the work website.",
   "The other one retired to Sussex to keep bees. I was replaced by Spotlight in 2005. One of us drew the short straw.",
 ];
 
@@ -37,7 +37,7 @@ export const BOOKING_HINT =
 
 // Once per visitor, 3+ sections visited and no booking click yet.
 export const SOCIAL_HINT =
-  "If async is more your speed — LinkedIn and X are real, and he answers.";
+  "If async is more your speed, LinkedIn and X are real, and he answers.";
 
 // Deductions. Only coarse facts (never timings, hovers or scroll depth).
 export const DEDUCTION_SECOND_CASE =
@@ -73,7 +73,7 @@ export const COMMAND_COMMENTARY = {
 
 // Shared by chat and terminal so both answer a bare "hi" the same way.
 export const GREETING_WORDS = ["hi", "hello", "hey", "hiya", "yo", "sup", "howdy", "greetings"] as const;
-export const GREETING_REPLY = "Hello. Now, to business — projects, services, or about?";
+export const GREETING_REPLY = "Hello. Now, to business: projects, services, or about?";
 
 // First open via a badged control. Uses the real badge age when known.
 export const BADGE_GREETING_DEFAULT =

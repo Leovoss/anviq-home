@@ -444,7 +444,7 @@ export function Terminal() {
                     <span className="terminal-control-yellow" aria-hidden="true" />
                     <span className="terminal-control-green" aria-hidden="true" />
                   </div>
-                  <div className="terminal-titlebar-copy"><span id={titleId}>Sherlock — Anviq</span></div>
+                  <div className="terminal-titlebar-copy"><span id={titleId}>Sherlock | Anviq</span></div>
                 </div>
                 <div
                   className="terminal-output"

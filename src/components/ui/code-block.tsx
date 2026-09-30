@@ -21,7 +21,7 @@ export type CodeBlockProps = Omit<React.ComponentProps<'div'>, 'children'> & {
     mode?: 'auto' | 'dark' | 'light'
     /** Filename or path shown in the header. Falls back to the language id when omitted. */
     filename?: string
-    /** Show the outer frame — background, border, rounded corners, and header. Turn off to render just the code. */
+    /** Show the outer frame: background, border, rounded corners, and header. Turn off to render just the code. */
     showFrame?: boolean
     /** Show the header bar. Ignored when the frame is off. */
     showHeader?: boolean
@@ -122,7 +122,7 @@ function buildTheme(accent: string, mode: 'dark' | 'light' = 'dark') {
     const colors = dark
         ? {
               accent: accentTone,
-              // Neutral chrome — matches the Rare UI preview surface (dark --card).
+              // Neutral chrome, matches the Rare UI preview surface (dark --card).
               bg: 'oklch(0.1822 0 0)',
               border: 'rgb(255 255 255 / 0.08)',
               headerBg: 'rgb(255 255 255 / 0.03)',
