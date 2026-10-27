@@ -116,7 +116,7 @@ const SITE_ORIGIN = "https://anviq.net";
 const SECTION_META: Record<string, { title: string; description: string }> = {
   overview: {
     title: "Anviq - IT consulting and software, end to end",
-    description: "An independent IT consulting and software practice for custom systems, automation, integration, and infrastructure.",
+    description: "An IT consulting and software practice for custom systems, automation, integration, and infrastructure.",
   },
   services: {
     title: "Services | Anviq",
@@ -148,7 +148,7 @@ const SECTION_META: Record<string, { title: string; description: string }> = {
   },
   about: {
     title: "About Anviq",
-    description: "An independent IT consulting and software practice. One person, accountable from first conversation to handover.",
+    description: "An IT consulting and software practice, accountable from first conversation to handover.",
   },
   licenses: {
     title: "Open Source Licenses & Attributions | Anviq",
@@ -157,12 +157,12 @@ const SECTION_META: Record<string, { title: string; description: string }> = {
 };
 // One credibility line, not an autobiography - LinkedIn holds the story.
 const FOUNDER_LINE =
-  "Independent engineer with four years in regulated commercial operations across brokerage, fintech, and iGaming.";
+  "Engineer with four years in regulated commercial operations across brokerage, fintech, and iGaming.";
 // Short subheaders for search rows, the same shape as a Selected work row
 // (name + tag). The body below is match text only, never displayed.
 const SEARCH_SUBS: Record<string, string> = {
   services: "What I build",
-  projects: "Independent builds",
+  projects: "Selected builds",
   approach: "Assess, build, deploy, maintain",
   engagement: "Assessment, Build, Retain",
   constraints: "Hosting, access, compliance",
@@ -203,7 +203,7 @@ const SEARCH_ENTRIES = [
     group: "Explore" as const,
     icon: BookOpen,
     sub: "The practice",
-    body: "Independent IT consulting and software practice. Commercial judgment and technical delivery, one person, full accountability. Leonardo Voss.",
+    body: "IT consulting and software practice. Commercial judgment and technical delivery, full accountability. Leonardo Voss.",
   },
 ];
 function searchEntries(query: string) {
@@ -376,9 +376,9 @@ function Overview() {
         </div>
         <h1 id="welcome-title">Systems built to hold.</h1>
         <p className="intro">
-          Independent IT consulting and software. Workflow, integration, and
-          infrastructure, AI where it earns its place. One engineer,
-          end-to-end accountability.
+          IT consulting and software. Workflow, integration, and
+          infrastructure, AI where it earns its place. End-to-end
+          accountability.
         </p>
         <ContactLink />
       </section>
@@ -511,7 +511,7 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
     <div className={`project-browser ${slug ? "has-project" : ""}`}>
       {filesLayout ? (!slug && <FilesProjects view={view} setView={setView} sort={sort} setSort={setSort} />) : <section className="project-list" aria-labelledby="project-list-title">
         <h1 id="project-list-title">Selected work</h1>
-        <p>Independent builds</p>
+        <p>Selected builds</p>
         <nav aria-label="Projects">
           {WORK_SELECTED.map((item, index) => (
             <Link
@@ -588,7 +588,7 @@ function ProjectBrowser({ slug, filesLayout, view, setView, sort, setSort }: { s
             </a>
           )}
           <p className="project-note">
-            A sample of independent builds, operated end to end. Some are
+            A sample of builds, operated end to end. Some are
             covered by discretion, built for internal use. Others are sold
             as products with their own landing page, where more detail is
             shared.
@@ -629,7 +629,7 @@ function Services() {
         })}
       </div>
       <p>
-        One engineer embeds with your team and owns delivery from the first
+        Anviq embeds with your team and owns delivery from the first
         technical assessment through deployment and documentation.
       </p>
       <div className="page-cta">
@@ -992,7 +992,7 @@ function About() {
   return (
     <DocumentPage
       title="About Anviq"
-      intro="Independent IT consulting and software. One person, accountable from first conversation to handover."
+      intro="IT consulting and software. Accountable from first conversation to handover."
     >
       <h2>Founder</h2>
       <div className="identity-strip">
@@ -1022,7 +1022,7 @@ function About() {
       <blockquote className="about-statement">
         Most systems fail because they depend on the person who built them, or on luck holding steady. Anviq is built against that: systems that hold on their own, and someone who stays accountable for them either way.
       </blockquote>
-      <h2>One person, three ways of shipping</h2>
+      <h2>Three ways of shipping</h2>
       <div className="constraint-inspector">
         <div
           ref={pickerRef}
@@ -1810,7 +1810,7 @@ export function Home() {
           <span>
             {active === "projects" || active === "overview"
               ? `${WORK_SELECTED.length} projects`
-              : "Independent practice"}
+              : "IT consulting and software"}
           </span>
         </footer>
         <SiteNavigator />

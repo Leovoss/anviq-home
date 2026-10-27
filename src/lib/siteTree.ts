@@ -54,7 +54,7 @@ export const SITE_TREE: SiteNode = {
       kind: "folder",
       route: "/explore/projects",
       // Desktop project-list sub-line, `function ProjectBrowser()`.
-      summary: "Independent builds",
+      summary: "Selected builds",
       aliases: ["work", "selected-work", "ship-log"],
       children: [
         {
@@ -152,7 +152,7 @@ export const SITE_TREE: SiteNode = {
       kind: "file",
       route: "/explore/about",
       // About intro, first sentence, `function About()`.
-      summary: "Anviq is an independent IT consulting and software practice.",
+      summary: "Anviq is an IT consulting and software practice.",
       // Grounded: /explore/founder redirects to /explore/about in App.tsx.
       aliases: ["founder"],
     },

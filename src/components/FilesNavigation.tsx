@@ -55,10 +55,10 @@ export function FilesTabBar({ active }: { active: string }) {
 
 export function FilesOverview() {
   return <div className="files-overview files-screen">
-    <div className="files-page-heading"><h1 className="sr-only">Anviq</h1><Logo /><p>Independent IT consulting and software</p></div>
+    <div className="files-page-heading"><h1 className="sr-only">Anviq</h1><Logo /><p>IT consulting and software</p></div>
     <section className="files-welcome-document" aria-labelledby="files-welcome-title">
       <div className="files-document-heading"><FilesArtwork document /><div><span>Read me</span><h2 id="files-welcome-title">Systems built to hold.</h2></div></div>
-      <p>Workflow, integration, and infrastructure, AI where it earns its place. One engineer, end-to-end accountability.</p>
+      <p>Workflow, integration, and infrastructure, AI where it earns its place. End-to-end accountability.</p>
       <a href="https://calendly.com/lvoss-anviq/30min?month=2026-09" target="_blank" rel="noopener noreferrer" onClick={() => recordBookingClick()}>Start a conversation <ArrowRight size={17} aria-hidden="true" /></a>
     </section>
     <section className="files-overview-work" aria-labelledby="files-work-title"><div className="files-section-heading"><h2 id="files-work-title">Selected work</h2><Link to="/explore/projects">See all<ChevronRight size={16} aria-hidden="true" /></Link></div>
@@ -81,7 +81,7 @@ export type FilesView = "icons" | "list";
 export type FilesSort = "name" | "kind";
 export function FilesProjects({ view, setView, sort, setSort }: { view: FilesView; setView: (view: FilesView) => void; sort: FilesSort; setSort: (sort: FilesSort) => void }) {
   const projects = WORK_SELECTED.map((item, index) => ({ ...item, slug: projectSlugs[index] })).sort((a, b) => (sort === "name" ? a.name.localeCompare(b.name) : a.tag.localeCompare(b.tag)));
-  return <section className="files-projects files-screen" aria-labelledby="files-projects-title"><div className="files-page-heading"><h1 id="files-projects-title">Selected work</h1><p>Independent builds, end to end.</p></div>
+  return <section className="files-projects files-screen" aria-labelledby="files-projects-title"><div className="files-page-heading"><h1 id="files-projects-title">Selected work</h1><p>Builds, end to end.</p></div>
     <div className="files-view-toolbar"><label className="files-sort">Sort by <select aria-label="Sort projects" value={sort} onChange={event => setSort(event.target.value as FilesSort)}><option value="name">Name</option><option value="kind">Type</option></select></label><div className="files-view-switch" role="group" aria-label="Project view"><button aria-label="Icon view" aria-pressed={view === "icons"} onClick={() => setView("icons")}><LayoutGrid size={19} aria-hidden="true" /></button><button aria-label="List view" aria-pressed={view === "list"} onClick={() => setView("list")}><List size={22} aria-hidden="true" /></button></div></div>
     <nav className={view === "icons" ? "files-grid" : "files-project-rows"} aria-label="Projects">{projects.map(project => <Link className="files-item" key={project.slug} to={`/projects/${project.slug}`}><FilesArtwork slug={project.slug} /><span className="files-item-name">{project.name}</span><span className="files-item-kind">{project.tag}</span>{view === "list" && <ChevronRight size={17} aria-hidden="true" />}</Link>)}</nav>
     <p className="files-item-count">{WORK_SELECTED.length} projects</p>

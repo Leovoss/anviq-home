@@ -336,9 +336,9 @@ export const ENGAGEMENT = [
     id: "retain",
     title: "Retain",
     price: "Month to month",
-    body: "Ongoing access to the same engineer as the system evolves.",
+    body: "Ongoing access as the system evolves.",
     in: [
-      "Same engineer on call as the system evolves",
+      "Ongoing support as the system evolves",
       "Fixes and small changes as needed",
       "Priority response",
     ],
@@ -351,7 +351,7 @@ export const ENGAGEMENT = [
 export const FAQ = [
   {
     q: "Who actually does the work?",
-    a: "I do. Anviq is an independent practice, not an agency with a rotating bench. The engineer you talk to in the assessment is the one who builds and deploys the system.",
+    a: "Leonardo leads the work. Anviq stays accountable from the assessment through deployment and handover.",
   },
   {
     q: "Where is data hosted?",

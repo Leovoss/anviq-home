@@ -89,7 +89,7 @@ const PAGE_GUIDANCE: Record<string, { plain: string; next: GuideStep[] }> = {
     ],
   },
   "/engagement": {
-    plain: "Engagement makes the commercial path concrete: a mostly free assessment produces a plan, Build delivers an agreed scope, and Retain keeps the same engineer available as the system evolves.",
+    plain: "Engagement makes the commercial path concrete: a mostly free assessment produces a plan, Build delivers an agreed scope, and Retain keeps support available as the system evolves.",
     next: [
       { path: "/contact/calendly", reason: "choose a time for the assessment conversation" },
       { path: "/questions", reason: "clear any practical concern first" },
@@ -113,7 +113,7 @@ const PAGE_GUIDANCE: Record<string, { plain: string; next: GuideStep[] }> = {
     ],
   },
   "/about": {
-    plain: "About explains the practice behind the work: a deliberately small independent engineering practice, with commercial context kept next to technical delivery.",
+    plain: "About explains the practice behind the work: a deliberately small engineering practice, with commercial context kept next to technical delivery.",
     next: [
       { path: "/projects", reason: "see that accountability in the work" },
       { path: "/activity", reason: "inspect the public evidence trail" },

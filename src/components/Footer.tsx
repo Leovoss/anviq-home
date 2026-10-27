@@ -19,7 +19,7 @@ export function Footer() {
             Licenses
           </Link>
         </nav>
-        <span>&copy; 2026 Anviq. Independent practice.</span>
+        <span>&copy; 2026 Anviq.</span>
       </div>
     </footer>
   )

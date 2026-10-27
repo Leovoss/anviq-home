@@ -25,7 +25,7 @@ export const SECTION_COMMENTARY: Record<string, string> = {
   "/constraints": "The page where clients get told no. They read it twice.",
   "/questions": "Answers pre-loaded. Suspiciously efficient.",
   "/activity": "Live commits. GitHub doesn't do marketing copy.",
-  "/about": "One engineer. The org chart is a post-it.",
+  "/about": "Small practice. The org chart is a post-it.",
   "/privacy": "No cookies here. The footer reaction stays in the footer.",
   "/cookies": "No cookies here. The footer reaction stays in the footer.",
   "/terms": "No cookies here. The footer reaction stays in the footer.",
