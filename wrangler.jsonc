@@ -1,5 +1,6 @@
 {
   "name": "anviq-home",
+  "account_id": "e9027d8558f91d1adb2fa970b3375c2c",
   "compatibility_date": "2026-09-10",
   "main": "worker/index.ts",
   "build": {
