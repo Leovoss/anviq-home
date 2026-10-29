@@ -57,7 +57,6 @@ import { DocumentPage } from "@/components/DocumentPage";
 import { Privacy } from "@/pages/Privacy";
 import { Cookies } from "@/pages/Cookies";
 import { Terms } from "@/pages/Terms";
-import { Licenses } from "@/pages/Licenses";
 import { FilesBrowse, FilesOverview, FilesProjects, FilesTabBar, FilesToolbar, type FilesSort, type FilesView } from "@/components/FilesNavigation";
 import { SiteNavigator } from "@/components/SiteNavigator";
 import { recordBookingClick, recordEmailCopy, recordSearchZeroResults } from "@/lib/guide";
@@ -149,10 +148,6 @@ const SECTION_META: Record<string, { title: string; description: string }> = {
   about: {
     title: "About Anviq",
     description: "An IT consulting and software practice, accountable from first conversation to handover.",
-  },
-  licenses: {
-    title: "Open Source Licenses & Attributions | Anviq",
-    description: "Open-source licenses and attributions for Anviq-maintained forks and modifications.",
   },
 };
 // One credibility line, not an autobiography - LinkedIn holds the story.
@@ -1526,7 +1521,6 @@ export function Home() {
     privacy: "Privacy Policy",
     cookies: "Cookie Policy",
     terms: "Terms & Disclaimer",
-    licenses: "Licenses",
   };
   const label =
     NAV.find((item) => item.id === active)?.label ??
@@ -1668,9 +1662,6 @@ export function Home() {
     case "terms":
       content = <Terms />;
       break;
-    case "licenses":
-      content = <Licenses />;
-      break;
     case "browse":
       content = filesLayout ? <FilesBrowse /> : (
         <DocumentPage title="Browse Anviq">
@@ -1690,6 +1681,7 @@ export function Home() {
   const retired: Record<string, string> = {
     founder: "/explore/about",
     "ship-log": "/explore/projects",
+    licenses: "/",
   };
   if (retired[active]) return <Navigate to={retired[active]} replace />;
   const legacy: Record<string, string> = {
@@ -1821,7 +1813,6 @@ export function Home() {
           <Link to="/explore/privacy">Privacy</Link>
           <Link to="/explore/cookies">Cookies</Link>
           <Link to="/explore/terms">Terms &amp; disclaimer</Link>
-          <Link to="/explore/licenses">Licenses</Link>
         </nav>
         <div className="site-footer-right">
           <nav className="social-links" aria-label="Social">

@@ -184,13 +184,6 @@ export const SITE_TREE: SiteNode = {
         'These terms apply to your use of this website (the "Site") at anviq.net.',
     },
     {
-      path: "/licenses",
-      name: "Licenses",
-      kind: "file",
-      route: "/explore/licenses",
-      summary: "Open-source licenses and attributions for Anviq-maintained forks.",
-    },
-    {
       // Grouping node for the external contact links. No route, so the
       // audit script skips it.
       path: "/contact",
