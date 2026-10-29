@@ -497,10 +497,9 @@ svg {
 }
 .sherlock-invite {
   position: absolute;
-  right: calc(100% + 10px);
-  top: 50%;
+  right: 0;
+  bottom: calc(100% + 10px);
   width: max-content;
-  transform: translateY(-50%);
   padding: 7px 10px;
   border-radius: var(--radius-control);
   isolation: isolate;
@@ -512,6 +511,7 @@ svg {
   font-size: 13px;
   font-weight: 550;
   white-space: nowrap;
+  pointer-events: none;
 }
 /* iOS/Dock-style count badge. Count is derived in guide.ts; this is
    paint only. System red, white numeral, site type weight. */
