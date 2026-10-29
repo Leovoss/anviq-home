@@ -3,7 +3,7 @@ import { DocumentPage } from '@/components/DocumentPage'
 export function Terms() {
   return (
     <DocumentPage title="Terms & Disclaimer">
-      <p className="legal-updated">Last updated: 9 September 2026</p>
+      <p className="legal-updated">Last updated: 29 October 2026</p>
       <div className="legal-copy">
       <p>
         These terms apply to your use of this website (the "Site") at anviq.net. By using the Site you
@@ -89,7 +89,8 @@ export function Terms() {
 
       <h2>11. Contact</h2>
       <p>
-        Questions about these terms: <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>. See also our{' '}
+        Questions about these terms: <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>. Anviq LLC,
+        30 N Gould St #69062, Sheridan, WY 82801, USA. See also our{' '}
         <a href="/explore/privacy">Privacy Policy</a> and <a href="/explore/cookies">Cookie Policy</a>.
       </p>
       </div>

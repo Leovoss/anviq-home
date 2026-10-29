@@ -3,7 +3,7 @@ import { DocumentPage } from '@/components/DocumentPage'
 export function Cookies() {
   return (
     <DocumentPage title="Cookie Policy">
-      <p className="legal-updated">Last updated: 9 September 2026</p>
+      <p className="legal-updated">Last updated: 29 October 2026</p>
       <div className="legal-copy">
       <p>
         Cookies are small files a website can store on your device. This page explains what this website
@@ -56,7 +56,8 @@ export function Cookies() {
 
       <h2>5. Contact</h2>
       <p>
-        Questions about cookies: <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>. See also our{' '}
+        Questions about cookies: <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>. Anviq LLC,
+        30 N Gould St #69062, Sheridan, WY 82801, USA. See also our{' '}
         <a href="/explore/privacy">Privacy Policy</a>.
       </p>
       </div>

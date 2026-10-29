@@ -3,7 +3,7 @@ import { DocumentPage } from '@/components/DocumentPage'
 export function Privacy() {
   return (
     <DocumentPage title="Privacy Policy">
-      <p className="legal-updated">Last updated: 9 September 2026</p>
+      <p className="legal-updated">Last updated: 29 October 2026</p>
       <div className="legal-copy">
       <p>
         This Privacy Policy explains how we handle personal data in connection with this website (the
@@ -24,6 +24,7 @@ export function Privacy() {
         <li>
           Email: <a href="mailto:lvoss@anviq.net">lvoss@anviq.net</a>
         </li>
+        <li>30 N Gould St #69062, Sheridan, WY 82801, USA</li>
       </ul>
 
       <h2>2. What this Site does and does not collect</h2>
