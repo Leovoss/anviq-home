@@ -115,7 +115,7 @@ const SITE_ORIGIN = "https://anviq.net";
 const SECTION_META: Record<string, { title: string; description: string }> = {
   overview: {
     title: "Anviq - IT consulting and software, end to end",
-    description: "An IT consulting and software practice for custom systems, automation, integration, and infrastructure.",
+    description: "An IT consulting and software company for custom systems, automation, integration, and infrastructure.",
   },
   services: {
     title: "Services | Anviq",
@@ -147,7 +147,7 @@ const SECTION_META: Record<string, { title: string; description: string }> = {
   },
   about: {
     title: "About Anviq",
-    description: "An IT consulting and software practice, accountable from first conversation to handover.",
+    description: "An IT consulting and software company. Leonardo Voss leads the work, from first conversation to handover.",
   },
 };
 // One credibility line, not an autobiography - LinkedIn holds the story.
@@ -156,7 +156,7 @@ const FOUNDER_LINE =
 // Short subheaders for search rows, the same shape as a Selected work row
 // (name + tag). The body below is match text only, never displayed.
 const SEARCH_SUBS: Record<string, string> = {
-  services: "What I build",
+  services: "What Anviq builds",
   projects: "Selected builds",
   approach: "Assess, build, deploy, maintain",
   engagement: "Assessment, Build, Retain",
@@ -197,8 +197,8 @@ const SEARCH_ENTRIES = [
     href: "/explore/about",
     group: "Explore" as const,
     icon: BookOpen,
-    sub: "The practice",
-    body: "IT consulting and software practice. Commercial judgment and technical delivery, full accountability. Leonardo Voss.",
+    sub: "The company",
+    body: "IT consulting and software company. Leonardo Voss leads the work. Commercial judgment and technical delivery, full accountability.",
   },
 ];
 function searchEntries(query: string) {
@@ -401,7 +401,7 @@ function Overview() {
         </div>
       </section>
       <section className="overview-services" aria-labelledby="services-title">
-        <h2 id="services-title">How I can help</h2>
+        <h2 id="services-title">How Anviq can help</h2>
         <div className="service-links">
           {WORK.map((service, index) => {
             const Icon = SERVICE_ICONS[index];
@@ -987,7 +987,7 @@ function About() {
   return (
     <DocumentPage
       title="About Anviq"
-      intro="IT consulting and software. Accountable from first conversation to handover."
+      intro="An IT consulting and software company. Leonardo Voss leads the work, from the first conversation to handover."
     >
       <h2>Founder</h2>
       <div className="identity-strip">

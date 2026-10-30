@@ -113,7 +113,7 @@ const PAGE_GUIDANCE: Record<string, { plain: string; next: GuideStep[] }> = {
     ],
   },
   "/about": {
-    plain: "About explains the practice behind the work: a deliberately small engineering practice, with commercial context kept next to technical delivery.",
+    plain: "About explains Anviq and the person accountable for the work. Leonardo Voss leads it, with the commercial context kept next to the technical delivery.",
     next: [
       { path: "/projects", reason: "see that accountability in the work" },
       { path: "/activity", reason: "inspect the public evidence trail" },
@@ -124,7 +124,7 @@ const PAGE_GUIDANCE: Record<string, { plain: string; next: GuideStep[] }> = {
     plain: "Activity is the public evidence trail. It is useful supporting proof, while Selected work explains the operating problems and outcomes behind it.",
     next: [
       { path: "/projects", reason: "see the work in context" },
-      { path: "/about", reason: "know the practice behind it" },
+      { path: "/about", reason: "know the company behind it" },
       { path: "/contact/calendly", reason: "discuss a real need" },
     ],
   },

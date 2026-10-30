@@ -14,7 +14,7 @@ export function Terms() {
       <h2>1. What this Site is</h2>
       <p>
         The Site is an informational and marketing website describing Anviq, an IT consulting and
-        software practice. It is not a product or a client deliverable. Any engagement is provided separately
+        software company. It is not a product or a client deliverable. Any engagement is provided separately
         under a written agreement.
       </p>
 

@@ -1,6 +1,6 @@
 # Anviq site
 
-Source for [anviq.net](https://anviq.net), the site of Anviq LLC, an IT consulting and software practice. React + TypeScript + Vite, styled with Tailwind CSS.
+Source for [anviq.net](https://anviq.net), the site of Anviq LLC, an IT consulting and software company. React + TypeScript + Vite, styled with Tailwind CSS.
 
 - `src/` - app source (pages, components, content data)
 - `public/` - static assets (favicon, robots.txt, sitemap.xml, llms.txt)
